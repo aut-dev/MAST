@@ -1,4 +1,4 @@
-dateModified: 1684498184
+dateModified: 1684499869
 elementSources:
   craft\elements\Entry:
     -
@@ -50,7 +50,14 @@ elementSources:
       key: 'section:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
       type: native
     -
+      defaultSort:
+        - postDate
+        - desc
+      disabled: false
       key: 'section:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+      tableAttributes:
+        - postDate
+        - author
       type: native
     -
       defaultSort:

@@ -43,17 +43,7 @@ class TasksService extends Component
         $blocks = $this->_createBlocks($task, $date, $length, $committed, $days[$date->format('D')]);
         if ($repeat) {
             $until->setTime(23, 59, 59);
-            switch ($repeat) {
-                case 'day':
-                    $interval = '+1 day';
-                    break;
-                case 'week':
-                    $interval = '+1 week';
-                    break;
-                case 'month':
-                    $interval = '+1 month';
-                    break;
-            }
+            $interval = '+1 ' . $repeat;
             $date->modify($interval);
             while ($date < $until) {
                 $blocks = array_merge($blocks, $this->_createBlocks($task, $date, $length, $committed, $days[$date->format('D')]));
