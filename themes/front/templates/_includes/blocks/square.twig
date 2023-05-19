@@ -13,7 +13,7 @@
         {% if show_timer %}
             <a href="#" class="js-toggle-timer fs-4" data-block-id="{{ block.id }}">
                 {% set current_block = currentUser.taskBlock.one() %}
-                {% if (current_block.id ?? null) ==  block.id%}
+                {% if (current_block.id ?? null) == block.id %}
                     <i class="fa-solid fa-stop"></i></a>
                 {% else %}
                     <i class="fa-solid fa-play"></i></a>

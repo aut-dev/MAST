@@ -1,4 +1,4 @@
-{% if currentUser %} 
+{% if currentUser %}
     <div class="toast bg-warning text-white border-0 {% if currentUser.timerStarted %}show{% endif %}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
         <div class="toast-body d-flex justify-content-between">
             {% if currentUser.timerStarted %}
