@@ -3,7 +3,7 @@
 {% set show_progress = show_progress ?? true %}
 
 <div class="square block p-3 bg-block border border-dark rounded" data-id="{{ block.id }}">
-    <h4>{{ block.task.first.title }} ({{ block.length / 60}}min)</h4>
+    <h4>{{ block.task.first.title }} ({{ block.length / 60 }}min)</h4>
     {% if show_progress %}
         {% set spent = block.timeSpent + currentUser.getTimerSpent(block) %}
         <div class="progress border border-primary">
