@@ -2,23 +2,28 @@
 
 <div class="square block p-3 bg-block border border-dark rounded" data-id="{{ block.id }}">
     <h4>{{ block.task.first.title }}</h4>
-    {% set spent = block.timeSpent %}
+    {% set spent = block.timeSpent + currentUser.getTimerSpent(block) %}
     <div class="progress border border-primary">
         <div class="progress-bar" role="progressbar" style="width: {{ spent / block.length * 100 }}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
-    {% if block.isExpired %}
-        <p class="text-warning m-0">{{ 'This task has expired at {time}'|t('site', {time: block.deadline|date('H:i')}) }}</p>
-    {% else %}
-        <p class="text-warning m-0">{{ 'This task will expire at {time}'|t('site', {time: block.deadline|date('H:i')}) }}</p>
-        {% if show_timer %}
-            <a href="#" class="js-toggle-timer fs-4" data-block-id="{{ block.id }}">
-                {% set current_block = currentUser.taskBlock.one() %}
-                {% if (current_block.id ?? null) == block.id %}
-                    <i class="fa-solid fa-stop"></i></a>
-                {% else %}
-                    <i class="fa-solid fa-play"></i></a>
+    <p class="text-success complete m-0" {% if not block.isComplete %}style="display:none"{% endif %}>{{ 'This task is complete !'|t }}</p>
+    {% if not block.isComplete %}
+        <div class="incomplete">
+            {% if block.isExpired %}
+                <p class="text-warning m-0">{{ 'This task has expired at {time}'|t('site', {time: block.deadline|date('H:i')}) }}</p>
+            {% else %}
+                <p class="text-warning m-0">{{ 'This task will expire at {time}'|t('site', {time: block.deadline|date('H:i')}) }}</p>
+                {% if show_timer %}
+                    <a href="#" class="js-toggle-timer fs-4" data-block-id="{{ block.id }}">
+                        {% set current_block = currentUser.taskBlock.one() %}
+                        {% if (current_block.id ?? null) == block.id %}
+                            <i class="fa-solid fa-stop"></i></a>
+                        {% else %}
+                            <i class="fa-solid fa-play"></i></a>
+                        {% endif %}
+                    </a>
                 {% endif %}
-            </a>
-        {% endif %}
+            {% endif %}
+        </div>
     {% endif %}
 </div>

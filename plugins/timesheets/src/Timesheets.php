@@ -6,6 +6,8 @@ use Plugins\Timesheets\behaviors\BlockBehavior;
 use Plugins\Timesheets\services\TimesheetsService;
 use craft\base\Plugin;
 use craft\elements\Entry;
+use craft\helpers\ElementHelper;
+use craft\services\Elements;
 use yii\base\Event;
 
 class Timesheets extends Plugin
@@ -24,6 +26,7 @@ class Timesheets extends Plugin
         self::$plugin = $this;
         $this->registerComponents();
         $this->registerBehaviors();
+        $this->registerEvents();
     }
 
     protected function registerComponents()
@@ -40,6 +43,22 @@ class Timesheets extends Plugin
                 if ($event->sender->section->handle == 'taskBlock') {
                     $event->sender->attachBehavior('plugin-timesheets', BlockBehavior::class);
                 }
+            }
+        });
+    }
+
+    protected function registerEvents()
+    {
+        Event::on(Elements::class, Elements::EVENT_AFTER_SAVE_ELEMENT, function (Event $event) {
+            $element = $event->element;
+            if (!ElementHelper::isDraftOrRevision($element) and $element instanceof Entry and $element->section->handle == 'timesheet') {
+                Timesheets::$plugin->timesheets->onTimesheetChange($element);
+            }
+        });
+        Event::on(Elements::class, Elements::EVENT_AFTER_DELETE_ELEMENT, function (Event $event) {
+            $element = $event->element;
+            if (!ElementHelper::isDraftOrRevision($element) and $element instanceof Entry and $element->section->handle == 'timesheet') {
+                Timesheets::$plugin->timesheets->onTimesheetChange($element);
             }
         });
     }

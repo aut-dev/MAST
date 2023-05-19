@@ -1,4 +1,4 @@
-dateModified: 1684487713
+dateModified: 1684491192
 elementSources:
   craft\elements\Entry:
     -
@@ -60,12 +60,12 @@ elementSources:
       key: 'section:a331f307-e71c-4961-a59b-a53ecc994e1c' # Task block
       tableAttributes:
         - postDate
-        - author
         - 'field:79cfda90-52f0-4348-b604-fdb241c209cf' # Task
         - 'field:beb8aabf-7970-4442-9f8b-f70568d8757a' # Day
         - 'field:a7c9164e-c77f-412f-8498-26092f7a0289' # Deadline
         - 'field:a25335f0-9a1f-4a5a-bb1b-f3d4480f55b1' # Committed
         - 'field:70279873-4261-4f79-b9d0-6dc067fb97b4' # Length
+        - 'field:d0af2316-3920-45e2-a0c7-5bf31b6f07ff' # Is complete
       type: native
     -
       defaultSort:
@@ -172,6 +172,7 @@ meta:
     c23328f2-0994-4997-be38-0ea95701ed16: Image # Image
     cd77c662-a80d-447b-9ca0-dd1aa44d6e6f: 'Login form' # Login form
     ce94cb33-2051-4b81-9e4f-4e2c7d3c0cb3: Default # Default
+    d0af2316-3920-45e2-a0c7-5bf31b6f07ff: 'Is complete' # Is complete
     d22f9b6b-afc7-49f4-af07-d03a17f0a2af: 'Page Maintenance' # Page Maintenance
     d9996114-81a4-47b8-82f7-9f4f219d67f9: 'Success message' # Success message
     e4dc77ff-7c96-4d98-b434-ed37c72fa8be: 'Matrix Content' # Matrix Content

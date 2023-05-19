@@ -3,6 +3,7 @@
 namespace Plugins\Timer\behaviors;
 
 use DateTime;
+use craft\elements\Entry;
 use yii\base\Behavior;
 
 class TimerBehavior extends Behavior
@@ -14,18 +15,15 @@ class TimerBehavior extends Behavior
         return $this->owner->timerStarted != null;
     }
 
-    /**
-     * Get the amount of hours and minutes elapsed since the timer started
-     *
-     * @return array
-     */
-    public function getTimerElapsed(): array
+    public function getTimerSpent(Entry $block): int
     {
-        $minutes = 0;
-        if ($this->owner->timerStarted) {
-            $diff = (new DateTime())->diff($this->owner->timerStarted);
-            $minutes += ($diff->d * 24 * 60) + ($diff->h * 60) + $diff->i;
+        if (!$this->owner->timerStarted) {
+            return 0;
         }
-        return [floor($minutes / 60), $minutes % 60];
+        if ($this->owner->taskBlock->one()->id != $block->id) {
+            return 0;
+        }
+        $diff = (new DateTime())->diff($this->owner->timerStarted);
+        return ($diff->d * 24 * 60 * 60) + ($diff->h * 60 * 60) + ($diff->i * 60) + $diff->s;
     }
 }

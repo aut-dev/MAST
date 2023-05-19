@@ -27,18 +27,20 @@ class TimerService extends Component
         \Craft::$app->elements->saveElement($user, false);
     }
 
-    public function stop()
+    public function stop(): Entry
     {
         $user = \Craft::$app->user->identity;
         if (!$user->timerStarted) {
             throw new Exception("Timer is not started");
         }
-        Timesheets::$plugin->timesheets->addTimesheet($user->taskBlock->one(), $user->timerStarted, new DateTime());
+        $block = $user->taskBlock->one();
+        Timesheets::$plugin->timesheets->addTimesheet($block, $user->timerStarted, new DateTime());
         $user->setFieldValues([
             'taskBlock' => [],
             'timerStarted' => null
         ]);
         \Craft::$app->elements->saveElement($user, false);
+        return Entry::find()->id($block->id)->one();
     }
 
     public function reset()

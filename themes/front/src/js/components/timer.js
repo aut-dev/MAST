@@ -51,10 +51,17 @@ class Timer
     {
         return $.ajax({
             url: '/?action=plugin-timer/timer/stop',
-        }).done(() => {
+        }).done((data) => {
             this.started = false;
             $('.js-toggle-timer i').removeClass('fa-stop').addClass('fa-play');
             this.$currentTimer.hide();
+            if (data.complete) {
+                let block = $('.block[data-id=' + data.blockId + ']');
+                if (block.length) {
+                    block.find('.complete').show();
+                    block.find('.incomplete').hide();
+                }
+            }
         });
     }
 

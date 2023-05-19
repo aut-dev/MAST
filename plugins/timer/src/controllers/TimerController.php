@@ -25,9 +25,15 @@ class TimerController extends Controller
 
     public function actionStop()
     {
-        Timer::$plugin->timer->stop();
+        try {
+            $block = Timer::$plugin->timer->stop();
+        } catch (\Exception $e) {
+            $this->response->setStatusCode(400);
+            return $this->asJson(['error' => $e->getMessage()]);
+        }
         return $this->asJson([
-            'current' => \Craft::$app->view->renderTemplate('_includes/current-timer')
+            'complete' => $block->isComplete,
+            'blockId' => $block->id
         ]);
     }
 
@@ -40,9 +46,7 @@ class TimerController extends Controller
                 'running' => false
             ]);
         }
-        $time = $block->timeSpent;
-        $diff = (new DateTime())->diff($user->timerStarted);
-        $time += ($diff->d * 24 * 60 * 60) + ($diff->h * 60 * 60) + ($diff->i * 60) + $diff->s;
+        $time = $block->timeSpent + $user->getTimerSpent($block);
         return $this->asJson([
             'running' => true,
             'blockId' => $block->id,

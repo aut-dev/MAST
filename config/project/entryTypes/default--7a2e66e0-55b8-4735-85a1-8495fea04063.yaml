@@ -44,6 +44,18 @@ fieldLayouts:
             width: 50
           -
             elementCondition: null
+            fieldUid: d0af2316-3920-45e2-a0c7-5bf31b6f07ff # Is complete
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: b273ee44-0057-4058-8af3-9f57ee2977c1
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
             fieldUid: beb8aabf-7970-4442-9f8b-f70568d8757a # Day
             instructions: null
             label: null
@@ -87,18 +99,6 @@ fieldLayouts:
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: 10012327-d8b7-4d1d-a4e1-318b577fd9ca
-            userCondition: null
-            warning: null
-            width: 50
-          -
-            elementCondition: null
-            fieldUid: b5fafefb-e1ed-4fd3-8432-c254b26a0e1a # Spent
-            instructions: null
-            label: null
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 46783277-dccf-4745-bb34-26bfb7655093
             userCondition: null
             warning: null
             width: 50

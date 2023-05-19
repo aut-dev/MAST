@@ -32,4 +32,16 @@ class TimesheetsService extends Component
         }
         throw new Exception("Couldn't save timesheet : " . print_r($block->errors, true));
     }
+
+    public function onTimesheetChange(Entry $sheet)
+    {
+        $block = $sheet->taskBlock->one();
+        if (!$block or $block->isComplete) {
+            return;
+        }
+        if ($block->timeSpent > $block->length) {
+            $block->setFieldValue('isComplete', true);
+            \Craft::$app->elements->saveElement($block, false);
+        }
+    }
 }
