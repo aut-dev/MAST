@@ -4,14 +4,27 @@ class Timer
 {
     $currentTimer;
     started;
+    interval;
 
     constructor()
     {
         this.started = window.Globals.timerStarted;
         this.$currentTimer = $('#current-timer');
         this.initTimerLinks();
-        setInterval(() => this.pollProgress(), 10000);
+        if (this.started) {
+            this.startPolling();
+        }
         console.log('Timer initialised');
+    }
+
+    startPolling()
+    {
+        this.interval = setInterval(() => this.pollProgress(), 10000);
+    }
+
+    stopPolling()
+    {
+        clearInterval(this.interval);
     }
 
     pollProgress()
@@ -55,6 +68,7 @@ class Timer
             this.started = false;
             $('.js-toggle-timer i').removeClass('fa-stop').addClass('fa-play');
             this.$currentTimer.hide();
+            this.stopPolling();
             if (data.complete) {
                 let block = $('.block[data-id=' + data.blockId + ']');
                 if (block.length) {
@@ -75,6 +89,7 @@ class Timer
         }).done((data) => {
             this.started = true;
             this.updateCurrentTimer(data.current);
+            this.startPolling();
             $('.js-toggle-timer[data-block-id=' + blockId + ']').find('i').removeClass('fa-play').addClass('fa-stop');
         }).fail((response) => {
             if (response.status == 400) {
