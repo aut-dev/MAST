@@ -1,0 +1,38 @@
+#header{
+    background-color: $gray-300;
+    .site-name {
+        font-size: 30px;
+    }
+    .menu {
+        align-self: center;
+    }
+    .main-navigation {
+        display: flex;
+        li {
+            margin-right: 10px;
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
+    .logo {
+        height: 50px;
+        width: 50px;
+        border-radius: 5px;
+        overflow: hidden;
+        display: inline-flex;
+        margin-right: 10px;
+    }
+}
+
+@media all and (max-width: 1024px) {
+    #navbarNav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: white;
+        z-index: 2;
+    }
+}

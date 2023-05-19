@@ -1,0 +1,19 @@
+{
+  "name": "themes/front-theme",
+  "description": "Front Theme",
+  "type": "craft-plugin",
+  "version": "2.0",
+  "autoload": {
+    "psr-4": {
+      "themes\\front\\": "."
+      }
+    },
+  "require": {
+    "puzzlers/base-theme": "^2.0"
+  },
+  "extra": {
+    "handle": "front-theme",
+    "name": "Front Theme",
+    "class": "themes\\front\\Theme"
+  }
+}

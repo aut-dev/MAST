@@ -1,0 +1,67 @@
+fieldLayouts:
+  5909ab2b-02fc-450f-8722-8d692bf940ff:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: e2fe0aac-5845-40da-bd0e-8b744ca86e48
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 1a74b697-1724-49fa-bed7-7a43a4833e2d # Image
+            instructions: null
+            label: Logo
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 087226bd-2b12-444c-96a8-423216d601b6
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 2e6b3d96-afd5-4f91-b04b-28c8111df017 # Favicon
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: f28a8ccd-ad70-49f2-bae6-f44c261834bb
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: cf05e050-6f8d-4149-a28e-09567c05f340
+        userCondition: null
+handle: imagery
+hasTitleField: false
+name: Imagery
+section: 9786f806-b266-4b7c-8bc4-a21eab3ddef4 # Imagery
+sortOrder: 1
+titleFormat: '{section.name|raw}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

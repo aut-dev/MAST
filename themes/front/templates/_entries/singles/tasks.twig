@@ -1,0 +1,24 @@
+{% extends "_layouts/entry" %}
+{% requireLogin %}
+
+{% do craft.app.view.registerAssetBundle('themes\\front\\assets\\TasksPage') %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center">{{ entry.title }}</h1>
+        <a href="/tasks/new" class="btn btn-primary">{{ 'New task'|t }}</a>
+        <h2 class="mt-3 text-center">{{ "Today's tasks"|t }}</h2>
+        {% set blocks = currentUser.getTodaysBlocks %}
+        {% if blocks %}
+            <div class="row">
+                {% for block in blocks %}
+                    <div class="col-12 col-md-3">
+                        {% include "_includes/blocks/square" %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>{{ 'You have no tasks today'|t }}
+        {% endif %}
+    </div>
+{% endblock %}

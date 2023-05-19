@@ -1,0 +1,89 @@
+{% extends "_layouts/base" %}
+
+{% import "_helpers/images" as images %}
+
+{% do craft.prefetch.asynchronousFont('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap') %}
+
+{% set imagery = craft.entries.section('imagery').with(['image', 'favicon']).one() %}
+{% set seo = entry.basicSeo %}
+{% set body_classes = 'entry ' ~ entry.slug %}
+{% set favicon = imagery.favicon.first %}
+{% set main_classes = 'py-5' %}
+{% if currentUser %}
+    {% do craft.puzzlers.registerGlobalJs('timerStarted', currentUser.isTimerStarted) %}
+{% endif %}
+
+{% block head_extra %}
+    {% hook "jsGlobals" %}
+{% endblock %}
+
+{% block before_end_body_tag %}
+    {# {{ craft.twigpack.includeSafariNomoduleFix() }} #}
+    <div id="noscript-wrapper">
+        <div class="content">
+            {{ 'You must enable javascript to view this website'|t }}
+        </div>
+    </div>
+    <script>
+        document.body.style.opacity = 0;
+        document.getElementById('noscript-wrapper').style.display = 'none';
+    </script>
+{% endblock %}
+
+{% block header %}
+    {% block header_top %}
+        {% cache %}
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-12 col-md">
+                        <a href="/" class="d-flex">
+                            <div class="logo">
+                                {% if imagery.image.0 is defined %}
+                                    {{ images.responsiveImg(imagery.image.first, [
+                                        {width: 55}
+                                    ], {}, 55) }}
+                                {% endif %}
+                            </div>
+                            <div class="site-name">{{ siteName }}</div>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md d-flex justify-content-end">
+                        {% set menu = craft.menus.getMenu('main-navigation') %}
+                        {% if menu %}
+                            <nav class="navbar navbar-expand-lg navbar-light">
+                                {% include "_menus/menu" %}
+                                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#{{ menu.htmlId }}">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                            </nav>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endcache %}
+    {% endblock %}
+
+    {% block header_banner %}
+    {% endblock %}
+{% endblock %}
+
+{% block footer %}
+    <div id="current-timer">
+        {% include "_includes/current-timer" %}
+    </div>
+    <div class="container py-3">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                {% set menu = craft.menus.getMenu('footer-menu') %}
+                {% if menu %}
+                    <nav class="navbar">
+                        {% include '_menus/menu' %}
+                    </nav>
+                {% endif %}
+            </div>
+            <div class="col-12 col-md-6 align-items-center d-flex justify-content-end">
+                <span>@Web Puzzlers {{ "now"|date("Y") }}</span>
+            </div>
+        </div>
+    </div>
+{% endblock %}

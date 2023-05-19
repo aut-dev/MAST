@@ -1,0 +1,17 @@
+columnSuffix: dyinlzrb
+contentColumnType: integer
+fieldGroup: 0ba8d9d5-2692-4324-acd8-0187c46d6e82 # Common
+handle: form
+instructions: null
+name: Form
+searchable: false
+settings:
+  allowedForms: '*'
+  templates:
+    __assoc__:
+      -
+        - 6d8a0ee5-61b5-4e2e-a5aa-4942e529a165 # Contact us
+        - ''
+translationKeyFormat: null
+translationMethod: none
+type: WebPuzzlers\Formidable\Models\FormField

@@ -1,0 +1,11 @@
+bcc: ''
+cc: ''
+from: ''
+fromName: ''
+heading: 'When contact form is submitted'
+instructions: ''
+key: contact_form
+redactorConfig: Full.json
+replyTo: ''
+saveLogs: 0
+system: 0

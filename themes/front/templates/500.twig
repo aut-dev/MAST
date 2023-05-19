@@ -1,0 +1,7 @@
+{% extends "_layouts/matrix-content" %}
+
+{% set entry = craft.entries().section('pageError').with([
+    'bannerImages',
+    'matrixContent',
+    'matrixContent.image:image',
+]).one() %}

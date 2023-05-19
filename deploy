@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#Stop scripts on any error :
+set -e
+
+PHP="/opt/plesk/php/8.1/bin/php"
+COMPOSER="/opt/psa/var/modules/composer/composer.phar"
+MODE="$1"
+COMMIT="$2"
+
+echo "Deploying in $MODE mode for commit $COMMIT"
+
+#set maintenance mode
+$PHP craft off
+#Check patform requirements
+$PHP $COMPOSER check-platform-reqs
+#Install composer
+$PHP $COMPOSER install --no-dev
+#Run all migrations
+$PHP craft migrate/all
+#Apply config changes
+$PHP craft project-config/apply
+#clear template caches
+$PHP craft clear-caches/compiled-templates
+##Compile assets
+if [[ "$COMMIT" == *"[skip npm]"* ]]; then
+    echo "Npm compilation skipped by commit message"
+else
+    cd themes/front
+    source ~/.bashrc
+    nvm use 16
+    if [[ "$MODE" == "prod" ]]; then
+        npm i --omit=dev
+    else
+        npm i
+    fi
+    npm run $MODE
+    cd ../../
+fi
+#set maintenance mode off
+$PHP craft on

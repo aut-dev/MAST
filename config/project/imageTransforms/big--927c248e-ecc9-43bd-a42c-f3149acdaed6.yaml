@@ -1,0 +1,10 @@
+format: jpg
+handle: big
+height: null
+interlace: none
+mode: crop
+name: Big
+position: center-center
+quality: 82
+upscale: true
+width: 800

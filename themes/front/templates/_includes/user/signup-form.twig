@@ -1,0 +1,102 @@
+{% import "_helpers/errors" as errors %}
+
+{% set email_as_username = craft.app.config.general.useEmailAsUsername %}
+{% set email_label = email_label ?? 'Email'|t('site') %}
+{% set username_label = username_label ?? 'Username'|t('site') %}
+{% if email_as_username %}
+    {% set username_label = email_label %}
+{% endif %}
+{% set redirect_to = redirect_to ?? craft.app.request.getQueryParam('redirectTo') %}
+
+<form method="post" action="" accept-charset="UTF-8" id="signup-form">
+    {{ csrfInput() }}
+    {{ actionInput('users/save-user') }}
+    {% if redirect_to %}
+        {{ redirectInput(redirect_to) }}
+    {% endif %}
+    {{ successMessageInput('Your account has been created'|t('site')) }}
+    {{ failMessageInput('Unable to create your account'|t('site')) }}
+
+    <div class="form-group mb-3">
+        <label for="firstName" class="required">{{ 'First name'|t }}</label>
+        <input type="text"
+            id="firstName"
+            required
+            name="firstName"
+            value="{{ user is defined ? user.firstName : '' }}"
+            class="form-control"/>
+
+        {% if user is defined %}
+            {{ errors.errorList(user.getErrors('firstName')) }}
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="lastName" class="required">{{ 'Last name'|t }}</label>
+        <input type="text"
+            id="lastName"
+            required
+            name="lastName"
+            value="{{ user is defined ? user.lastName : '' }}"
+            class="form-control"/>
+
+        {% if user is defined %}
+            {{ errors.errorList(user.getErrors('lastName')) }}
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="username" class="required">{{ username_label }}</label>
+        <input type="text"
+            id="username"
+            required
+            name="username"
+            value="{{ user is defined ? user.username : '' }}"
+            class="form-control"/>
+
+        {% if user is defined %}
+            {{ errors.errorList(user.getErrors('username')) }}
+        {% endif %}
+    </div>
+
+    {% if not email_as_username %}
+        <div class="form-group mb-3">
+            <label for="email" class="required">{{ email_label }}</label>
+            <input type="text"
+                id="email"
+                required
+                name="email"
+                class="form-control"
+                value="{{ user is defined ? user.email : '' }}"
+                />
+
+            {% if user is defined %}
+                {{ errors.errorList(user.getErrors('email')) }}
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="form-group mb-3">
+        <label for="savePassword" class="required">{{ 'Password'|t }}</label>
+        <input type="password"
+            id="savePassword"
+            class="form-control"
+            required
+            name="password"/>
+
+        {% if user is defined %}
+            {{ errors.errorList(user.getErrors('password')) }}
+        {% endif %}
+    </div>
+
+    <div class="form-group text-center mb-3">
+        <button type="submit" class="btn btn-primary">
+            {{ 'Register'|t }}
+        </button>
+    </div>
+
+    <p class="m-0 text-center">{{ "Already have an account ? {tag}Login{endtag}"|t('site', {
+        tag: '<a href="/login">',
+        endtag: '</a>'
+    })|raw }}</p>
+</form>

@@ -1,0 +1,32 @@
+{% extends "_layouts/entry" %}
+
+{% do eagerLoadElements(entry, [
+    'bannerImages',
+    'matrixContent',
+    'matrixContent.image:image',
+]) %}
+
+{% block header_banner %}
+    {% cache %}
+       <div class="header-banner">
+            {% set images = entry.bannerImages %}
+            {% include "_includes/slideshow" %}
+       </div>
+    {% endcache %}
+{% endblock %}
+
+{% block content %}
+    {% block content_title %}
+        <div class="container">
+            <h1 class="mb-4 text-center">{{ entry.title }}</h1>
+        </div>
+    {% endblock %}
+    {% block before_content_matrix %}{% endblock %}
+    {% block content_matrix %}
+        {% include "_includes/matrix-content" with {
+            cache_key: 'entry-' ~ entry.id,
+            content: entry.matrixContent
+        } %}
+    {% endblock %}
+    {% block after_content_matrix %}{% endblock %}
+{% endblock %}

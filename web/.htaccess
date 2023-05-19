@@ -1,0 +1,121 @@
+RewriteEngine On
+
+### Redirect non-www on live
+RewriteCond %{HTTP_HOST} ^craft\.co\.uk$
+RewriteRule (.*) https://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+### Redirect non-https
+RewriteCond %{SERVER_PORT} 80
+RewriteCond %{HTTP_HOST} ^www\.craft\.co\.uk$ [OR]
+RewriteCond %{HTTP_HOST} ^craft\.inspireserverc\.com$
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+### Set Strict-Transport-Security header on live
+<If "%{HTTP_HOST} == 'www.craft.co.uk'">
+	Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</If>
+
+<IfModule mod_rewrite.c>
+    # Send would-be 404 requests to Craft
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} !^/(favicon\.ico|apple-touch-icon.*\.png)$ [NC]
+    RewriteRule (.+) index.php?p=$1 [QSA,L]
+</IfModule>
+
+# MOD_DEFLATE COMPRESSION
+<IfModule mod_deflate.c>
+	SetOutputFilter DEFLATE
+	AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/x-javascript application/x-httpd-php
+	#For incompatible browsers
+	BrowserMatch ^Mozilla/4 gzip-only-text/html
+	BrowserMatch ^Mozilla/4\.0[678] no-gzip
+	BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+	BrowserMatch \bMSI[E] !no-gzip !gzip-only-text/html
+	#Don't cache if already cached
+	SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip
+	#Proxies must give right content
+	Header append Vary User-Agent env=!dont-vary
+</IfModule>
+
+# BEGIN Expire headers
+AddType application/vnd.ms-fontobject .eot
+AddType font/ttf .ttf
+AddType font/otf .otf
+AddType font/woff .woff
+AddType font/woff2 .woff2
+AddType image/svg+xml .svg
+
+<IfModule mod_expires.c>
+	ExpiresActive On
+	ExpiresDefault "access plus 1 year"
+	# cache.appcache needs re-requests in FF 3.6
+	ExpiresByType text/cache-manifest "access plus 0 seconds"
+	# Your document html
+	ExpiresByType text/html "access plus 0 seconds"
+	# Data
+	ExpiresByType text/xml "access plus 0 seconds"
+	ExpiresByType application/xml "access plus 0 seconds"
+	ExpiresByType application/json "access plus 0 seconds"
+	# Feed
+	ExpiresByType application/rss+xml "access plus 1 hour"
+	ExpiresByType application/atom+xml "access plus 1 hour"
+</IfModule>
+# END Expire headers
+
+# BEGIN Cache-Control Headers
+<IfModule mod_headers.c>
+	<FilesMatch "\\.(ico|jpe?g|png|gif|webp|swf|gz|ttf|woff|woff2|js|css)$">
+	Header set Cache-Control "max-age=31536000, public"
+	</FilesMatch>
+	<filesMatch "\\.(html|htm)$">
+	Header set Cache-Control "max-age=0, public"
+	</filesMatch>
+	# Disable caching for scripts and other dynamic files
+	<FilesMatch "\.(pl|php|cgi|spl|scgi|fcgi)$">
+	Header unset Cache-Control
+	</FilesMatch>
+
+	Header set X-XSS-Protection "1; mode=block"
+	Header set X-Frame-Options "SAMEORIGIN"
+	Header set X-Content-Type-Options "nosniff"
+	Header set Referrer-Policy "same-origin"
+	Header add Content-Security-Policy "\
+		default-src 'self' \
+			*.craftcms.com \
+			*.google-analytics.com; \
+		script-src 'self' \
+			'unsafe-inline' \
+			'unsafe-eval' \
+			*.cloudflareinsights.com \
+			*.stripe.com \
+			*.gstatic.com \
+			*.google.com \
+			*.facebook.net \
+			*.googletagmanager.com \
+			*.google-analytics.com;\
+		img-src 'self' \
+			data: \
+			*.ytimg.com \
+			*.google.com \
+			*.craft-cdn.com \
+			*.placeholder.com \
+			*.facebook.com \
+			*.google-analytics.com;\
+		style-src 'self' \
+			'unsafe-inline' \
+			*.googletagmanager.com \
+			*.googleapis.com;\
+		font-src 'self' \
+			data: \
+			*.gstatic.com;\
+		frame-src 'self' \
+			*.youtube.com \
+			*.inspire.scot \
+			*.stripe.com \
+			*.vimeo.com \
+			*.facebook.com \
+			*.google.com;\
+		object-src 'none'"
+</IfModule>
+# END Cache-Control Headers

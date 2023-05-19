@@ -1,0 +1,11 @@
+bcc: ''
+cc: ''
+from: ''
+fromName: ''
+heading: 'When someone forgets their password:'
+instructions: ''
+key: forgot_password
+redactorConfig: ''
+replyTo: ''
+saveLogs: 0
+system: 1

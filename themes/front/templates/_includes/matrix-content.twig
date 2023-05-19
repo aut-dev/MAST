@@ -1,0 +1,9 @@
+<div class="matrix-content">
+    {% for index, item in content %}
+        <div class="{{ item.getType() }} matrix-block" id="matrix-content-{{ index }}">
+            {% include "_includes/matrix-blocks/" ~ item.getType() with {
+                cache_key: 'matrix-block-' ~ index ~ '-' ~ cache_key
+            } %}
+        </div>
+    {% endfor %}
+</div>

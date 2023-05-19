@@ -1,0 +1,54 @@
+field: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
+fieldLayouts:
+  1bd06635-117d-4aad-a06b-8a5e79216cf7:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: aa6e4905-4e1c-44af-b6a2-84c73af59989 # Text
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: a5fc1d53-a15d-4f4f-8950-8449f86f6efb
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: 61aa996c-0537-4702-99e4-b0272ad9c8ff
+        userCondition: null
+fields:
+  aa6e4905-4e1c-44af-b6a2-84c73af59989: # Text
+    columnSuffix: null
+    contentColumnType: text
+    fieldGroup: null
+    handle: text
+    instructions: null
+    name: Text
+    searchable: true
+    settings:
+      availableTransforms: '*'
+      availableVolumes: '*'
+      columnType: text
+      configSelectionMode: choose
+      defaultTransform: ''
+      manualConfig: ''
+      purifierConfig: null
+      purifyHtml: true
+      redactorConfig: Full.json
+      removeEmptyTags: true
+      removeInlineStyles: true
+      removeNbsp: true
+      showHtmlButtonForNonAdmins: false
+      showUnpermittedFiles: false
+      showUnpermittedVolumes: false
+      uiMode: normal
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\redactor\Field
+handle: text
+name: Text
+sortOrder: 1

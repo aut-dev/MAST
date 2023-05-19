@@ -1,0 +1,5 @@
+{
+  "buttons": ["bold", "italic", "underline", "deleted"],
+  "plugins": ["fullscreen", "counter"],
+  "toolbarFixed": true
+}

@@ -1,0 +1,468 @@
+dateModified: 1684487713
+elementSources:
+  craft\elements\Entry:
+    -
+      defaultSort:
+        - postDate
+        - desc
+      disabled: false
+      key: '*'
+      tableAttributes:
+        - section
+        - postDate
+        - expiryDate
+        - link
+      type: native
+    -
+      heading: Singles
+      type: heading
+    -
+      defaultSort:
+        - title
+        - asc
+      disabled: false
+      key: 'single:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
+      tableAttributes:
+        - postDate
+        - expiryDate
+        - author
+        - link
+      type: native
+    -
+      key: 'single:e237d745-b0a6-4a3f-9003-984efa160459' # Page error
+      type: native
+    -
+      key: 'single:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
+      type: native
+    -
+      key: 'single:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
+      type: native
+    -
+      key: 'single:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
+      type: native
+    -
+      key: 'single:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
+      type: native
+    -
+      heading: Channels
+      type: heading
+    -
+      key: 'section:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+      type: native
+    -
+      key: 'section:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+      type: native
+    -
+      defaultSort:
+        - postDate
+        - desc
+      disabled: false
+      key: 'section:a331f307-e71c-4961-a59b-a53ecc994e1c' # Task block
+      tableAttributes:
+        - postDate
+        - author
+        - 'field:79cfda90-52f0-4348-b604-fdb241c209cf' # Task
+        - 'field:beb8aabf-7970-4442-9f8b-f70568d8757a' # Day
+        - 'field:a7c9164e-c77f-412f-8498-26092f7a0289' # Deadline
+        - 'field:a25335f0-9a1f-4a5a-bb1b-f3d4480f55b1' # Committed
+        - 'field:70279873-4261-4f79-b9d0-6dc067fb97b4' # Length
+      type: native
+    -
+      defaultSort:
+        - postDate
+        - desc
+      disabled: false
+      key: 'section:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+      tableAttributes:
+        - author
+        - 'field:aab1cc6f-c9a2-4939-8e7e-1127c3f19f84' # Task block
+        - 'field:96b46985-2b26-4ee8-8279-e2c4fea4bcc2' # Start time
+        - 'field:33641f0b-d2b1-4870-afe5-faaa2ef8844e' # End time
+      type: native
+    -
+      heading: Globals
+      type: heading
+    -
+      key: 'single:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
+      type: native
+    -
+      heading: ''
+      type: heading
+    -
+      heading: ''
+      type: heading
+email:
+  fromEmail: noreply@puzzlers.run
+  fromName: Craft
+  replyToEmail: null
+  template: null
+  transportSettings:
+    encryptionMethod: $EMAIL_ENCRYPTION
+    host: $EMAIL_HOST
+    password: $EMAIL_PASSWORD
+    port: $EMAIL_PORT
+    timeout: '10'
+    useAuthentication: $EMAIL_AUTHENTICATION
+    username: $EMAIL_USERNAME
+  transportType: craft\mail\transportadapters\Smtp
+fs:
+  public:
+    hasUrls: true
+    name: Public
+    settings:
+      path: '@webroot/files'
+    type: craft\fs\Local
+    url: /files
+meta:
+  __names__:
+    0ba8d9d5-2692-4324-acd8-0187c46d6e82: Common # Common
+    1a74b697-1724-49fa-bed7-7a43a4833e2d: Image # Image
+    2e3e24ad-d20e-48fc-ba6a-453f1ac66748: User # User
+    2e6b3d96-afd5-4f91-b04b-28c8111df017: Favicon # Favicon
+    2e428424-4539-4e04-b9c1-66cd7ca17911: Form # Form
+    3be80663-0614-4a4d-9626-631d2bfd20bb: Public # Public
+    4af59c54-88a6-4ada-b492-3246b6f6ea7c: 'Standard Page' # Standard Page
+    6a9e4f78-0e55-4b7b-9e55-4fc31c721794: Autonomy # Autonomy
+    6a56660b-9d07-41fe-8cc0-e27a35e9d466: Form # Form
+    6d8a0ee5-61b5-4e2e-a5aa-4942e529a165: 'Contact us' # Contact us
+    6df6f10a-5ece-4a68-8fb6-68c2af85721f: 'Page error' # Page error
+    7a2e66e0-55b8-4735-85a1-8495fea04063: Default # Default
+    8ad55fd2-2c4e-436b-a572-d9d4bef64524: 'Basic Seo' # Basic Seo
+    8e16df26-189c-4cab-bfe1-658ff8db2d14: Default # Default
+    8fd53ce4-059f-4154-8ef4-f1d0c5a0d8ce: Small # Small
+    18ad884e-ff55-4513-8822-fb6222c76f60: Imagery # Imagery
+    37e79b05-ad6f-49e5-a1eb-28f46e70f0fc: Default # Default
+    51e58384-83d6-4c87-966f-ba12d10e9076: Image # Image
+    70c0d997-a64e-47f3-956a-11deff9be426: 'New task' # New task
+    75dda2af-19e9-48e0-aed1-116af08373a5: Icon # Icon
+    79cfda90-52f0-4348-b604-fdb241c209cf: Task # Task
+    96b46985-2b26-4ee8-8279-e2c4fea4bcc2: 'Start time' # Start time
+    123c86c3-404e-49c2-8fb1-8666da333b2d: 'Sign up form' # Sign up form
+    646a52b6-154e-4e2e-846b-72c6d35feadf: 'Timer started' # Timer started
+    720dc906-57fd-4848-92a1-447acf4703f3: Task # Task
+    754e6619-64f1-4d4d-8a61-6df6f90e5a9b: Tasks # Tasks
+    837fa2c1-2e58-4efa-860b-7c22abbaf240: Imagery # Imagery
+    877c3423-006e-4942-bfdb-c44bac344c97: Timesheet # Timesheet
+    927c248e-ecc9-43bd-a42c-f3149acdaed6: Big # Big
+    9786f806-b266-4b7c-8bc4-a21eab3ddef4: Imagery # Imagery
+    9806b1c0-5f4e-476f-8f76-3301b70e9415: Tasks # Tasks
+    33641f0b-d2b1-4870-afe5-faaa2ef8844e: 'End time' # End time
+    41606ea8-32f2-420d-8dab-de4f2a9c3fd1: Finished # Finished
+    88153a03-a6b7-41a0-8649-8331ae28fe84: 'Redactor (full)' # Redactor (full)
+    786514c8-8adf-4d05-a1ce-0b054ab04b67: Craft # Craft
+    8888327a-ccb9-49c2-bdec-7465c0dfa6bf: SEO # SEO
+    36524402-a8ca-4776-8343-8885cac88d21: Medium # Medium
+    70279873-4261-4f79-b9d0-6dc067fb97b4: Length # Length
+    a2bc72ab-0dab-4c33-bd04-254b7bb9d337: Home # Home
+    a6a6cc39-5cd4-495c-ac23-6804047c2640: 'Page Maintenance' # Page Maintenance
+    a7c9164e-c77f-412f-8498-26092f7a0289: Deadline # Deadline
+    a220a4df-7337-4099-807d-b7ac71becd03: 'Redactor (simple)' # Redactor (simple)
+    a331f307-e71c-4961-a59b-a53ecc994e1c: 'Task block' # Task block
+    a25335f0-9a1f-4a5a-bb1b-f3d4480f55b1: Committed # Committed
+    aa5c9cbc-3fc7-44fd-aca8-a2410d75570e: 'Redactor (standard)' # Redactor (standard)
+    aa6e4905-4e1c-44af-b6a2-84c73af59989: Text # Text
+    aab1cc6f-c9a2-4939-8e7e-1127c3f19f84: 'Task block' # Task block
+    ab6a1072-3bb0-460a-bf36-bbb4b5dac8da: 'Page not found' # Page not found
+    b5fafefb-e1ed-4fd3-8432-c254b26a0e1a: Spent # Spent
+    b39f1bdf-5ce7-4286-9e4f-3162f9c70830: Full # Full
+    beb8aabf-7970-4442-9f8b-f70568d8757a: Day # Day
+    bf477c2a-b2b3-4dde-a0e0-0978de99ab77: 'New task' # New task
+    c02d8ea3-fd26-4084-890d-83260c7fc0dd: 'Banner Images' # Banner Images
+    c95e7ea6-ef14-4d2b-af3e-da848760500f: 'Page not found' # Page not found
+    c23328f2-0994-4997-be38-0ea95701ed16: Image # Image
+    cd77c662-a80d-447b-9ca0-dd1aa44d6e6f: 'Login form' # Login form
+    ce94cb33-2051-4b81-9e4f-4e2c7d3c0cb3: Default # Default
+    d22f9b6b-afc7-49f4-af07-d03a17f0a2af: 'Page Maintenance' # Page Maintenance
+    d9996114-81a4-47b8-82f7-9f4f219d67f9: 'Success message' # Success message
+    e4dc77ff-7c96-4d98-b434-ed37c72fa8be: 'Matrix Content' # Matrix Content
+    e237d745-b0a6-4a3f-9003-984efa160459: 'Page error' # Page error
+    ea72fbbd-5d58-4612-9f76-ad3abbaa8870: Form # Form
+    eca48186-ef8a-40ab-bb78-26a70ea56bb0: Text # Text
+    fa53f651-84c9-437f-9bed-edaead3bf8ed: Home # Home
+    fb9eba24-cb32-4bf5-8a07-ba003842b35f: Tasks # Tasks
+plugins:
+  blitz-recommendations:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.1.0
+  cookie-consent-banner:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.1
+  device-detect:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  eager-beaver:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  elements-panel:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  embeddedassets:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  expanded-singles:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  formidable:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.2.0
+    settings:
+      acceptableScore: '7'
+      deleteSpamThreshold: '30'
+      deleteSubmissionsThreshold: ''
+      secretKey: $RECAPTCHA_SECRET_KEY
+      siteKey: $RECAPTCHA_SITE_KEY
+      useQueue: '1'
+  front-theme:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  gtag:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  image-resizer:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.0.0
+  monitor404s:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.0.3
+  plugin-tasks:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  plugin-timer:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  plugin-timesheets:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  prefetch:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  puzzlers:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  puzzlers-base-theme:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  puzzlers-emails:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  puzzlers-imager:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  puzzlers-translations:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+    settings:
+      addMissingTranslations: true
+      categories:
+        - site
+      enableCaching: true
+      languages:
+        - en-GB
+  puzzlersmenus:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.2.1
+  redactor:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.3.0
+  restrict-deletion:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+    settings:
+      adminCanOverride: ''
+      disableForConsoleRequests: ''
+      disableForFrontRequests: ''
+      policies:
+        __assoc__:
+          -
+            - 4af59c54-88a6-4ada-b492-3246b6f6ea7c # Standard Page
+            - noRevisions
+          -
+            - 3be80663-0614-4a4d-9626-631d2bfd20bb # Public
+            - noRevisions
+      userPolicy: noRevisions
+  schedule:
+    edition: standard
+    enabled: true
+    schemaVersion: 0.4.0
+    settings:
+      cliPath: $PHP_PATH
+      customCpNavName: ''
+      customName: ''
+      modifyPluginName: false
+  sentry-logger:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+    settings:
+      anonymous: false
+      dsn: $SENTRY_DSN
+      enabled: true
+      exceptCodes:
+        - '403'
+        - '404'
+      levels:
+        - error
+        - warning
+      release: ''
+  seo:
+    edition: standard
+    enabled: true
+    schemaVersion: 3.2.0
+    settings:
+      description: ''
+      facebookAppId: ''
+      metaTemplate: ''
+      removeAlternateUrls: ''
+      robots:
+        - ''
+        - ''
+        - ''
+        - ''
+        - ''
+        - ''
+      robotsTxt: "{# Sitemap URL #}\r\nSitemap: {{ url(seo.sitemapName ~ '.xml') }}\r\n\r\n{# Disallows #}\r\n{% if craft.app.config.env != 'production' %}\r\n\r\n{# Disallow access to everything when NOT in production #}\r\nUser-agent: *\r\nDisallow: /\r\n\r\n{% else %}\r\n\r\n{# Disallow access to cpresources/ when live #}\r\nUser-agent: *\r\nDisallow: /cpresources/\r\n\r\n{% endif %}"
+      sitemapLimit: '1000'
+      sitemapName: sitemap
+      socialImage: ''
+      title:
+        -
+          __assoc__:
+            -
+              - key
+              - '1'
+            -
+              - locked
+              - '0'
+            -
+              - template
+              - '{title}'
+      titleSuffix: null
+      twitterHandle: ''
+  social-login:
+    edition: standard
+    enabled: true
+    licenseKey: 9GO9C7V32T08BAFN5FDBC1JB
+    schemaVersion: 1.0.1
+    settings:
+      cpLoginTemplate: ''
+      enableCpLogin: false
+      enableLogin: true
+      enableRegistration: true
+      populateProfile: true
+      providers:
+        __assoc__:
+          -
+            - google
+            -
+              __assoc__:
+                -
+                  - proxyRedirect
+                  - '0'
+                -
+                  - enabled
+                  - true
+                -
+                  - matchUserSource
+                  - email
+                -
+                  - matchUserDestination
+                  - email
+                -
+                  - loginEnabled
+                  - true
+                -
+                  - cpLoginEnabled
+                  - false
+                -
+                  - fieldMapping
+                  -
+                    __assoc__:
+                      -
+                        - username
+                        - email
+                      -
+                        - email
+                        - email
+                      -
+                        - name
+                        - ''
+                      -
+                        - firstName
+                        - firstName
+                      -
+                        - lastName
+                        - lastName
+                      -
+                        - photo
+                        - avatar
+                -
+                  - clientId
+                  - 835432513261-5erlr15bt4d9qaev3c54jijd2dus6i1u.apps.googleusercontent.com
+                -
+                  - clientSecret
+                  - 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
+  spam-check:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+  super-table:
+    edition: standard
+    enabled: true
+    schemaVersion: 3.0.0
+  themes:
+    edition: lite
+    enabled: true
+    schemaVersion: 4.1.0
+    settings:
+      blockCache: null
+      console: front-theme
+      cp: front-theme
+      default: front-theme
+      displayerCache: null
+      eagerLoad: true
+      eagerLoadingCache: null
+      folder: themes
+      hideEmptyFields: true
+      maxEagerLoadLevel: 5
+      menuItemName: Theming
+      redirectTo: list
+      rulesCache: null
+      setConsole: '1'
+      setCp: '1'
+      showCpShortcuts: true
+      templateCache: null
+  typedlinkfield:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.0.0
+system:
+  edition: pro
+  live: true
+  name: Autonomy
+  retryDuration: 200
+  schemaVersion: 4.4.0.4
+  timeZone: Europe/London

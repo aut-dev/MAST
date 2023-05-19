@@ -1,0 +1,31 @@
+tabs:
+  -
+    elementCondition: null
+    elements:
+      -
+        elementCondition: null
+        fieldUid: 646a52b6-154e-4e2e-846b-72c6d35feadf # Timer started
+        instructions: null
+        label: null
+        required: false
+        tip: null
+        type: craft\fieldlayoutelements\CustomField
+        uid: 0f47deaa-e798-45c3-a88b-484fed362c9c
+        userCondition: null
+        warning: null
+        width: 50
+      -
+        elementCondition: null
+        fieldUid: aab1cc6f-c9a2-4939-8e7e-1127c3f19f84 # Task block
+        instructions: null
+        label: null
+        required: false
+        tip: null
+        type: craft\fieldlayoutelements\CustomField
+        uid: 78d23180-ecb0-4d83-a989-eb3bf1ef7b43
+        userCondition: null
+        warning: null
+        width: 50
+    name: Timer
+    uid: 8a5aa9b0-01fa-40f1-b8a9-a7966bbbb51b
+    userCondition: null

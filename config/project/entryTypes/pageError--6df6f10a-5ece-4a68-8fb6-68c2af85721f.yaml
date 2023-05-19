@@ -1,0 +1,85 @@
+fieldLayouts:
+  858f194b-c93d-45bc-83a2-6d5315c378d3:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: 9b6306ee-c30a-4d76-875e-94963cb15727
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: c02d8ea3-fd26-4084-890d-83260c7fc0dd # Banner Images
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: abaa15a2-f6b2-456c-947c-fd72bf1291e3
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 301246c2-1ff7-46b4-b159-c22b81540f70
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: 8ececb74-b397-4321-a182-33a3a4673fee
+        userCondition: null
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 8ad55fd2-2c4e-436b-a572-d9d4bef64524 # Basic Seo
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 1e25c687-5da7-4590-a78e-282a8f73f227
+            userCondition: null
+            warning: null
+            width: 100
+        name: SEO
+        uid: 35c5f450-9870-4f65-a195-60df3046a184
+        userCondition: null
+handle: pageError
+hasTitleField: true
+name: 'Page error'
+section: e237d745-b0a6-4a3f-9003-984efa160459 # Page error
+sortOrder: 1
+titleFormat: '{section.name|raw}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

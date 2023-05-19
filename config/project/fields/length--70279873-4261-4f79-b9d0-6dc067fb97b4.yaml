@@ -1,0 +1,20 @@
+columnSuffix: qjbdqsdn
+contentColumnType: integer(10)
+fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
+handle: length
+instructions: null
+name: Length
+searchable: false
+settings:
+  decimals: 0
+  defaultValue: null
+  max: null
+  min: 0
+  prefix: null
+  previewCurrency: null
+  previewFormat: none
+  size: null
+  suffix: seconds
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Number

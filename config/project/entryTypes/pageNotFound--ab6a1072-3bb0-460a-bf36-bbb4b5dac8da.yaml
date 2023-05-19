@@ -1,0 +1,85 @@
+fieldLayouts:
+  4bf8fb8f-03f0-4901-aae2-7211153a01ac:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: afd1d150-4cc5-40a4-8156-e97022d0e7b7
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: c02d8ea3-fd26-4084-890d-83260c7fc0dd # Banner Images
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: f6f86cbd-6cf5-4ba6-95b0-ec1bba032305
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 15c977df-6609-45db-b699-bb814383af37
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: dc735a46-2623-4004-8601-d47d04ef71df
+        userCondition: null
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 8ad55fd2-2c4e-436b-a572-d9d4bef64524 # Basic Seo
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: d5faf6cc-000b-4fa4-bdcd-6164f08fd61a
+            userCondition: null
+            warning: null
+            width: 100
+        name: SEO
+        uid: c078b100-2b33-46d7-957e-59fe25cf3771
+        userCondition: null
+handle: pageNotFound
+hasTitleField: true
+name: 'Page not found'
+section: c95e7ea6-ef14-4d2b-af3e-da848760500f # Page not found
+sortOrder: 1
+titleFormat: '{section.name|raw}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

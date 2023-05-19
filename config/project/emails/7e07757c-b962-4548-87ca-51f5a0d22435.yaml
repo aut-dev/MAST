@@ -1,0 +1,11 @@
+bcc: ''
+cc: ''
+from: ''
+fromName: ''
+heading: 'When someone changes their email address:'
+instructions: ''
+key: verify_new_email
+redactorConfig: ''
+replyTo: ''
+saveLogs: 0
+system: 1

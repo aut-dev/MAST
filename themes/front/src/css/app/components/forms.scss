@@ -1,0 +1,20 @@
+form {
+    .instructions {
+        color: $gray-600;
+        font-size: 80%;
+    }
+    label.required::after {
+        content: "*";
+        color: $danger;
+    }
+    .invalid-feedback {
+        display: block;
+    }
+    .datepicker[readonly] {
+        background-color: unset;
+    }
+}
+
+.grecaptcha-badge {
+    display: none !important;
+}

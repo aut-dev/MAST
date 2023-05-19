@@ -1,0 +1,17 @@
+columnSuffix: bonubyzp
+contentColumnType: integer(10)
+fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
+handle: committed
+instructions: null
+name: Committed
+searchable: false
+settings:
+  currency: USD
+  defaultValue: null
+  max: null
+  min: 0
+  showCurrency: true
+  size: null
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Money

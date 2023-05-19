@@ -1,0 +1,76 @@
+field: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
+fieldLayouts:
+  cff1c2cf-52e4-4c84-bee6-09388728861b:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 2e428424-4539-4e04-b9c1-66cd7ca17911 # Form
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 6bc9b075-c7fb-455f-9204-baadb6af2643
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: d9996114-81a4-47b8-82f7-9f4f219d67f9 # Success message
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 62167358-1ce8-446f-8a0e-b5551166b0d7
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: c0618053-fbfe-421d-97a2-5a3fbb408fd9
+        userCondition: null
+fields:
+  2e428424-4539-4e04-b9c1-66cd7ca17911: # Form
+    columnSuffix: ozfpeyob
+    contentColumnType: integer
+    fieldGroup: null
+    handle: form
+    instructions: null
+    name: Form
+    searchable: false
+    settings:
+      allowedForms: '*'
+      templates:
+        __assoc__:
+          -
+            - 6d8a0ee5-61b5-4e2e-a5aa-4942e529a165 # Contact us
+            - _forms/default
+    translationKeyFormat: null
+    translationMethod: none
+    type: WebPuzzlers\Formidable\Models\FormField
+  d9996114-81a4-47b8-82f7-9f4f219d67f9: # Success message
+    columnSuffix: aiiqxobf
+    contentColumnType: text
+    fieldGroup: null
+    handle: successMessage
+    instructions: null
+    name: 'Success message'
+    searchable: false
+    settings:
+      byteLimit: null
+      charLimit: null
+      code: false
+      columnType: null
+      initialRows: 4
+      multiline: true
+      placeholder: null
+      uiMode: normal
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\PlainText
+handle: form
+name: Form
+sortOrder: 3

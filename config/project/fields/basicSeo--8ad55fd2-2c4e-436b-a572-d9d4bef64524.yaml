@@ -1,0 +1,35 @@
+columnSuffix: null
+contentColumnType: text
+fieldGroup: 8888327a-ccb9-49c2-bdec-7465c0dfa6bf # SEO
+handle: basicSeo
+instructions: null
+name: 'Basic Seo'
+searchable: false
+settings:
+  description: ''
+  hideSocial: ''
+  robots:
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+    - ''
+  socialImage: ''
+  suffixAsPrefix: null
+  title:
+    -
+      __assoc__:
+        -
+          - key
+          - '1'
+        -
+          - locked
+          - '0'
+        -
+          - template
+          - '{title}'
+  titleSuffix: null
+translationKeyFormat: null
+translationMethod: none
+type: ether\seo\fields\SeoField

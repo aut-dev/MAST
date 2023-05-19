@@ -1,0 +1,85 @@
+fieldLayouts:
+  e79650d7-a7cb-48e2-ba27-e3d769179d02:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: 2107b866-2d97-40bd-bff4-23c13c705438
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 1a74b697-1724-49fa-bed7-7a43a4833e2d # Image
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 2e2a2030-0a2b-4e6e-9345-e0680c7df8e2
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: cb0c05b4-9d90-4995-b769-e74eb40482e9
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: b68797f2-6d6e-4b93-84ce-b47a5b92f34f
+        userCondition: null
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 8ad55fd2-2c4e-436b-a572-d9d4bef64524 # Basic Seo
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 46274e11-099a-4500-b15b-83fcd023c797
+            userCondition: null
+            warning: null
+            width: 100
+        name: SEO
+        uid: fd1475cf-9308-47ec-b12c-b7fdb4b1914c
+        userCondition: null
+handle: pageMaintenance
+hasTitleField: true
+name: 'Page Maintenance'
+section: d22f9b6b-afc7-49f4-af07-d03a17f0a2af # Page Maintenance
+sortOrder: 1
+titleFormat: '{section.name|raw}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

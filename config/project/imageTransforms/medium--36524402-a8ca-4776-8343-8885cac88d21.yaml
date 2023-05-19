@@ -1,0 +1,10 @@
+format: jpg
+handle: medium
+height: null
+interlace: none
+mode: crop
+name: Medium
+position: center-center
+quality: 82
+upscale: true
+width: 400

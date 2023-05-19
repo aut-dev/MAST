@@ -1,0 +1,10 @@
+format: jpg
+handle: small
+height: null
+interlace: none
+mode: crop
+name: Small
+position: center-center
+quality: 82
+upscale: true
+width: 200

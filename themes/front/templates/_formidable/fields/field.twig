@@ -1,0 +1,27 @@
+{% set class = 'col-12 mb-3' %}
+
+{% if form.handle == 'contact-us' %}
+	{% if field.handle in ['name', 'email'] %}
+		{% set class = class ~ ' col-md-6' %}
+	{% endif %}
+{% endif %}
+
+{% set container_class = 'form-group' %}
+
+{% if field.type in ['select', 'text', 'email', 'textarea', 'number', 'select_category', 'select_entry', 'date'] %}
+	{% set field_class = 'form-control' %}
+{% elseif field.type == 'file' %}
+	{% set field_class = 'form-control-file' %}
+{% elseif field.type in ['checkboxes', 'radio'] %}
+	{% set field_choice_container_class = 'form-check' %}
+	{% set field_class = 'form-check-input' %}
+	{% set field_choice_label_class = 'form-check-label' %}
+{% elseif field.type in ['switch'] %}
+	{% set field_class = 'form-check-input' %}
+	{% set label_class = 'form-check-label' %}
+	{% set container_class = 'form-check' %}
+{% endif %}
+
+<div class="{{ class }}">
+	{% include field.frontEndTemplate() %}
+</div>

@@ -1,0 +1,12 @@
+defaultPlacement: end
+enableVersioning: true
+handle: standardPage
+name: 'Standard Page'
+propagationMethod: all
+siteSettings:
+  6a9e4f78-0e55-4b7b-9e55-4fc31c721794: # Autonomy
+    enabledByDefault: true
+    hasUrls: true
+    template: _entries/channels/standardPage
+    uriFormat: '{slug}'
+type: channel

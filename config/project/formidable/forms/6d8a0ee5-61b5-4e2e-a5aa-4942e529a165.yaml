@@ -1,0 +1,68 @@
+captcha: googleV3
+class: ''
+color: '#000000'
+fields:
+  -
+    active: 1
+    containerClass: ''
+    fieldClass: ''
+    handle: name
+    instructions: ''
+    labelClass: ''
+    name: Name
+    options: '{"placeholder":"Name","label":"","default":"","labelHtml":false,"tooltip":"","tooltipLabel":"","autocomplete":true}'
+    type: text
+    uid: 86a8d5fe-be32-4280-8bdd-a06e1f3971d1
+  -
+    active: 1
+    containerClass: ''
+    fieldClass: ''
+    handle: email
+    instructions: ''
+    labelClass: ''
+    name: Email
+    options: '{"placeholder":"Email","label":"","default":"","labelHtml":false,"tooltip":"","tooltipLabel":"","autocomplete":true}'
+    type: email
+    uid: 3f8f2833-bb39-4102-87ee-84e7cd4af1cd
+  -
+    active: 1
+    containerClass: ''
+    fieldClass: ''
+    handle: message
+    instructions: ''
+    labelClass: ''
+    name: Message
+    options: '{"rows":null,"placeholder":"Message","label":"","default":"","labelHtml":false,"tooltip":"","tooltipLabel":"","autocomplete":true}'
+    type: textarea
+    uid: 00014537-e9e9-4a7f-bd90-abc845806a62
+frontEndValidation: 1
+handle: contact-us
+honeypot: 1
+honeypotField: website
+htmlId: null
+method: POST
+name: 'Contact us'
+notifyAdmin_key: null
+notifyEmails: ''
+notifyField: email
+notifySpamEmails: null
+notifySpam_key: null
+notify_key: contact_form
+obfuscateFieldNames: 1
+redirect: ''
+rules:
+  -
+    fields:
+      - email
+      - message
+      - name
+    message: '{field.name} is required.'
+    title: ''
+    type: required
+    uid: 98a7a52b-9382-4164-8f35-f9ea7f44a0ed
+    value: null
+saveSpam: 1
+saveSubmissions: 1
+spamCheck: email
+submitClass: ''
+submitLabel: Submit

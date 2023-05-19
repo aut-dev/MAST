@@ -1,0 +1,24 @@
+defaultPlacement: end
+enableVersioning: false
+handle: newTask
+name: 'New task'
+previewTargets:
+  -
+    __assoc__:
+      -
+        - label
+        - 'Primary entry page'
+      -
+        - urlFormat
+        - '{url}'
+      -
+        - refresh
+        - '1'
+propagationMethod: all
+siteSettings:
+  6a9e4f78-0e55-4b7b-9e55-4fc31c721794: # Autonomy
+    enabledByDefault: true
+    hasUrls: true
+    template: _entries/singles/new-task
+    uriFormat: tasks/new
+type: single

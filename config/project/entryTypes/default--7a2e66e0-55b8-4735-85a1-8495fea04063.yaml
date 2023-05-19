@@ -1,0 +1,115 @@
+fieldLayouts:
+  27ea8525-a978-4347-982f-a64385bc3098:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: be44070c-c3ad-4651-9863-bbfdc5b04516
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 79cfda90-52f0-4348-b604-fdb241c209cf # Task
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 1660ef27-1350-48d5-95b0-c0f05965d596
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: beb8aabf-7970-4442-9f8b-f70568d8757a # Day
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: fcf89cb4-7792-431d-b440-b248f1e48046
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: a7c9164e-c77f-412f-8498-26092f7a0289 # Deadline
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: b0180476-c377-4dc9-aecd-446c3fd2662d
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: a25335f0-9a1f-4a5a-bb1b-f3d4480f55b1 # Committed
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 4c6c328b-4108-4d18-a469-2facf2b4e638
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: 70279873-4261-4f79-b9d0-6dc067fb97b4 # Length
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 10012327-d8b7-4d1d-a4e1-318b577fd9ca
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: b5fafefb-e1ed-4fd3-8432-c254b26a0e1a # Spent
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 46783277-dccf-4745-bb34-26bfb7655093
+            userCondition: null
+            warning: null
+            width: 50
+        name: Content
+        uid: d9e93c74-5d76-46c7-961e-1d2dfd541b2a
+        userCondition: null
+handle: default
+hasTitleField: false
+name: Default
+section: a331f307-e71c-4961-a59b-a53ecc994e1c # Task block
+sortOrder: 1
+titleFormat: '{{ task.one().title }}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

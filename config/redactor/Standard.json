@@ -1,0 +1,7 @@
+{
+  "buttons": ["formatting", "bold", "italic", "underline", "deleted", "lists", "link", "image"],
+  "plugins": ["fullscreen", "video", "counter"],
+  "linkNewTab": true,
+  "imagePosition": true,
+  "toolbarFixed": true
+}

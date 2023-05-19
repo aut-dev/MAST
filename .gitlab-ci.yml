@@ -1,0 +1,28 @@
+stages:
+  - code_quality
+  - deploy
+
+code_quality:
+  before_script:
+    - source ~/.bashrc
+    - nvm use 16 > /dev/null
+    - if [ ! -d "node_modules" ]; then npm install > /dev/null; fi
+  stage: code_quality
+  script:
+    - /home/gitlab-runner/.config/composer/vendor/bin/phpcs plugins --tab-width=4 -n --standard=PSR2
+    - /home/gitlab-runner/.config/composer/vendor/bin/phpmd plugins ansi phpmd.ruleset.xml
+    - /home/gitlab-runner/.config/composer/vendor/bin/twigcs themes/front/templates --severity error  --display blocking
+    - node_modules/.bin/eslint themes/front/src/js/
+    - node_modules/.bin/stylelint themes/front/src/css/**/*.scss --custom-syntax postcss-scss
+    - ./lockfileversion.sh "$CI_COMMIT_TITLE"
+
+#Deploy to dev
+deploy_to_dev:
+  stage: deploy
+  script:
+    - ssh webpuzzlers.co.uk@109.228.60.227 "set -e;cd autonomy.webpuzzlers.co.uk;git pull;./deploy prod \"$CI_COMMIT_TITLE\""
+  environment:
+    name: dev site
+    url: https://autonomy-dev.webpuzzlers.co.uk
+  only:
+    - devel

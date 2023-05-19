@@ -1,0 +1,79 @@
+fieldLayouts:
+  d87688c1-d93b-4a7a-be8f-4347c8b57bca:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: c2d06c40-6ee3-456c-81cf-36694c0b9d05
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: aab1cc6f-c9a2-4939-8e7e-1127c3f19f84 # Task block
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: a4dc0979-3b63-4893-941d-1b558da6c616
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 96b46985-2b26-4ee8-8279-e2c4fea4bcc2 # Start time
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: a6523bd0-d628-448e-ae89-b2188615c6aa
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: 33641f0b-d2b1-4870-afe5-faaa2ef8844e # End time
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: aa6deb11-3dd0-44b6-a367-c9a1fd872bd1
+            userCondition: null
+            warning: null
+            width: 50
+        name: Content
+        uid: 517fab63-1440-4eb0-a2a1-200d160e602a
+        userCondition: null
+handle: default
+hasTitleField: false
+name: Default
+section: 877c3423-006e-4942-bfdb-c44bac344c97 # Timesheet
+sortOrder: 1
+titleFormat: '{{ taskBlock.one().title }}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

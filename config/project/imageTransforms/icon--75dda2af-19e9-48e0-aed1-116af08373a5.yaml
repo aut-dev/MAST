@@ -1,0 +1,10 @@
+format: jpg
+handle: icon
+height: null
+interlace: none
+mode: crop
+name: Icon
+position: center-center
+quality: 82
+upscale: true
+width: 100

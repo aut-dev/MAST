@@ -1,0 +1,43 @@
+fieldLayouts:
+  c454d1fb-a16e-420f-9f65-4df5615f20e0:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: ca94ed0e-b550-4c6b-8b48-28b6ccc1e608
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: 8ec7c1a0-0710-45a2-a246-efba168c60dd
+        userCondition: null
+handle: tasks
+hasTitleField: false
+name: Tasks
+section: 754e6619-64f1-4d4d-8a61-6df6f90e5a9b # Tasks
+sortOrder: 1
+titleFormat: '{section.name|raw}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

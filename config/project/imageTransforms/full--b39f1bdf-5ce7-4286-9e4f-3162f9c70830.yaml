@@ -1,0 +1,10 @@
+format: jpg
+handle: full
+height: null
+interlace: none
+mode: crop
+name: Full
+position: center-center
+quality: 82
+upscale: true
+width: 1200

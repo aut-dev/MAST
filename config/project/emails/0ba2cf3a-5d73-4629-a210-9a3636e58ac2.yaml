@@ -1,0 +1,11 @@
+bcc: ''
+cc: ''
+from: ''
+fromName: ''
+heading: 'When you are testing your email settings:'
+instructions: ''
+key: test_email
+redactorConfig: ''
+replyTo: ''
+saveLogs: 0
+system: 1

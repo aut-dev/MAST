@@ -1,0 +1,18 @@
+{% if currentUser %} 
+    <div class="toast bg-warning text-white border-0 {% if currentUser.timerStarted %}show{% endif %}" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+        <div class="toast-body d-flex justify-content-between">
+            {% if currentUser.timerStarted %}
+                {% set block = currentUser.taskBlock.one() %}
+                <div>
+                    {{ 'Working on {block} since {time}'|t('site', {
+                        block: block.title,
+                        time: currentUser.timerStarted|date('H:i')
+                    }) }}
+                </div>
+                <a href="#" class="js-toggle-timer" data-block-id="{{ block.id }}">
+                    <i class="fa-solid fa-stop"></i></a>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

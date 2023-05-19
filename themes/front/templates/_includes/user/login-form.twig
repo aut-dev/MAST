@@ -1,0 +1,58 @@
+{% set redirect_to = redirect_to ?? craft.app.request.getQueryParam('redirectTo') %}
+
+<form method="post" accept-charset="UTF-8" id="login-form">
+    {{ csrfInput() }}
+    {{ actionInput('users/login') }}
+    {% if redirect_to %}
+        {{ redirectInput(redirect_to) }}
+    {% endif %}
+
+    {% set notice = craft.socialLogin.getNotice() %}
+    {% if notice %}
+        <div class="alert alert-warning">{{ notice }}</div>
+    {% endif %}
+    {% set error = craft.socialLogin.getError() %}
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <div class="form-group mb-3">
+        <label for="loginName" class="required">{{ 'Username or email'|t }}</label>
+        {{ input('text', 'loginName', craft.app.user.rememberedUsername, {
+        id: 'loginName',
+        class: 'form-control',
+        autocomplete: 'username'
+        }) }}
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="password" class="required">{{ 'Password'|t }}</label>
+        {{ input('password', 'password', null, {
+        id: 'password',
+        class: 'form-control'
+        }) }}
+        <div id="forgotPassword" class="form-text"><a href="{{ url('reset-password') }}">{{ 'Forgot your password?'|t }}</a></div>
+    </div>
+
+    <div class="form-group mb-3 text-center">
+        <input class="form-check-input" type="checkbox" value="1" id="rememberMe" name="rememberMe">
+        <label class="form-check-label" for="rememberMe">
+            {{ 'Remember me'|t }}
+        </label>
+    </div>
+
+    <div class="form-group mb-3 text-center">
+        <button type="submit" class="btn btn-primary">{{ 'Login'|t }}</button>
+    </div>
+
+    <div class="d-flex justify-content-center mb-3">
+        {% for provider in craft.socialLogin.getLoginProviders() %}
+            <a class="btn btn-secondary" href="{{ craft.socialLogin.getLoginUrl(provider.handle) }}">Login with {{ provider.name }}</a>
+        {% endfor %}
+    </div>
+
+    <p class="m-0 text-center">{{ "Don't have an account yet ? {tag}Sign up{endtag}"|t('site', {
+        tag: '<a href="/sign-up">',
+        endtag: '</a>'
+    })|raw }}</p>
+</form>

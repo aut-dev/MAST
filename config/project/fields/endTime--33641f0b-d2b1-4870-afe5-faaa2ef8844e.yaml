@@ -1,0 +1,17 @@
+columnSuffix: jypqbbxy
+contentColumnType: datetime
+fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
+handle: endTime
+instructions: null
+name: 'End time'
+searchable: false
+settings:
+  max: null
+  min: null
+  minuteIncrement: 5
+  showDate: true
+  showTime: true
+  showTimeZone: false
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Date

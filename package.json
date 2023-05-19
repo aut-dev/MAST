@@ -1,0 +1,14 @@
+{
+  "name": "",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Boris Blondin <boris@inspire.scot>",
+  "dependencies": {
+    "@babel/core": "^7.16.12",
+    "@babel/eslint-parser": "^7.16.5",
+    "eslint": "^8.6.0",
+    "postcss-scss": "^4.0.3",
+    "stylelint": "^14.2.0",
+    "stylelint-config-standard": "^24.0.0"
+  }
+}

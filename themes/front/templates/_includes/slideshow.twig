@@ -1,0 +1,11 @@
+{% import "_helpers/images" as images %}
+
+{% if images|length %}
+    <div class="slick-carousel">
+        {% for elem in images %}
+        	<div class="slick-elem">
+            	{{ images.responsiveImg(elem ?? null) }}
+        	</div>
+        {% endfor %}
+    </div>
+{% endif %}

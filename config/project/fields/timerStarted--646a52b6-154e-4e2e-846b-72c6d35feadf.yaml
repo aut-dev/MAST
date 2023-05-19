@@ -1,0 +1,17 @@
+columnSuffix: jpxsraso
+contentColumnType: datetime
+fieldGroup: 2e3e24ad-d20e-48fc-ba6a-453f1ac66748 # User
+handle: timerStarted
+instructions: null
+name: 'Timer started'
+searchable: false
+settings:
+  max: null
+  min: null
+  minuteIncrement: 5
+  showDate: true
+  showTime: true
+  showTimeZone: false
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Date
