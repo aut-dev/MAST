@@ -1,7 +1,7 @@
 {% set show_timer = show_timer ?? true %}
 
 <div class="square block p-3 bg-block border border-dark rounded" data-id="{{ block.id }}">
-    <h4>{{ block.task.first.title }}</h4>
+    <h4>{{ block.task.first.title }} ({{ block.length / 60}}min)</h4>
     {% set spent = block.timeSpent + currentUser.getTimerSpent(block) %}
     <div class="progress border border-primary">
         <div class="progress-bar" role="progressbar" style="width: {{ spent / block.length * 100 }}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
