@@ -9,6 +9,7 @@
  **************/
 
 //App
+import 'lazysizes';
 import App from './js/app';
 
 window.App = new App;

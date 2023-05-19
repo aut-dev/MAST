@@ -10,7 +10,7 @@ class Timer
         this.started = window.Globals.timerStarted;
         this.$currentTimer = $('#current-timer');
         this.initTimerLinks();
-        setInterval(() => this.pollProgress(), 5000);
+        setInterval(() => this.pollProgress(), 10000);
         console.log('Timer initialised');
     }
 

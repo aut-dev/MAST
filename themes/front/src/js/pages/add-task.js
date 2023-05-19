@@ -21,6 +21,8 @@ class AddTask
                 data: this.$form.serialize()
             }).fail(response => {
                 App.handleError(response, this.$form);
+            }).done(data => {
+                window.location.href = data.redirect;
             });
         });
     }
