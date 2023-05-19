@@ -68,18 +68,6 @@ fieldLayouts:
             width: 50
           -
             elementCondition: null
-            fieldUid: a7c9164e-c77f-412f-8498-26092f7a0289 # Deadline
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: b0180476-c377-4dc9-aecd-446c3fd2662d
-            userCondition: null
-            warning: null
-            width: 50
-          -
-            elementCondition: null
             fieldUid: a25335f0-9a1f-4a5a-bb1b-f3d4480f55b1 # Committed
             instructions: null
             label: null

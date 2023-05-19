@@ -30,9 +30,13 @@ img {
 }
 
 #login-form,
-#add-task-form,
 #signup-form {
     width: 400px;
+    max-width: 100%;
+}
+
+#add-task-form {
+    width: 500px;
     max-width: 100%;
 }
 

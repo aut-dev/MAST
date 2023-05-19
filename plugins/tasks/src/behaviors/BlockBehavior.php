@@ -12,6 +12,6 @@ class BlockBehavior extends Behavior
 
     public function getIsExpired(): bool
     {
-        return $this->owner->deadline < (new DateTime());
+        return $this->owner->day < (new DateTime());
     }
 }

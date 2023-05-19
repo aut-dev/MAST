@@ -1,5 +1,7 @@
 columnSuffix: lwofwfcs
-contentColumnType: datetime
+contentColumnType:
+  - 'date:datetime'
+  - 'tz:string'
 fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
 handle: startTime
 instructions: null
@@ -11,7 +13,7 @@ settings:
   minuteIncrement: 5
   showDate: true
   showTime: true
-  showTimeZone: false
+  showTimeZone: true
 translationKeyFormat: null
 translationMethod: none
 type: craft\fields\Date

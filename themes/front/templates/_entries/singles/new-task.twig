@@ -20,7 +20,8 @@
 
                 <div class="form-group mb-3 field-startDate">
                     <label for="startDate" class="required">{{ 'Start date'|t }}</label>
-                    {{ input('text', 'startDate', now|date('Y-m-d'), {
+                    <input type="hidden" class="timezone" name="startDate[timezone]" value="{{ craft.app.timezone }}">
+                    {{ input('text', 'startDate[date]', now|date('Y-m-d'), {
                         id: 'startDate',
                         class: 'form-control datepicker',
                         data: {
@@ -54,6 +55,111 @@
                             }
                         }
                     }) }}
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="repeat">{{ 'Repeat blocks every'|t }}</label>
+                    <select name="repeat" class="form-control" id="repeat">
+                        <option value="">{{ 'Do not repeat'|t }}</option>
+                        <option value="day">{{ 'Day'|t }}</option>
+                        <option value="day">{{ 'Week'|t }}</option>
+                        <option value="day">{{ 'Month'|t }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3 field-until" style="display:none">
+                    <label for="until" class="required">{{ 'Until'|t }}</label>
+                    <input type="hidden" class="timezone" name="until[timezone]" value="{{ craft.app.timezone }}">
+                    {{ input('text', 'until[date]', '', {
+                        id: 'until',
+                        class: 'form-control datepicker',
+                        data: {
+                            options: {
+                                minDate: now|date_modify("+1 day")|date('Y-m-d'),
+                            }
+                        }
+                    }) }}
+                </div>
+
+                <div class="form-group mb-3 field-days">
+                    <label>{{ 'How many work blocks do you want to do each day?'|t }}</label>
+                    <div class="d-flex">
+                        <div class="d-flex flex-column me-1">
+                            <label>{{ 'Mon'|t }}</label>
+                            {{ input('number', 'days[Mon]', 1, {
+                                id: 'committed',
+                                class: 'form-control',
+                                min: 0,
+                                step: 1
+                            }) }}
+                        </div>
+                        <div class="d-flex">
+                            <div class="d-flex flex-column me-1">
+                                <label>{{ 'Tue'|t }}</label>
+                                {{ input('number', 'days[Tue]', 1, {
+                                    id: 'committed',
+                                    class: 'form-control',
+                                    min: 0,
+                                    step: 1
+                                }) }}
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="d-flex flex-column me-1">
+                                <label>{{ 'Wed'|t }}</label>
+                                {{ input('number', 'days[Wed]', 1, {
+                                    id: 'committed',
+                                    class: 'form-control',
+                                    min: 0,
+                                    step: 1
+                                }) }}
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="d-flex flex-column me-1">
+                                <label>{{ 'Thu'|t }}</label>
+                                {{ input('number', 'days[Thu]', 1, {
+                                    id: 'committed',
+                                    class: 'form-control',
+                                    min: 0,
+                                    step: 1
+                                }) }}
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="d-flex flex-column me-1">
+                                <label>{{ 'Fri'|t }}</label>
+                                {{ input('number', 'days[Fri]', 1, {
+                                    id: 'committed',
+                                    class: 'form-control',
+                                    min: 0,
+                                    step: 1
+                                }) }}
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="d-flex flex-column me-1">
+                                <label>{{ 'Sat'|t }}</label>
+                                {{ input('number', 'days[Sat]', 1, {
+                                    id: 'committed',
+                                    class: 'form-control',
+                                    min: 0,
+                                    step: 1
+                                }) }}
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="d-flex flex-column me-1">
+                                <label>{{ 'Sun'|t }}</label>
+                                {{ input('number', 'days[Sun]', 1, {
+                                    id: 'committed',
+                                    class: 'form-control',
+                                    min: 0,
+                                    step: 1
+                                }) }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group mb-3 field-committed">
