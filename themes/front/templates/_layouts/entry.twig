@@ -1,9 +1,7 @@
 {% extends "_layouts/base" %}
 {% import "_helpers/images" as images %}
 
-{% set redirect_to_save_card = redirect_to_save_card ?? true %}
-
-{% if currentUser and not currentUser.hasValidPaymentMethod and redirect_to_save_card %}
+{% if currentUser and not currentUser.hasValidPaymentMethod and (entry.redirectToSaveCard ?? true) %}
     {% redirect '/save-card' %}
 {% endif %}
 

@@ -1,4 +1,4 @@
-dateModified: 1686155198
+dateModified: 1686156053
 elementSources:
   craft\elements\Entry:
     -
@@ -238,6 +238,7 @@ meta:
     eca48186-ef8a-40ab-bb78-26a70ea56bb0: Text # Text
     f7edb11b-5202-431b-b3c7-0c227fe1ebed: week # week
     f95157d7-1eac-4192-855e-c8bdb66fba9b: Monday # Monday
+    f4994683-7a71-491d-b14b-0a986b8ec613: 'Redirect to save card' # Redirect to save card
     fa53f651-84c9-437f-9bed-edaead3bf8ed: Home # Home
     fb9eba24-cb32-4bf5-8a07-ba003842b35f: Tasks # Tasks
     ffcbe586-fcdc-4583-8682-0098aae96672: Fri # Fri

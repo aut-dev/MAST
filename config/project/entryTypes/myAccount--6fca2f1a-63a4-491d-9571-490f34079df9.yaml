@@ -29,12 +29,54 @@ fieldLayouts:
             uid: a963ab01-bbc3-4822-a0ed-ed19e21a977e
             userCondition: null
             warning: null
+            width: 75
+          -
+            elementCondition: null
+            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613 # Redirect to save card
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 3a7e5ad2-6958-474e-8863-4a5b0b2b8937
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 94c67eeb-1ec6-4a75-949a-0bf56a586ebd
+            userCondition: null
+            warning: null
             width: 100
         name: Content
         uid: 72e731b7-b6a7-4302-892d-f8cc208f25c1
         userCondition: null
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 8ad55fd2-2c4e-436b-a572-d9d4bef64524 # Basic Seo
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: e1ec4d47-0261-4e10-af66-a56496e3f711
+            userCondition: null
+            warning: null
+            width: 100
+        name: SEO
+        uid: da0d5295-52ac-4462-87f8-46def3e9dcaf
+        userCondition: null
 handle: myAccount
-hasTitleField: false
+hasTitleField: true
 name: 'My account'
 section: 4ede571c-eeba-4a8f-b11f-07e744c2c12a # My account
 sortOrder: 1

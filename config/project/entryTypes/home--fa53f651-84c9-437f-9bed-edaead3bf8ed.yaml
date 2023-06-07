@@ -29,7 +29,19 @@ fieldLayouts:
             uid: 0b9f6a32-29fd-4c83-918c-2d7e4c7909a0
             userCondition: null
             warning: null
-            width: 100
+            width: 75
+          -
+            elementCondition: null
+            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613 # Redirect to save card
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 7c47c7f3-1b21-4d1c-b0ae-9403af30f981
+            userCondition: null
+            warning: null
+            width: 25
           -
             elementCondition: null
             fieldUid: c02d8ea3-fd26-4084-890d-83260c7fc0dd # Banner Images

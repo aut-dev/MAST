@@ -29,7 +29,19 @@ fieldLayouts:
             uid: 7fce8fd3-17bc-480d-a093-53064d7d9f70
             userCondition: null
             warning: null
-            width: 100
+            width: 75
+          -
+            elementCondition: null
+            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613 # Redirect to save card
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: eb11605f-8314-40eb-a8dd-9221021efcec
+            userCondition: null
+            warning: null
+            width: 25
           -
             elementCondition: null
             fieldUid: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
