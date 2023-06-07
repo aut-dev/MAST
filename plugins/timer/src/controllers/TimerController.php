@@ -11,9 +11,9 @@ class TimerController extends Controller
 {
     public function actionStart()
     {
-        $blockId = $this->request->getRequiredParam('blockId');
+        $taskId = $this->request->getRequiredParam('taskId');
         try {
-            Timer::$plugin->timer->start($blockId);
+            Timer::$plugin->timer->start($taskId);
         } catch (\Exception $e) {
             $this->response->setStatusCode(400);
             return $this->asJson(['error' => $e->getMessage()]);
@@ -26,32 +26,32 @@ class TimerController extends Controller
     public function actionStop()
     {
         try {
-            $block = Timer::$plugin->timer->stop();
+            $task = Timer::$plugin->timer->stop();
         } catch (\Exception $e) {
             $this->response->setStatusCode(400);
             return $this->asJson(['error' => $e->getMessage()]);
         }
         return $this->asJson([
-            'complete' => $block->isComplete,
-            'blockId' => $block->id
+            'complete' => $task->isComplete,
+            'taskId' => $task->id
         ]);
     }
 
     public function actionPollProgress()
     {
         $user = \Craft::$app->user->identity;
-        $block = $user->taskBlock->one();
-        if (!$block) {
+        $task = $user->timerTask->one();
+        if (!$task) {
             return $this->asJson([
                 'running' => false
             ]);
         }
-        $time = $block->timeSpent + $user->getTimerSpent($block);
+        $time = $task->timeSpent + $user->getTimerSpent($task);
         return $this->asJson([
             'running' => true,
-            'blockId' => $block->id,
+            'taskId' => $task->id,
             'time' => $time,
-            'percent' => $time / $block->length * 100
+            'percent' => $time / $task->length * 100
         ]);
     }
 }

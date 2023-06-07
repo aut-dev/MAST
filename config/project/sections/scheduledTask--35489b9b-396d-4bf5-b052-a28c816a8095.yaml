@@ -1,7 +1,7 @@
 defaultPlacement: end
 enableVersioning: false
-handle: taskBlock
-name: 'Task block'
+handle: scheduledTask
+name: 'Scheduled task'
 previewTargets:
   -
     __assoc__:

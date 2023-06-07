@@ -15,15 +15,15 @@ class TimerBehavior extends Behavior
         return $this->owner->timerStarted != null;
     }
 
-    public function getTimerSpent(Entry $block): int
+    public function getTimerSpent(Entry $task): int
     {
         if (!$this->owner->timerStarted) {
             return 0;
         }
-        if ($this->owner->taskBlock->one()->id != $block->id) {
+        if ($this->owner->timerTask->one()->id != $task->id) {
             return 0;
         }
-        $diff = (new DateTime())->diff($this->owner->timerStarted);
-        return ($diff->d * 24 * 60 * 60) + ($diff->h * 60 * 60) + ($diff->i * 60) + $diff->s;
+        $diff = $this->owner->now->diff($this->owner->timerStarted);
+        return ($diff->d * 24 * 60) + ($diff->h * 60) + $diff->i;
     }
 }

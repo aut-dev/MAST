@@ -19,7 +19,7 @@ class Timer
 
     startPolling()
     {
-        this.interval = setInterval(() => this.pollProgress(), 10000);
+        this.interval = setInterval(() => this.pollProgress(), 30000);
     }
 
     stopPolling()
@@ -32,7 +32,7 @@ class Timer
         $.ajax({
             url: '/?action=plugin-timer/timer/poll-progress'
         }).done((data) => {
-            let progress = $('.block[data-id=' + data.blockId + '] .progress-bar');
+            let progress = $('.task[data-id=' + data.taskId + '] .progress-bar');
             if (progress.length) {
                 progress.css('width', data.percent + '%');
             }
@@ -43,19 +43,19 @@ class Timer
     {
         $(document).on('click','.js-toggle-timer', e => {
             e.preventDefault();
-            let blockId = $(e.currentTarget).data('block-id');
-            if (!blockId) {
+            let taskId = $(e.currentTarget).data('task-id');
+            if (!taskId) {
                 return;
             }
-            let restart = $(e.currentTarget).hasClass('fa-play');
+            let restart = $(e.currentTarget).find('.fa-play').length > 0;
             if (this.started) {
                 this.stopTimer().done(() => {
                     if (restart) {
-                        this.startTimer(blockId);
+                        this.startTimer(taskId);
                     }
                 });
             } else {
-                this.startTimer(blockId);
+                this.startTimer(taskId);
             }
         });
     }
@@ -70,27 +70,27 @@ class Timer
             this.$currentTimer.hide();
             this.stopPolling();
             if (data.complete) {
-                let block = $('.block[data-id=' + data.blockId + ']');
-                if (block.length) {
-                    block.find('.complete').show();
-                    block.find('.incomplete').hide();
+                let task = $('.task[data-id=' + data.taskId + ']');
+                if (task.length) {
+                    task.find('.complete').show();
+                    task.find('.incomplete').hide();
                 }
             }
         });
     }
 
-    startTimer(blockId)
+    startTimer(taskId)
     {
         return $.ajax({
             url: '/?action=plugin-timer/timer/start',
             data: {
-                blockId: blockId
+                taskId: taskId
             }
         }).done((data) => {
             this.started = true;
             this.updateCurrentTimer(data.current);
             this.startPolling();
-            $('.js-toggle-timer[data-block-id=' + blockId + ']').find('i').removeClass('fa-play').addClass('fa-stop');
+            $('.js-toggle-timer[data-task-id=' + taskId + ']').find('i').removeClass('fa-play').addClass('fa-stop');
         }).fail((response) => {
             if (response.status == 400) {
                 App.addToast(response.responseJSON.error, 'danger');

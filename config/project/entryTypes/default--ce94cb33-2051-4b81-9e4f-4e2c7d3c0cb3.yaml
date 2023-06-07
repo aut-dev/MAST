@@ -29,6 +29,78 @@ fieldLayouts:
             uid: cf75eb83-6d2b-4ce2-9f62-353bd74fe8a9
             userCondition: null
             warning: null
+            width: 75
+          -
+            elementCondition: null
+            fieldUid: 1b238269-1e74-4eb1-aca9-256f0fca08b9 # Task type
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 504682da-b7c2-42c7-8e00-223fa74b839e
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: a7c9164e-c77f-412f-8498-26092f7a0289 # Deadline
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 558c739a-5abc-4652-ba78-81ed443a3bb1
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: 70279873-4261-4f79-b9d0-6dc067fb97b4 # Length
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: fc49c163-0107-4b9f-8f0a-f5e8eac03756
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: beb8aabf-7970-4442-9f8b-f70568d8757a # Start date
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: b3e941ae-2f3c-4a4b-b65f-ef18a9a6e4ac
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: a25335f0-9a1f-4a5a-bb1b-f3d4480f55b1 # Committed
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 7c4d1747-6291-410c-a193-2131f3cce266
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: ce461ea7-466c-4a18-ab4f-dddeb94af716 # Weeks
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 071aa78f-5eee-4c85-a9b0-8a6b2fc9f728
+            userCondition: null
+            warning: null
             width: 100
         name: Content
         uid: cbfbd016-f81d-4cb1-ad1c-c411dfae2249

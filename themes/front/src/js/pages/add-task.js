@@ -6,27 +6,45 @@ class AddTask
 
     constructor () 
     {
-        console.log('Add task initialised');
         this.$form = $('#add-task-form');
         this.initSubmit();
-        this.initTimezones();
-        this.initUntil();
+        this.initWeeks();
+        console.log('Add task initialised');
     }
 
-    initUntil()
+    initWeeks()
     {
-        this.$form.find('#repeat').change((e) => {
-            if ($(e.currentTarget).val()) {
-                this.$form.find('.field-until').slideDown();
-            } else {
-                this.$form.find('.field-until').slideUp();
-            }
+        this.$form.find('#repeat-input').change(() => {
+            this.createWeeks();
         });
+        this.createWeeks();
     }
 
-    initTimezones()
+    createWeeks()
     {
-        this.$form.find('input.timezone').val(Intl.DateTimeFormat().resolvedOptions().timeZone);
+        let total = parseInt(this.$form.find('#repeat-input').val());
+        let existing = this.$form.find('.field-weeks .week');
+        while (total < existing.length) {
+            existing.last().remove();
+            existing = this.$form.find('.field-weeks .week');
+        }
+        while (total > existing.length) {
+            this.$form.find('.field-weeks').append(this.createWeek());
+            existing = this.$form.find('.field-weeks .week');
+        }
+    }
+
+    createWeek()
+    {
+        let week = this.$form.find('.field-weeks .week').first().clone();
+        let index = 'new' + (this.$form.find('.field-weeks .week').length + 1);
+        let namespace = 'fields[weeks][' + index + ']';
+        week.find('.type').attr('name', namespace + '[type]');
+        week.find('.enabled').attr('name', namespace + '[enabled]');
+        $.each(week.find('.day'), (i, item) => {
+            $(item).attr('name', namespace + '[fields][' + $(item).data('day') + ']').val(1);
+        });
+        return week;
     }
 
     initSubmit()
@@ -36,6 +54,7 @@ class AddTask
             $.ajax({
                 url: '/',
                 method: 'post',
+                dataType: 'json',
                 data: this.$form.serialize()
             }).fail(response => {
                 App.handleError(response, this.$form);

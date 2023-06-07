@@ -2,7 +2,7 @@
 
 namespace Plugins\Timesheets;
 
-use Plugins\Timesheets\behaviors\BlockBehavior;
+use Plugins\Timesheets\behaviors\TaskBehavior;
 use Plugins\Timesheets\services\TimesheetsService;
 use craft\base\Plugin;
 use craft\elements\Entry;
@@ -40,8 +40,8 @@ class Timesheets extends Plugin
     {
         Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function (Event $event) {
             if ($event->sender->sectionId) {
-                if ($event->sender->section->handle == 'taskBlock') {
-                    $event->sender->attachBehavior('plugin-timesheets', BlockBehavior::class);
+                if ($event->sender->section->handle == 'scheduledTask') {
+                    $event->sender->attachBehavior('plugin-timesheets', TaskBehavior::class);
                 }
             }
         });

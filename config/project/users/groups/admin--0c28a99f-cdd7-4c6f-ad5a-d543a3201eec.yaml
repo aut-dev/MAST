@@ -1,0 +1,132 @@
+description: ''
+handle: admin
+name: Admin
+permissions:
+  - accesscp
+  - accesscpwhensystemisoff
+  - accessplugin-formidable
+  - accessplugin-monitor404s
+  - accessplugin-puzzlers-emails
+  - accessplugin-puzzlers-translations
+  - accessplugin-puzzlersmenus
+  - accessplugin-schedule
+  - accessplugin-seo
+  - accesssitewhensystemisoff
+  - administrateusers
+  - 'assignusergroup:0c28a99f-cdd7-4c6f-ad5a-d543a3201eec' # Admin
+  - assignuserpermissions
+  - 'createentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'createentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+  - 'createentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'createentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'createfolders:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - 'deleteassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - deleteemaillogs
+  - 'deleteentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'deleteentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+  - 'deleteentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'deleteentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'deletepeerassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - 'deletepeerentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'deletepeerentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+  - 'deletepeerentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'deletepeerentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'deletepeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'deletepeerentrydrafts:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+  - 'deletepeerentrydrafts:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'deletepeerentrydrafts:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
+  - 'deletepeerentrydrafts:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'deletepeerentrydrafts:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
+  - 'deletepeerentrydrafts:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
+  - 'deletepeerentrydrafts:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
+  - 'deletepeerentrydrafts:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
+  - 'deletepeerentrydrafts:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
+  - 'deletepeerentrydrafts:e237d745-b0a6-4a3f-9003-984efa160459' # Page error
+  - deleteusers
+  - 'editimages:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - 'editpeerimages:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - editusers
+  - 'ignoredeletionrestriction:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'ignoredeletionrestriction:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - 'ignoredeletionrestriction:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+  - 'ignoredeletionrestriction:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'ignoredeletionrestriction:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'ignoredeletionrestriction:users'
+  - imageresizer-resizeimage
+  - impersonateusers
+  - manageformidableforms
+  - manageformidablesubmissions
+  - manageredirects
+  - managesitemap
+  - moderateusers
+  - modifyemailconfig
+  - modifyemailcontent
+  - registerusers
+  - 'replacefiles:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - 'replacepeerfiles:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - 'saveassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - 'saveentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'saveentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+  - 'saveentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'saveentries:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
+  - 'saveentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'saveentries:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
+  - 'saveentries:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
+  - 'saveentries:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
+  - 'saveentries:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
+  - 'saveentries:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
+  - 'saveentries:e237d745-b0a6-4a3f-9003-984efa160459' # Page error
+  - 'savepeerassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - 'savepeerentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'savepeerentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+  - 'savepeerentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'savepeerentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'savepeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'savepeerentrydrafts:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+  - 'savepeerentrydrafts:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'savepeerentrydrafts:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
+  - 'savepeerentrydrafts:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'savepeerentrydrafts:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
+  - 'savepeerentrydrafts:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
+  - 'savepeerentrydrafts:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
+  - 'savepeerentrydrafts:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
+  - 'savepeerentrydrafts:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
+  - 'savepeerentrydrafts:e237d745-b0a6-4a3f-9003-984efa160459' # Page error
+  - schedule-managelogs
+  - schedule-manageschedules
+  - seeemaillogs
+  - 'utility:asset-indexes'
+  - 'utility:clear-caches'
+  - 'utility:deprecation-errors'
+  - 'utility:php-info'
+  - 'utility:queue-manager'
+  - 'utility:system-report'
+  - 'utility:updates'
+  - 'viewassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - 'viewentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'viewentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+  - 'viewentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'viewentries:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
+  - 'viewentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'viewentries:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
+  - 'viewentries:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
+  - 'viewentries:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
+  - 'viewentries:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
+  - 'viewentries:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
+  - 'viewentries:e237d745-b0a6-4a3f-9003-984efa160459' # Page error
+  - 'viewpeerassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
+  - 'viewpeerentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'viewpeerentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+  - 'viewpeerentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'viewpeerentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'viewpeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'viewpeerentrydrafts:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+  - 'viewpeerentrydrafts:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'viewpeerentrydrafts:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
+  - 'viewpeerentrydrafts:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'viewpeerentrydrafts:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
+  - 'viewpeerentrydrafts:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
+  - 'viewpeerentrydrafts:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
+  - 'viewpeerentrydrafts:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
+  - 'viewpeerentrydrafts:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
+  - 'viewpeerentrydrafts:e237d745-b0a6-4a3f-9003-984efa160459' # Page error

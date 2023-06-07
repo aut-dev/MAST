@@ -8,34 +8,17 @@
         <h1 class="text-center">{{ entry.title }}</h1>
         <a href="/tasks/new" class="btn btn-primary">{{ 'New task'|t }}</a>
         <h2 class="my-3 text-center">{{ "Today's tasks"|t }}</h2>
-        {% set blocks = currentUser.getTodaysBlocks %}
-        {% if blocks %}
+        {% set tasks = currentUser.getTodaysTasks %}
+        {% if tasks %}
             <div class="row">
-                {% for block in blocks %}
+                {% for task in tasks %}
                     <div class="col-12 col-md-3 my-2">
-                        {% include "_includes/blocks/square" %}
+                        {% include "_includes/tasks/square" %}
                     </div>
                 {% endfor %}
             </div>
         {% else %}
             <p>{{ 'You have no tasks today'|t }}
-        {% endif %}
-        <h2 class="my-3 text-center">{{ "Coming up"|t }}</h2>
-        {% set blocks = currentUser.getFutureBlocks %}
-        {% if blocks %}
-            <div class="row">
-                {% for block in blocks %}
-                    <div class="col-12 col-md-3 my-2">
-                        {% include "_includes/blocks/square" with {
-                            show_date: true,
-                            show_timer: false,
-                            show_progress: false,
-                        } %}
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>{{ 'You have no tasks coming up'|t }}
         {% endif %}
     </div>
 {% endblock %}

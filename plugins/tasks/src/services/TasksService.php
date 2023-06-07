@@ -2,99 +2,110 @@
 
 namespace Plugins\Tasks\services;
 
+use DateInterval;
+use DateTime;
+use Plugins\Tasks\helpers\DateHelper;
 use craft\base\Component;
 use craft\base\Element;
 use craft\elements\Entry;
 use craft\elements\User;
-use DateTime;
-use DateInterval;
+use craft\helpers\DateTimeHelper;
+use yii\base\InvalidArgumentException;
 
 class TasksService extends Component
 {
-    public function createTask(string $name, ?User $user = null): Entry
+    public function getTodaysTasks(User $user): array
     {
-        if (!$user) {
-            $user = \Craft::$app->user->identity;
+        $query = Entry::find()->section('scheduledTask')->with('task')->authorId($user->id);
+        DateHelper::addDateParamsBetween($query, $user->today, $user->endOfToday);
+        return $query->all();
+    }
+
+    /**
+     * Schedule all tasks
+     *
+     * @return int
+     */
+    public function scheduleTasks(): int
+    {
+        $now = DateTimeHelper::toDateTime('now');
+        $total = 0;
+        $tasks = Entry::find()->section('task')->with('weeks');
+        DateHelper::addDateParamsSmallerThan($tasks, $now);
+        foreach ($tasks->all() as $task) {
+            if ($this->scheduleTask($task)) {
+                $total++;
+            }
         }
-        if (!$user) {
-            throw new Exception("Can't create a task without a user");
+        return $total;
+    }
+
+    /**
+     * Schedule a task, will check if the task is already scheduled for that day
+     *
+     * @return ?Entry
+     */
+    public function scheduleTask(Entry $task): ?Entry
+    {
+        $today = $task->author->today;
+        $query = Entry::find()->section('scheduledTask')->relatedTo($task)->authorId($task->authorId);
+        DateHelper::addDateParamsEquals($query, $today);
+        if ($query->count()) {
+            return null;
         }
-        if (!$name) {
-            throw new Exception("Can't create a task without a name");
+        $week = $this->findWeek($task, $today);
+        $day = strtolower($today->format('D'));
+        $length = $week[$day];
+        if (!$length) {
+            return null;
         }
-        $section = \Craft::$app->sections->getSectionByHandle('task');
+        $section = \Craft::$app->sections->getSectionByHandle('scheduledTask');
         $types = $section->entryTypes;
         $type = reset($types);
-        $task = new Entry([
+        $scheduled = new Entry([
             'sectionId' => $section->id,
             'typeId' => $type->id,
-            'authorId' => $user->id,
-            'title' => $name
+            'authorId' => $task->authorId
         ]);
-        $task->scenario = Element::SCENARIO_LIVE;
-        if (\Craft::$app->elements->saveElement($task)) {
-            return $task;
+        $scheduled->setFieldValues([
+            'task' => [$task->id],
+            'startDate' => $today,
+            'deadline' => $task->deadline,
+            'length' => $task->length * $length
+        ]);
+        if (\Craft::$app->elements->saveElement($scheduled)) {
+            return $scheduled;
         }
-        throw new Exception("Couldn't save task : " . print_r($task->errors, true));
+        return null;
     }
 
-    public function createBlocks(Entry $task, DateTime $date, int $length, int $committed, string $repeat, ?DateTime $until, array $days): array
+    /**
+     * Callback when a task is created, will schedule it if the start date is today
+     */
+    public function onTaskCreated(Entry $task)
     {
-        $blocks = $this->_createBlocks($task, $date, $length, $committed, $days[$date->format('D')]);
-        if ($repeat) {
-            $until->setTime(23, 59, 59);
-            $interval = '+1 ' . $repeat;
-            $date->modify($interval);
-            while ($date < $until) {
-                $blocks = array_merge($blocks, $this->_createBlocks($task, $date, $length, $committed, $days[$date->format('D')]));
-                $date->modify($interval);
+        if ($task->startDate >= $task->author->today and $task->startDate <= $task->author->endOfToday) {
+            $this->scheduleTask($task, $task->startDate);
+        }
+    }
+
+    public function beforeSavingTask(Entry $task)
+    {
+    }
+
+    protected function findWeek(Entry $task, \DateTime $end)
+    {
+        $start = $task->startDate;
+        $current = 0;
+        $weeks = $task->weeks instanceof Collection ? $task->weeks : $task->weeks->all();
+        $max = sizeof($weeks);
+        while ($start < $end) {
+            $current++;
+            if ($current >= $max) {
+                $current = 0;
             }
+            $start->add(new \DateInterval('P7D'));
         }
-        return $blocks;
-    }
-
-    public function getTodaysBlocks(User $user): array
-    {
-        $start = (new DateTime())->setTime(0, 0, 0);
-        $end = (clone $start)->setTime(23, 59, 59);
-        $dayField = 'content.field_day_' . \Craft::$app->fields->getFieldByHandle('day')->columnSuffix;
-        $query = Entry::find()->section('taskBlock')->with('task')->authorId($user->id)->where(['between', $dayField, $start->format('Y-m-d H:i:s'), $end->format('Y-m-d H:i:s')]);
-        return $query->all();
-    }
-
-    public function getFutureBlocks(User $user): array
-    {
-        $start = (new DateTime())->setTime(23, 59, 59);
-        $dayField = 'content.field_day_' . \Craft::$app->fields->getFieldByHandle('day')->columnSuffix;
-        $query = Entry::find()->section('taskBlock')->with('task')->authorId($user->id)->where(['>', $dayField, $start->format('Y-m-d H:i:s')]);
-        return $query->all();
-    }
-
-    protected function _createBlocks(Entry $task, DateTime $date, int $length, int $committed, int $amount): array
-    {
-        $section = \Craft::$app->sections->getSectionByHandle('taskBlock');
-        $types = $section->entryTypes;
-        $type = reset($types);
-        $blocks = [];
-        while ($amount > 0) {
-            $block = new Entry([
-                'sectionId' => $section->id,
-                'typeId' => $type->id,
-                'authorId' => $task->authorId,
-            ]);
-            $block->setFieldValues([
-                'task' => [$task->id],
-                'day' => $date,
-                'length' => $length * 60,
-                'committed' => $committed * 100
-            ]);
-            $block->scenario = Element::SCENARIO_LIVE;
-            if (!\Craft::$app->elements->saveElement($block)) {
-                throw new Exception("Couldn't save block : " . print_r($block->errors, true));
-            }
-            $blocks[] = $block;
-            $amount--;
-        }
-        return $blocks;
+        return $weeks[$current];
     }
 }

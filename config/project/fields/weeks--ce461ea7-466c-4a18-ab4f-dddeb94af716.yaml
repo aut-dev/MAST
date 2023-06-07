@@ -1,0 +1,72 @@
+columnSuffix: null
+contentColumnType: string
+fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
+handle: weeks
+instructions: null
+name: Weeks
+searchable: false
+settings:
+  blockTypeFields: 0
+  changedFieldIndicator: 1569279649
+  columns:
+    __assoc__:
+      -
+        - 4df93eb0-efad-46a1-b6a2-8ae92e60f31c # Mon
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - d0cf64d0-59b8-4a50-80de-0e5df63ec975 # Tue
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - 4c1d2239-ce5e-4b8f-aa18-eb05d4b0ea1a # Wed
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - af8b97a9-5da5-416b-8c43-7222862e0d19 # Thu
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - ffcbe586-fcdc-4583-8682-0098aae96672 # Fri
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - 1c3fe166-77a3-4dd4-8da6-f031611bb725 # Sat
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - 28fc98a3-e1d4-4d4c-a78c-d92903e760cc # Sun
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+  contentTable: '{{%stc_weeks}}'
+  fieldLayout: table
+  maxRows: null
+  minRows: 1
+  propagationKeyFormat: null
+  propagationMethod: all
+  selectionLabel: null
+  staticField: null
+translationKeyFormat: null
+translationMethod: none
+type: verbb\supertable\fields\SuperTableField

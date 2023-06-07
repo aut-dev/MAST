@@ -50,4 +50,6 @@ return GeneralConfig::create()
     ->maxRevisions(10)
     //One week duration verification code
     ->verificationCodeDuration(604800)
-;
+    ->setPasswordSuccessPath('login?password-set=1')
+    ->verifyEmailSuccessPath('login?verified=1')
+    ->activateAccountSuccessPath('login?verified=1');

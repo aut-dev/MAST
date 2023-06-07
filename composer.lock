@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7f3df15c16c91b16d9a547d600a9f335",
+    "content-hash": "55c83e3cc9207fecf908da89681068a0",
     "packages": [
         {
             "name": "adigital/cookie-consent-banner",
@@ -6645,6 +6645,46 @@
                 }
             ],
             "description": "Timesheets plugin",
+            "keywords": [
+                "cms",
+                "craft",
+                "craft-plugin",
+                "craftcms"
+            ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "plugins/users",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "plugins/user",
+                "reference": "ce5ddeaad8308745e1b8496d4463b73c93ce2456"
+            },
+            "require": {
+                "craftcms/cms": "^4.0"
+            },
+            "type": "craft-plugin",
+            "extra": {
+                "name": "Users",
+                "handle": "plugin-users",
+                "class": "Plugins\\Users\\Users"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Plugins\\Users\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Web Puzzlers",
+                    "homepage": "https://puzzlers.run"
+                }
+            ],
+            "description": "Users plugin",
             "keywords": [
                 "cms",
                 "craft",

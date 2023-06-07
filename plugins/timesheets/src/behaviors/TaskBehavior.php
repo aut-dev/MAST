@@ -7,7 +7,7 @@ use Plugins\Tasks\Tasks;
 use craft\elements\Entry;
 use yii\base\Behavior;
 
-class BlockBehavior extends Behavior
+class TaskBehavior extends Behavior
 {
     public $owner;
 
@@ -17,7 +17,7 @@ class BlockBehavior extends Behavior
         $time = 0;
         foreach ($sheets as $sheet) {
             $diff = ($sheet->endTime)->diff($sheet->startTime);
-            $time += ($diff->d * 24 * 60 * 60) + ($diff->h * 60 * 60) + ($diff->i * 60) + $diff->s;
+            $time += ($diff->d * 24 * 60) + ($diff->h * 60) + $diff->i;
         }
         return $time;
     }

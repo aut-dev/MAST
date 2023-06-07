@@ -1,0 +1,36 @@
+{% set show_timer = show_timer ?? true %}
+{% set show_date = show_date ?? false %}
+{% set show_progress = show_progress ?? true %}
+
+<div class="square task p-3 bg-task border border-dark rounded" data-id="{{ task.id }}">
+    <h4>{{ task.title }} ({{ task.length }}min)</h4>
+    {% if show_progress %}
+        {% set spent = task.timeSpent + currentUser.getTimerSpent(task) %}
+        <div class="progress border border-primary">
+            <div class="progress-bar" role="progressbar" style="width: {{ spent / task.length * 100 }}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+    {% endif %}
+    {% if show_date %}
+        <p class="m-0">{{ task.startDate|date('Y-m-d') }}</p>
+    {% endif %}
+    <p class="text-success complete m-0" {% if not task.isComplete %}style="display:none"{% endif %}>{{ 'This task is complete !'|t }}</p>
+    {% if not task.isComplete %}
+        <div class="incomplete">
+            {% if task.isExpired %}
+                <p class="text-warning m-0">{{ 'This task has expired at {time}'|t('site', {time: task.expiringDate|date('H:i', currentUser.timezone)}) }}</p>
+            {% else %}
+                <p class="text-warning m-0">{{ 'This task will expire at {time}'|t('site', {time: task.expiringDate|date('H:i', currentUser.timezone)}) }}</p>
+                {% if show_timer %}
+                    <a href="#" class="js-toggle-timer fs-4" data-task-id="{{ task.id }}">
+                        {% set current_task = currentUser.timerTask.one() %}
+                        {% if (current_task.id ?? null) == task.id %}
+                            <i class="fa-solid fa-stop"></i></a>
+                        {% else %}
+                            <i class="fa-solid fa-play"></i></a>
+                        {% endif %}
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

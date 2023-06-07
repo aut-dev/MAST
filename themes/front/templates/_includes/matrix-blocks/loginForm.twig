@@ -1,3 +1,21 @@
+{% set password_set = craft.app.request.getQueryParam("password-set") %}
+{% set email_verified = craft.app.request.getQueryParam("verified") %}
+
+{% if password_set %}
+     <div class="container">
+         <div class="alert alert-success">
+             {{ 'Your password has been reset, please login'|t }}
+         </div>
+     </div>
+ {% endif %}
+ {% if email_verified %}
+     <div class="container">
+         <div class="alert alert-success">
+             {{ 'Your email is now verified, please login'|t }}
+         </div>
+     </div>
+ {% endif %}
+ 
 <div class="container d-flex justify-content-center">
    {% include "_includes/user/login-form" %}
 </div>

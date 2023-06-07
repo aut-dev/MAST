@@ -11,7 +11,7 @@ use craft\elements\User;
 
 class TimesheetsService extends Component
 {
-    public function addTimesheet(Entry $block, DateTime $startTime, DateTime $endTime): Entry
+    public function addTimesheet(Entry $task, DateTime $startTime, DateTime $endTime): Entry
     {
         $section = \Craft::$app->sections->getSectionByHandle('timesheet');
         $types = $section->entryTypes;
@@ -19,10 +19,10 @@ class TimesheetsService extends Component
         $sheet = new Entry([
             'sectionId' => $section->id,
             'typeId' => $type->id,
-            'authorId' => $block->authorId,
+            'authorId' => $task->authorId,
         ]);
         $sheet->setFieldValues([
-            'taskBlock' => [$block->id],
+            'scheduledTask' => [$task->id],
             'startTime' => $startTime,
             'endTime' => $endTime,
         ]);
@@ -30,18 +30,18 @@ class TimesheetsService extends Component
         if (\Craft::$app->elements->saveElement($sheet)) {
             return $sheet;
         }
-        throw new Exception("Couldn't save timesheet : " . print_r($block->errors, true));
+        throw new Exception("Couldn't save timesheet : " . print_r($sheet->errors, true));
     }
 
     public function onTimesheetChange(Entry $sheet)
     {
-        $block = $sheet->taskBlock->one();
-        if (!$block or $block->isComplete) {
+        $task = $sheet->scheduledTask->one();
+        if (!$task or $task->isComplete) {
             return;
         }
-        if ($block->timeSpent > $block->length) {
-            $block->setFieldValue('isComplete', true);
-            \Craft::$app->elements->saveElement($block, false);
+        if ($task->timeSpent > $task->length) {
+            $task->setFieldValue('isComplete', true);
+            \Craft::$app->elements->saveElement($task, false);
         }
     }
 }

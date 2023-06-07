@@ -32,7 +32,7 @@ fieldLayouts:
             width: 100
           -
             elementCondition: null
-            fieldUid: aab1cc6f-c9a2-4939-8e7e-1127c3f19f84 # Task block
+            fieldUid: aab1cc6f-c9a2-4939-8e7e-1127c3f19f84 # Scheduled task
             instructions: null
             label: null
             required: false
@@ -74,6 +74,6 @@ hasTitleField: false
 name: Default
 section: 877c3423-006e-4942-bfdb-c44bac344c97 # Timesheet
 sortOrder: 1
-titleFormat: '{{ taskBlock.one().title }}'
+titleFormat: '{{ scheduledTask.one().title }}'
 titleTranslationKeyFormat: null
 titleTranslationMethod: site

@@ -28,7 +28,7 @@ $warning:   $orange;
 $danger:    $red;
 $light:     $gray-100;
 $dark:      $gray-900;
-$block:     $gray-200;
+$task:     $gray-200;
 
 $body-bg: $white;
 $body-color: $gray-900;
@@ -53,7 +53,7 @@ $theme-colors: (
     "teal": $teal,
     "cyan": $cyan,
     "white": $white,
-    "block": $block
+    "task": $task
 );
 
 /**** Grid ****/

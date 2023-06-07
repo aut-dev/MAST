@@ -1,0 +1,243 @@
+changedFieldIndicator: 1027384425
+field: ce461ea7-466c-4a18-ab4f-dddeb94af716 # Weeks
+fieldLayouts:
+  fe9c1089-7a9a-4028-a6ff-4a5a8db495cd:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 4df93eb0-efad-46a1-b6a2-8ae92e60f31c # Mon
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 245d1617-b209-49ce-bdc2-d00b1e82e5da
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: d0cf64d0-59b8-4a50-80de-0e5df63ec975 # Tue
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: f96bafd0-53c3-4976-be17-b24663f69af8
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 4c1d2239-ce5e-4b8f-aa18-eb05d4b0ea1a # Wed
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 17dab7fb-3578-4275-a87c-7dd7a3bcdc50
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: af8b97a9-5da5-416b-8c43-7222862e0d19 # Thu
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 15533daf-e378-4caa-89a3-ae0a9719d114
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: ffcbe586-fcdc-4583-8682-0098aae96672 # Fri
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 7db302f3-e568-40d9-bdfb-f1cf44c783ab
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 1c3fe166-77a3-4dd4-8da6-f031611bb725 # Sat
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: c9b66325-9b8c-4ba1-8fdd-ecf10f04107b
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 28fc98a3-e1d4-4d4c-a78c-d92903e760cc # Sun
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 6952273d-a4ea-4478-bdef-e1ae9076579b
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: bf169def-bede-4523-90b8-72dfc5daec03
+        userCondition: null
+fields:
+  1c3fe166-77a3-4dd4-8da6-f031611bb725: # Sat
+    columnSuffix: jhtiwxnk
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: sat
+    instructions: null
+    name: Sat
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  4c1d2239-ce5e-4b8f-aa18-eb05d4b0ea1a: # Wed
+    columnSuffix: oofpcogm
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: wed
+    instructions: null
+    name: Wed
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  4df93eb0-efad-46a1-b6a2-8ae92e60f31c: # Mon
+    columnSuffix: bdkhbowi
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: mon
+    instructions: null
+    name: Mon
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  28fc98a3-e1d4-4d4c-a78c-d92903e760cc: # Sun
+    columnSuffix: ienvruoh
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: sun
+    instructions: null
+    name: Sun
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  af8b97a9-5da5-416b-8c43-7222862e0d19: # Thu
+    columnSuffix: nnythzss
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: thu
+    instructions: null
+    name: Thu
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  d0cf64d0-59b8-4a50-80de-0e5df63ec975: # Tue
+    columnSuffix: kytvwjqf
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: tue
+    instructions: null
+    name: Tue
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  ffcbe586-fcdc-4583-8682-0098aae96672: # Fri
+    columnSuffix: tnircepn
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: fri
+    instructions: null
+    name: Fri
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number

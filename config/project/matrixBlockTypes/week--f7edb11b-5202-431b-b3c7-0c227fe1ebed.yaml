@@ -1,0 +1,245 @@
+field: ce461ea7-466c-4a18-ab4f-dddeb94af716 # Weeks
+fieldLayouts:
+  f9a02377-3f1e-45a3-9c9b-2417c44799ea:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: f95157d7-1eac-4192-855e-c8bdb66fba9b # Monday
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 449ab7bf-4509-4961-b79f-0de95cd28f86
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: d998792d-65c7-42c6-83f1-1f53db6dc772 # Tuesday
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 4b6f2428-3d28-4c49-a94c-5c4625a471cd
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: 794938f1-5646-4fb9-ac19-350aee00d94d # Wednesday
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 8917ad74-b128-41f9-80a6-3cc8c7d43f8c
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: a3c12980-ade6-4dee-94c3-be4c058fe840 # Thursday
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 95143fe7-3685-4e31-95e2-a0c3f3272cc2
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: 4b8491ba-b00d-4d47-8383-1da085075921 # Friday
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: f1958f9c-468e-4870-b298-a86261474f1c
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: 5d9bfa29-8f27-45dd-b445-818b98020132 # Saturday
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: a8d517af-e3bf-4888-a456-45be8a7f8ced
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: cb5a68ab-f470-4387-8531-bea8103c221b # Sunday
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 557b84a1-4b46-4816-ab34-df40274f9a13
+            userCondition: null
+            warning: null
+            width: 25
+        name: Content
+        uid: 8eaca2f5-d74d-4b4c-8527-29ac6308a219
+        userCondition: null
+fields:
+  4b8491ba-b00d-4d47-8383-1da085075921: # Friday
+    columnSuffix: kwwczpnj
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: friday
+    instructions: null
+    name: Friday
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  5d9bfa29-8f27-45dd-b445-818b98020132: # Saturday
+    columnSuffix: tjxslqwb
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: saturday
+    instructions: null
+    name: Saturday
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  794938f1-5646-4fb9-ac19-350aee00d94d: # Wednesday
+    columnSuffix: ggxebdbs
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: wednesday
+    instructions: null
+    name: Wednesday
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  a3c12980-ade6-4dee-94c3-be4c058fe840: # Thursday
+    columnSuffix: lgimbxiz
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: thursday
+    instructions: null
+    name: Thursday
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  cb5a68ab-f470-4387-8531-bea8103c221b: # Sunday
+    columnSuffix: gvuxmjkm
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: sunday
+    instructions: null
+    name: Sunday
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  d998792d-65c7-42c6-83f1-1f53db6dc772: # Tuesday
+    columnSuffix: fzvdnane
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: tuesday
+    instructions: null
+    name: Tuesday
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+  f95157d7-1eac-4192-855e-c8bdb66fba9b: # Monday
+    columnSuffix: zhgrchcz
+    contentColumnType: integer(10)
+    fieldGroup: null
+    handle: monday
+    instructions: null
+    name: Monday
+    searchable: false
+    settings:
+      decimals: 0
+      defaultValue: null
+      max: null
+      min: 0
+      prefix: null
+      previewCurrency: null
+      previewFormat: none
+      size: null
+      suffix: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Number
+handle: week
+name: week
+sortOrder: 1

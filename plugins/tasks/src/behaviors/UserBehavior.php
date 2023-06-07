@@ -8,22 +8,13 @@ use yii\base\Behavior;
 class UserBehavior extends Behavior
 {
     public $owner;
-    protected $_todayBlocks;
-    protected $_futureBlocks;
+    protected $_todayTasks;
 
-    public function getTodaysBlocks(): array
+    public function getTodaysTasks(): array
     {
-        if ($this->_todayBlocks === null) {
-            $this->_todayBlocks = Tasks::$plugin->tasks->getTodaysBlocks($this->owner);
+        if ($this->_todayTasks === null) {
+            $this->_todayTasks = Tasks::$plugin->tasks->getTodaysTasks($this->owner);
         }
-        return $this->_todayBlocks;
-    }
-
-    public function getFutureBlocks(): array
-    {
-        if ($this->_futureBlocks === null) {
-            $this->_futureBlocks = Tasks::$plugin->tasks->getFutureBlocks($this->owner);
-        }
-        return $this->_futureBlocks;
+        return $this->_todayTasks;
     }
 }

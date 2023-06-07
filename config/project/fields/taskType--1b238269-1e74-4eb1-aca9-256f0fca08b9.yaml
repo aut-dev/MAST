@@ -1,0 +1,34 @@
+columnSuffix: expfycns
+contentColumnType: string
+fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
+handle: taskType
+instructions: null
+name: 'Task type'
+searchable: false
+settings:
+  options:
+    -
+      __assoc__:
+        -
+          - label
+          - More
+        -
+          - value
+          - more
+        -
+          - default
+          - ''
+    -
+      __assoc__:
+        -
+          - label
+          - Less
+        -
+          - value
+          - less
+        -
+          - default
+          - ''
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Dropdown

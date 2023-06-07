@@ -1,0 +1,31 @@
+{
+    "name": "plugins/users",
+    "description": "Users plugin",
+    "type": "craft-plugin",
+    "version": "1.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin"
+    ],
+    "authors": [
+        {
+            "name": "Web Puzzlers",
+            "homepage": "https://puzzlers.run"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "Plugins\\Users\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Users",
+        "handle": "plugin-users",
+        "class": "Plugins\\Users\\Users"
+    }
+}

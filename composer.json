@@ -14,6 +14,7 @@
         "plugins/tasks": "^1.0",
         "plugins/timer": "^1.0",
         "plugins/timesheets": "^1.0",
+        "plugins/users": "^1.0",
         "putyourlightson/craft-blitz-recommendations": "^2.0",
         "putyourlightson/craft-elements-panel": "^2.0",
         "puzzlers/base-plugin": "^2.0",

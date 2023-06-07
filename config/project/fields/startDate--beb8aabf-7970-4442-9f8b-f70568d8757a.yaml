@@ -3,9 +3,9 @@ contentColumnType:
   - 'date:datetime'
   - 'tz:string'
 fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
-handle: day
+handle: startDate
 instructions: null
-name: Day
+name: 'Start date'
 searchable: false
 settings:
   max: null

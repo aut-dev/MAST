@@ -10,19 +10,19 @@ use craft\elements\Entry;
 
 class TimerService extends Component
 {
-    public function start(int $blockId)
+    public function start(int $taskId)
     {
         $user = \Craft::$app->user->identity;
         if ($user->timerStarted) {
             throw new Exception("Timer is already started");
         }
-        $block = Entry::find()->id($blockId)->one();
-        if ($block->isExpired) {
+        $task = Entry::find()->id($taskId)->one();
+        if ($task->isExpired) {
             throw new Exception("This task has expired");
         }
         $user->setFieldValues([
-            'timerStarted' => new DateTime(),
-            'taskBlock' => [$blockId]
+            'timerStarted' => $user->now,
+            'timerTask' => [$taskId]
         ]);
         \Craft::$app->elements->saveElement($user, false);
     }
@@ -33,26 +33,13 @@ class TimerService extends Component
         if (!$user->timerStarted) {
             throw new Exception("Timer is not started");
         }
-        $block = $user->taskBlock->one();
-        Timesheets::$plugin->timesheets->addTimesheet($block, $user->timerStarted, new DateTime());
+        $task = $user->timerTask->one();
+        Timesheets::$plugin->timesheets->addTimesheet($task, $user->timerStarted, $user->now);
         $user->setFieldValues([
-            'taskBlock' => [],
+            'timerTask' => [],
             'timerStarted' => null
         ]);
         \Craft::$app->elements->saveElement($user, false);
-        return Entry::find()->id($block->id)->one();
-    }
-
-    public function reset()
-    {
-        $user = \Craft::$app->user->identity;
-        $user->setFieldValues([
-            'timerStartedUnsaved' => null,
-            'timerStoppedUnsaved' => null
-        ]);
-        if (!$user->timerStarted) {
-            $user->setFieldValue('timerTask', []);
-        }
-        \Craft::$app->elements->saveElement($user, false);
+        return Entry::find()->id($task->id)->one();
     }
 }
