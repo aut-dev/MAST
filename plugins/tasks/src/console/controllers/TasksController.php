@@ -20,4 +20,11 @@ class TasksController extends Controller
         $this->stdout("Scheduled $total tasks\n");
         return ExitCode::OK;
     }
+
+    public function actionCheckDerails()
+    {
+        $total = Tasks::$plugin->tasks->checkDerails();
+        $this->stdout("Found $total derailed tasks and charged users\n");
+        return ExitCode::OK;
+    }
 }

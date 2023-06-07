@@ -42,7 +42,7 @@ class Tasks extends Plugin
                 Tasks::$plugin->tasks->onTaskCreated($task);
             }
         });
-        Event::on(Elements::class, Elements::EVENT_AFTER_SAVE_ELEMENT, function (Event $event) {
+        Event::on(Elements::class, Elements::EVENT_BEFORE_SAVE_ELEMENT, function (Event $event) {
             $task = $event->element;
             if ($task instanceof Entry and !ElementHelper::isDraftOrRevision($task) and $task->section->handle == 'task' and !$event->isNew) {
                 Tasks::$plugin->tasks->beforeSavingTask($task);

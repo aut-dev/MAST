@@ -1,4 +1,4 @@
-dateModified: 1686156053
+dateModified: 1686158800
 elementSources:
   craft\elements\Entry:
     -
@@ -87,10 +87,9 @@ elementSources:
       key: 'section:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
       tableAttributes:
         - 'field:beb8aabf-7970-4442-9f8b-f70568d8757a' # Start date
-        - 'field:a7c9164e-c77f-412f-8498-26092f7a0289' # Deadline
+        - 'field:285c99c4-fa78-44f1-afd3-6eed1b0d5121' # End date
         - 'field:70279873-4261-4f79-b9d0-6dc067fb97b4' # Length
         - author
-        - postDate
       type: native
     -
       defaultSort:
@@ -109,21 +108,6 @@ elementSources:
       type: heading
     -
       key: 'single:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
-      type: native
-    -
-      heading: ''
-      type: heading
-    -
-      heading: ''
-      type: heading
-    -
-      heading: ''
-      type: heading
-    -
-      heading: ''
-      type: heading
-    -
-      key: 'single:2999471d-116b-4d2b-9f06-afde837f4cc1'
       type: native
 email:
   fromEmail: noreply@puzzlers.run
@@ -159,6 +143,7 @@ meta:
     2e428424-4539-4e04-b9c1-66cd7ca17911: Form # Form
     3be80663-0614-4a4d-9626-631d2bfd20bb: Public # Public
     4af59c54-88a6-4ada-b492-3246b6f6ea7c: 'Standard Page' # Standard Page
+    4b8fd5c8-4aaa-4384-8956-861ce041def9: 'Charge attempted' # Charge attempted
     4b8491ba-b00d-4d47-8383-1da085075921: Friday # Friday
     4c1d2239-ce5e-4b8f-aa18-eb05d4b0ea1a: Wed # Wed
     4df93eb0-efad-46a1-b6a2-8ae92e60f31c: Mon # Mon
@@ -172,6 +157,7 @@ meta:
     6df6f10a-5ece-4a68-8fb6-68c2af85721f: 'Page error' # Page error
     6f08d395-f505-46a5-b75a-f32bf4829ace: 'Stripe customer' # Stripe customer
     6fca2f1a-63a4-491d-9571-490f34079df9: 'My account' # My account
+    8ad10f9f-e461-4fb0-85a8-76ffc63cfb81: Charged # Charged
     8ad55fd2-2c4e-436b-a572-d9d4bef64524: 'Basic Seo' # Basic Seo
     8e16df26-189c-4cab-bfe1-658ff8db2d14: Default # Default
     8f3e4bb6-78fd-4499-839b-7089e509aa78: 'Timer task' # Timer task
@@ -185,6 +171,7 @@ meta:
     79cfda90-52f0-4348-b604-fdb241c209cf: Task # Task
     96b46985-2b26-4ee8-8279-e2c4fea4bcc2: 'Start time' # Start time
     123c86c3-404e-49c2-8fb1-8666da333b2d: 'Sign up form' # Sign up form
+    285c99c4-fa78-44f1-afd3-6eed1b0d5121: 'End date' # End date
     646a52b6-154e-4e2e-846b-72c6d35feadf: 'Timer started' # Timer started
     720dc906-57fd-4848-92a1-447acf4703f3: Task # Task
     754e6619-64f1-4d4d-8a61-6df6f90e5a9b: Tasks # Tasks

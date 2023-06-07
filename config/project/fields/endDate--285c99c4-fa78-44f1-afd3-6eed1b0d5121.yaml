@@ -1,0 +1,19 @@
+columnSuffix: iyhhipjv
+contentColumnType:
+  - 'date:datetime'
+  - 'tz:string'
+fieldGroup: 0ba8d9d5-2692-4324-acd8-0187c46d6e82 # Common
+handle: endDate
+instructions: null
+name: 'End date'
+searchable: false
+settings:
+  max: null
+  min: null
+  minuteIncrement: 5
+  showDate: true
+  showTime: true
+  showTimeZone: true
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Date

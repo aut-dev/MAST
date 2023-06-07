@@ -3,11 +3,15 @@
 namespace Plugins\Stripe\services;
 
 use Stripe\Customer;
+use Stripe\Exception\CardException;
+use Stripe\PaymentIntent;
 use Stripe\PaymentMethod;
 use Stripe\SetupIntent;
 use Stripe\StripeClient;
 use craft\base\Component;
+use craft\elements\Entry;
 use craft\elements\User;
+use craft\helpers\MoneyHelper;
 
 class StripeService extends Component
 {
@@ -75,6 +79,28 @@ class StripeService extends Component
     public function clearPaymentMethodCache(User $user)
     {
         \Craft::$app->cache->delete(self::PAYMENT_METHOD_CACHE_KEY . $user->id);
+    }
+
+    public function chargeForDerail(Entry $task)
+    {
+        if (!$task->author->stripeCustomer or !$task->author->paymentMethod) {
+            return;
+        }
+        try {
+            $amount = MoneyHelper::toNumber($task->task[0]->committed) * 100;
+            $this->getClient()->paymentIntents->create([
+                'amount' => $amount,
+                'currency' => 'usd',
+                'customer' => $task->author->stripeCustomer,
+                'payment_method' => $task->author->paymentMethod,
+                'off_session' => true,
+                'confirm' => true,
+                'description' => 'Derail for task ' . $task->title
+            ]);
+            $task->setFieldValue('charged', $amount);
+        } catch (CardException $e) {
+            \Craft::$app->errorHandler->logException($e);
+        }
     }
 
     protected function getClient(): StripeClient

@@ -4,6 +4,7 @@ namespace Plugins\Tasks\services;
 
 use DateInterval;
 use DateTime;
+use Plugins\Stripe\Stripe;
 use Plugins\Tasks\helpers\DateHelper;
 use craft\base\Component;
 use craft\base\Element;
@@ -67,16 +68,30 @@ class TasksService extends Component
             'typeId' => $type->id,
             'authorId' => $task->authorId
         ]);
+        $end = (clone $today)->setTime($task->deadline->format('H'), $task->deadline->format('i'), 59);
         $scheduled->setFieldValues([
             'task' => [$task->id],
             'startDate' => $today,
-            'deadline' => $task->deadline,
+            'endDate' => $end,
             'length' => $task->length * $length
         ]);
         if (\Craft::$app->elements->saveElement($scheduled)) {
             return $scheduled;
         }
         return null;
+    }
+
+    public function checkDerails(): int
+    {
+        $now = DateTimeHelper::toDateTime('now');
+        $query = Entry::find()->section('scheduledTask')->with('task')->chargeAttempted(false)->isComplete(false);
+        DateHelper::addDateParamsSmallerThan($query, $now, 'endDate');
+        $total = 0;
+        foreach ($query->all() as $task) {
+            $this->taskHasDerailed($task);
+            $total++;
+        }
+        return $total;
     }
 
     /**
@@ -89,8 +104,32 @@ class TasksService extends Component
         }
     }
 
+    /**
+     * Disable all scheduled task when a task is disabled
+     *
+     * @param  Entry  $task
+     */
     public function beforeSavingTask(Entry $task)
     {
+        if ($task->enabled) {
+            return;
+        }
+        $old = Entry::find()->section('task')->id($task->id)->one();
+        if (!$old) {
+            return;
+        }
+        $scheduled = Entry::find()->section('scheduledTask')->relatedTo($task)->all();
+        foreach ($scheduled as $scheduled) {
+            $scheduled->enabled = false;
+            \Craft::$app->elements->saveElement($scheduled, false);
+        }
+    }
+
+    protected function taskHasDerailed(Entry $task)
+    {
+        $task->setFieldValue('chargeAttempted', true);
+        Stripe::$plugin->stripe->chargeForDerail($task);
+        \Craft::$app->elements->saveElement($task, false);
     }
 
     protected function findWeek(Entry $task, \DateTime $end)

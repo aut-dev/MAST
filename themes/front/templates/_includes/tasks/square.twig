@@ -17,9 +17,9 @@
     {% if not task.isComplete %}
         <div class="incomplete">
             {% if task.isExpired %}
-                <p class="text-warning m-0">{{ 'This task has expired at {time}'|t('site', {time: task.expiringDate|date('H:i', currentUser.timezone)}) }}</p>
+                <p class="text-warning m-0">{{ 'This task has expired at {time}'|t('site', {time: task.endDate|date('H:i', currentUser.timezone)}) }}</p>
             {% else %}
-                <p class="text-warning m-0">{{ 'This task will expire at {time}'|t('site', {time: task.expiringDate|date('H:i', currentUser.timezone)}) }}</p>
+                <p class="text-warning m-0">{{ 'This task will expire at {time}'|t('site', {time: task.endDate|date('H:i', currentUser.timezone)}) }}</p>
                 {% if show_timer %}
                     <a href="#" class="js-toggle-timer fs-4" data-task-id="{{ task.id }}">
                         {% set current_task = currentUser.timerTask.one() %}
