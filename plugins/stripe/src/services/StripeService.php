@@ -2,6 +2,7 @@
 
 namespace Plugins\Stripe\services;
 
+use Plugins\Tasks\Tasks;
 use Stripe\Customer;
 use Stripe\Exception\CardException;
 use Stripe\PaymentIntent;
@@ -81,10 +82,10 @@ class StripeService extends Component
         \Craft::$app->cache->delete(self::PAYMENT_METHOD_CACHE_KEY . $user->id);
     }
 
-    public function chargeForDerail(Entry $task)
+    public function chargeForDerail(Entry $task): bool
     {
         if (!$task->author->stripeCustomer or !$task->author->paymentMethod) {
-            return;
+            return false;
         }
         try {
             $amount = MoneyHelper::toNumber($task->task[0]->committed) * 100;
@@ -98,9 +99,18 @@ class StripeService extends Component
                 'description' => 'Derail for task ' . $task->title
             ]);
             $task->setFieldValue('charged', $amount);
+            return true;
         } catch (CardException $e) {
             \Craft::$app->errorHandler->logException($e);
+            $email = \Craft::$app->mailer->composeFromKey('admin_charge_failed', [
+                'task' => $task,
+                'amount' => $amount / 100,
+                'user' => $task->author,
+                'error' => $e->getMessage()
+            ]);
+            $email->setTo(Tasks::getAdminEmails())->send();
         }
+        return false;
     }
 
     protected function getClient(): StripeClient

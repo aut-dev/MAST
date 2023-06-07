@@ -33,6 +33,10 @@ class Tasks extends Plugin
         $this->registerTasksEvents();
         $this->registerUserEvents();
     }
+    public static function getAdminEmails(): array
+    {
+        return explode(',', getenv('ADMIN_EMAILS'));
+    }
 
     protected function registerTasksEvents()
     {

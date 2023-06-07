@@ -1,0 +1,11 @@
+bcc: ''
+cc: ''
+from: ''
+fromName: ''
+heading: 'When a user is charged for a derail'
+instructions: ''
+key: charged_for_derail
+redactorConfig: ''
+replyTo: ''
+saveLogs: ''
+system: 0

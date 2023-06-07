@@ -11,6 +11,7 @@ use craft\base\Element;
 use craft\elements\Entry;
 use craft\elements\User;
 use craft\helpers\DateTimeHelper;
+use craft\helpers\MoneyHelper;
 use yii\base\InvalidArgumentException;
 
 class TasksService extends Component
@@ -128,7 +129,14 @@ class TasksService extends Component
     protected function taskHasDerailed(Entry $task)
     {
         $task->setFieldValue('chargeAttempted', true);
-        Stripe::$plugin->stripe->chargeForDerail($task);
+        if (Stripe::$plugin->stripe->chargeForDerail($task)) {
+            $amount = MoneyHelper::toNumber($task->task[0]->committed);
+            $email = \Craft::$app->mailer->composeFromKey('charged_for_derail', [
+                'task' => $task,
+                'amount' => $amount
+            ]);
+            $email->setTo($task->author->email)->send();
+        }
         \Craft::$app->elements->saveElement($task, false);
     }
 

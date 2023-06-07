@@ -1,0 +1,11 @@
+bcc: ''
+cc: ''
+from: ''
+fromName: ''
+heading: '[Admin] Charge failed'
+instructions: ''
+key: admin_charge_failed
+redactorConfig: ''
+replyTo: ''
+saveLogs: ''
+system: false
