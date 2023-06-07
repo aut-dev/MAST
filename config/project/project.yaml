@@ -1,4 +1,4 @@
-dateModified: 1686153792
+dateModified: 1686155198
 elementSources:
   craft\elements\Entry:
     -
@@ -177,7 +177,6 @@ meta:
     8f3e4bb6-78fd-4499-839b-7089e509aa78: 'Timer task' # Timer task
     8fd53ce4-059f-4154-8ef4-f1d0c5a0d8ce: Small # Small
     18ad884e-ff55-4513-8822-fb6222c76f60: Imagery # Imagery
-    27d69246-427e-4357-8ff4-29a9529cf4f6: 'Card saved' # Card saved
     28fc98a3-e1d4-4d4c-a78c-d92903e760cc: Sun # Sun
     37e79b05-ad6f-49e5-a1eb-28f46e70f0fc: Default # Default
     51e58384-83d6-4c87-966f-ba12d10e9076: Image # Image

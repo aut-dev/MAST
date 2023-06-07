@@ -3,7 +3,7 @@
 
 {% set redirectToSaveCard = redirectToSaveCard ?? true %}
 
-{% if currentUser and not currentUser.paymentMethod and redirectToSaveCard %}
+{% if currentUser and not currentUser.hasValidPaymentMethod and redirectToSaveCard %}
     {% redirect '/save-card' %}
 {% endif %}
 
@@ -70,6 +70,20 @@
 
     {% block header_banner %}
     {% endblock %}
+{% endblock %}
+
+{% block before_content %}
+    {% if currentUser and currentUser.paymentMethodExpiresSoon %}
+        <div class="container">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ 'Your payment method is expiring soon, make sure you add a new one {link}here{endlink}'|t('site', {
+                    link: '<a href="/save-card">',
+                    endlink: '</a>'
+                })|raw }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block footer %}
