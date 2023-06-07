@@ -104,7 +104,7 @@ class TasksService extends Component
             if ($current >= $max) {
                 $current = 0;
             }
-            $start->add(new \DateInterval('P7D'));
+            $start->add(new DateInterval('P7D'));
         }
         return $weeks[$current];
     }

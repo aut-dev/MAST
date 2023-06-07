@@ -3,28 +3,30 @@
 namespace Plugins\Users\behaviors;
 
 use yii\base\Behavior;
+use DateTimeZone;
+use DateTime;
 
 class UserBehavior extends Behavior
 {
     public $owner;
 
-    public function getTimezoneInstance(): ?\DateTimeZone
+    public function getTimezoneInstance(): ?DateTimeZone
     {
         if ($this->owner->timezone) {
-            return new \DateTimeZone($this->owner->timezone);
+            return new DateTimeZone($this->owner->timezone);
         }
         return null;
     }
 
-    public function getNow(): ?\DateTime
+    public function getNow(): ?DateTime
     {
         if ($this->owner->timezone) {
-            return (new \DateTime())->setTimezone($this->getTimezoneInstance());
+            return (new DateTime())->setTimezone($this->getTimezoneInstance());
         }
         return null;
     }
 
-    public function getToday(): ?\DateTime
+    public function getToday(): ?DateTime
     {
         if ($this->owner->timezone) {
             return $this->getNow()->setTime(0, 0, 0);
@@ -32,7 +34,7 @@ class UserBehavior extends Behavior
         return null;
     }
 
-    public function getEndOfToday(): ?\DateTime
+    public function getEndOfToday(): ?DateTime
     {
         if ($this->owner->timezone) {
             return $this->getNow()->setTime(23, 59, 59);
