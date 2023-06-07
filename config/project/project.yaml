@@ -1,4 +1,4 @@
-dateModified: 1686134565
+dateModified: 1686136337
 elementSources:
   craft\elements\Entry:
     -
@@ -141,6 +141,7 @@ meta:
     4b8491ba-b00d-4d47-8383-1da085075921: Friday # Friday
     4c1d2239-ce5e-4b8f-aa18-eb05d4b0ea1a: Wed # Wed
     4df93eb0-efad-46a1-b6a2-8ae92e60f31c: Mon # Mon
+    4ede571c-eeba-4a8f-b11f-07e744c2c12a: 'My account' # My account
     5c62d201-a99d-45f2-bc77-eecf4383c50a: Timezone # Timezone
     5d9bfa29-8f27-45dd-b445-818b98020132: Saturday # Saturday
     6a9e4f78-0e55-4b7b-9e55-4fc31c721794: Autonomy # Autonomy
@@ -148,6 +149,7 @@ meta:
     6d8a0ee5-61b5-4e2e-a5aa-4942e529a165: 'Contact us' # Contact us
     6d707569-67a4-4a4e-868e-31a9a6eef835: 'Set password form' # Set password form
     6df6f10a-5ece-4a68-8fb6-68c2af85721f: 'Page error' # Page error
+    6fca2f1a-63a4-491d-9571-490f34079df9: 'My account' # My account
     8ad55fd2-2c4e-436b-a572-d9d4bef64524: 'Basic Seo' # Basic Seo
     8e16df26-189c-4cab-bfe1-658ff8db2d14: Default # Default
     8f3e4bb6-78fd-4499-839b-7089e509aa78: 'Timer task' # Timer task

@@ -1,0 +1,78 @@
+{% import "_helpers/errors" as errors %}
+
+{% set user_profile_success_message = user_profile_success_message ?? 'Your profile has been saved' %}
+{% set user_profile_fail_message = user_profile_fail_message ?? 'Unable to save your profile' %}
+{% set user = user ?? currentUser %}
+
+<form method="post" accept-charset="UTF-8" enctype="multipart/form-data" id="profile-form">
+    {{ csrfInput() }}
+    {{ actionInput('users/save-user') }}
+    {{ hiddenInput('userId', user.id) }}
+    {{ successMessageInput(user_profile_success_message|t('site')) }}
+    {{ failMessageInput(user_profile_fail_message|t('site')) }}
+    {{ redirectInput("my-account") }}
+
+    <div class="form-group mb-3">
+        <label class="required" for="first-name">{{ 'First Name'|t }}</label>
+        {{ input('text', 'firstName', user.firstName, {
+            id: 'first-name',
+            class: 'form-control ' ~ (user.hasErrors('firstName') ? 'is-invalid'),
+            autocomplete: 'given-name',
+            placeholder: 'First Name'
+        }) }}
+        {{ errors.errorList(user.getErrors('firstName')) }}
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="required" for="last-name">{{ 'Last Name'|t }}</label>
+        {{ input('text', 'lastName', user.lastName, {
+            id: 'last-name',
+            class: 'form-control ' ~ (user.hasErrors('lastName') ? 'is-invalid'),
+            autocomplete: 'family-name',
+            placeholder: 'Last Name'
+        }) }}
+        {{ errors.errorList(user.getErrors('lastName')) }}
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="required" for="email">{{ 'Email'|t }}</label>
+        {{ input('text', 'email', user.unverifiedEmail ?? user.email, {
+            id: 'email',
+            class: 'form-control ' ~ (user.hasErrors('email') ? 'is-invalid'),
+            autocomplete: 'email',
+            placeholder: 'Email'
+        }) }}
+        {{ errors.errorList(user.getErrors('username')) }}
+        {% if craft.app.projectConfig.get('users.requireEmailVerification') %}
+            <small class="form-text text-muted">New email addresses need to be verified.</small>
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="current-password">{{ 'Current Password'|t }}</label>
+        {{ input('password', 'password', null, {
+            id: 'current-password',
+            class: 'form-control ' ~ (user.hasErrors('currentPassword') ? 'is-invalid'),
+            autocomplete: 'current-password',
+            placeholder: 'Current password'
+        }) }}
+        {{ errors.errorList(user.getErrors('currentPassword')) }}
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="new-password">{{ 'New Password'|t }}</label>
+        {{ input('password', 'newPassword', null, {
+            id: 'new-password',
+            class: 'form-control ' ~ (user.hasErrors('newPassword') ? 'is-invalid'),
+            autocomplete: 'new-password',
+            placeholder: 'New Password'
+        }) }}
+        {{ errors.errorList(user.getErrors('newPassword')) }}
+    </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">
+            {{ 'Update'|t('site') }}
+        </button>
+    </div>
+</form>
