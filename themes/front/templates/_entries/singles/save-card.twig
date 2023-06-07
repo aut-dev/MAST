@@ -1,7 +1,7 @@
 {% extends "_layouts/matrix-content" %}
 {% requireLogin %}
 
-{% set redirectToSaveCard = false %}
+{% set redirect_to_save_card = false %}
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\SaveCardPage') %}
 {% do craft.puzzlers.registerGlobalJs('stripeKey', getenv('STRIPE_PUBLISHABLE_KEY')) %}
 {% do craft.puzzlers.registerGlobalJs('return_url', siteUrl ~ 'stripe-card-saved') %}
