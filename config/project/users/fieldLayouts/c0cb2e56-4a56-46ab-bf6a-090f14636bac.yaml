@@ -47,3 +47,33 @@ tabs:
     name: Timezone
     uid: 6b444f12-7cb1-41bd-a08b-b9a26d89dfca
     userCondition: null
+  -
+    elementCondition: null
+    elements:
+      -
+        elementCondition: null
+        fieldUid: 9950af26-8378-4f58-a7ae-f7717f8870d7 # Payment method
+        instructions: null
+        label: null
+        required: false
+        tip: null
+        type: craft\fieldlayoutelements\CustomField
+        uid: a0ee94d8-3e5f-44be-8c6d-e04476b15ca2
+        userCondition: null
+        warning: null
+        width: 50
+      -
+        elementCondition: null
+        fieldUid: 6f08d395-f505-46a5-b75a-f32bf4829ace # Stripe customer
+        instructions: null
+        label: null
+        required: false
+        tip: null
+        type: craft\fieldlayoutelements\CustomField
+        uid: e658e524-9860-496b-976d-4c72d731fe9a
+        userCondition: null
+        warning: null
+        width: 50
+    name: Stripe
+    uid: 45ce7292-c287-440e-8ada-e73520920ffd
+    userCondition: null

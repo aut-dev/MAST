@@ -1,0 +1,11 @@
+{% extends "_layouts/matrix-content" %}
+{% requireLogin %}
+
+{% set redirectToSaveCard = false %}
+
+{% block after_content_matrix %}
+    <div class="container">
+        {% set methods = currentUser.paymentMethods %}
+        <pre>{{ dump(methods) }}</pre>
+    </div>
+{% endblock %}

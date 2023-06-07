@@ -1,0 +1,73 @@
+fieldLayouts:
+  5462f893-d33d-4369-b7f1-afc7cd08724e:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: 7fce8fd3-17bc-480d-a093-53064d7d9f70
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 328579ed-b878-437b-ac7d-da127864e98b
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: cb4368aa-243d-49dd-890f-d0377b8237c5
+        userCondition: null
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 8ad55fd2-2c4e-436b-a572-d9d4bef64524 # Basic Seo
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 3dccca03-db7a-4073-ae7f-67024328ef3b
+            userCondition: null
+            warning: null
+            width: 100
+        name: SEO
+        uid: a5335a70-15c2-4a0f-a011-b18905c5cbd4
+        userCondition: null
+handle: saveCard
+hasTitleField: true
+name: 'Save card'
+section: b4f3d0dd-ea59-4971-910f-751b839ab358 # Save card
+sortOrder: 1
+titleFormat: '{section.name|raw}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

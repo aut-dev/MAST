@@ -1,4 +1,4 @@
-dateModified: 1686136337
+dateModified: 1686153792
 elementSources:
   craft\elements\Entry:
     -
@@ -29,6 +29,12 @@ elementSources:
         - link
       type: native
     -
+      key: 'single:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
+      type: native
+    -
+      key: 'single:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
+      type: native
+    -
       key: 'single:e237d745-b0a6-4a3f-9003-984efa160459' # Page error
       type: native
     -
@@ -38,16 +44,25 @@ elementSources:
       key: 'single:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
       type: native
     -
-      key: 'single:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
+      key: 'single:b4f3d0dd-ea59-4971-910f-751b839ab358' # Save card
       type: native
     -
-      key: 'single:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
+      key: 'single:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
       type: native
     -
       heading: Channels
       type: heading
     -
+      defaultSort:
+        - postDate
+        - desc
+      disabled: false
       key: 'section:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
+      tableAttributes:
+        - postDate
+        - expiryDate
+        - author
+        - link
       type: native
     -
       defaultSort:
@@ -104,6 +119,12 @@ elementSources:
     -
       heading: ''
       type: heading
+    -
+      heading: ''
+      type: heading
+    -
+      key: 'single:2999471d-116b-4d2b-9f06-afde837f4cc1'
+      type: native
 email:
   fromEmail: noreply@puzzlers.run
   fromName: Craft
@@ -149,12 +170,14 @@ meta:
     6d8a0ee5-61b5-4e2e-a5aa-4942e529a165: 'Contact us' # Contact us
     6d707569-67a4-4a4e-868e-31a9a6eef835: 'Set password form' # Set password form
     6df6f10a-5ece-4a68-8fb6-68c2af85721f: 'Page error' # Page error
+    6f08d395-f505-46a5-b75a-f32bf4829ace: 'Stripe customer' # Stripe customer
     6fca2f1a-63a4-491d-9571-490f34079df9: 'My account' # My account
     8ad55fd2-2c4e-436b-a572-d9d4bef64524: 'Basic Seo' # Basic Seo
     8e16df26-189c-4cab-bfe1-658ff8db2d14: Default # Default
     8f3e4bb6-78fd-4499-839b-7089e509aa78: 'Timer task' # Timer task
     8fd53ce4-059f-4154-8ef4-f1d0c5a0d8ce: Small # Small
     18ad884e-ff55-4513-8822-fb6222c76f60: Imagery # Imagery
+    27d69246-427e-4357-8ff4-29a9529cf4f6: 'Card saved' # Card saved
     28fc98a3-e1d4-4d4c-a78c-d92903e760cc: Sun # Sun
     37e79b05-ad6f-49e5-a1eb-28f46e70f0fc: Default # Default
     51e58384-83d6-4c87-966f-ba12d10e9076: Image # Image
@@ -171,12 +194,14 @@ meta:
     927c248e-ecc9-43bd-a42c-f3149acdaed6: Big # Big
     9786f806-b266-4b7c-8bc4-a21eab3ddef4: Imagery # Imagery
     9806b1c0-5f4e-476f-8f76-3301b70e9415: Tasks # Tasks
+    9950af26-8378-4f58-a7ae-f7717f8870d7: 'Payment method' # Payment method
     33641f0b-d2b1-4870-afe5-faaa2ef8844e: 'End time' # End time
     35489b9b-396d-4bf5-b052-a28c816a8095: 'Scheduled task' # Scheduled task
     80851ac5-3626-4e73-a48c-6b12b5699cb2: Default # Default
     88153a03-a6b7-41a0-8649-8331ae28fe84: 'Redactor (full)' # Redactor (full)
     786514c8-8adf-4d05-a1ce-0b054ab04b67: Craft # Craft
     794938f1-5646-4fb9-ac19-350aee00d94d: Wednesday # Wednesday
+    919531a9-88ce-4153-b327-da4c999e00dc: 'Save card' # Save card
     8888327a-ccb9-49c2-bdec-7465c0dfa6bf: SEO # SEO
     36524402-a8ca-4776-8343-8885cac88d21: Medium # Medium
     70279873-4261-4f79-b9d0-6dc067fb97b4: Length # Length
@@ -191,6 +216,7 @@ meta:
     aab1cc6f-c9a2-4939-8e7e-1127c3f19f84: 'Scheduled task' # Scheduled task
     ab6a1072-3bb0-460a-bf36-bbb4b5dac8da: 'Page not found' # Page not found
     af8b97a9-5da5-416b-8c43-7222862e0d19: Thu # Thu
+    b4f3d0dd-ea59-4971-910f-751b839ab358: 'Save card' # Save card
     b39f1bdf-5ce7-4286-9e4f-3162f9c70830: Full # Full
     b6662c40-1d50-47d9-bc6d-45c902bbca73: 'Reset password form' # Reset password form
     beb8aabf-7970-4442-9f8b-f70568d8757a: 'Start date' # Start date
@@ -276,6 +302,10 @@ plugins:
     edition: standard
     enabled: true
     schemaVersion: 2.0.3
+  plugin-stripe:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
   plugin-tasks:
     edition: standard
     enabled: true

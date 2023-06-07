@@ -11,6 +11,7 @@
         "nystudio107/craft-eagerbeaver": "^4.0",
         "panlatent/schedule": "^0.4",
         "pennebaker/craft-architect": "^4.0",
+        "plugins/stripe": "^1.0",
         "plugins/tasks": "^1.0",
         "plugins/timer": "^1.0",
         "plugins/timesheets": "^1.0",
