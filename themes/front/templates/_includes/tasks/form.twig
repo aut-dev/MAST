@@ -89,7 +89,7 @@
 
     <div class="form-group mb-3">
         <label for="deadline" class="required">{{ 'Deadline'|t }}</label>
-        {{ input('text', 'fields[deadline]', task ? task.startDate|date('H:i', currentUser.timezone) : '23:59', {
+        {{ input('text', 'fields[deadline]', task ? task.deadline|date('H:i', currentUser.timezone) : '23:59', {
             id: 'deadline',
             class: 'form-control datepicker',
             data: {
