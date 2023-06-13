@@ -1,0 +1,12 @@
+description: ''
+handle: member
+name: Member
+permissions:
+  - 'createentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'createentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'deleteentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'deleteentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'saveentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'saveentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
+  - 'viewentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+  - 'viewentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet

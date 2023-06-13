@@ -4,42 +4,98 @@ namespace Plugins\Timer\services;
 
 use DateTime;
 use Exception;
+use Illuminate\Support\Collection;
 use Plugins\Timesheets\Timesheets;
 use craft\base\Component;
 use craft\elements\Entry;
+use craft\elements\MatrixBlock;
+use craft\elements\User;
 
 class TimerService extends Component
 {
-    public function start(int $taskId)
+    public function start(int $taskId, User $user)
     {
-        $user = \Craft::$app->user->identity;
-        if ($user->timerStarted) {
+        if ($this->timerStarted($taskId, $user)) {
             throw new Exception("Timer is already started");
         }
-        $task = Entry::find()->id($taskId)->one();
-        if ($task->isExpired) {
-            throw new Exception("This task has expired");
+        $timer = $user->timer instanceof Collection ? $user->timer : $user->timer->with('timer:task')->all();
+        $blocks = [];
+        $order = [];
+        foreach ($timer as $timer) {
+            $blocks[$timer->id] = [
+                'type' => 'timer',
+                'fields' => [
+                    'task' => $timer->task[0]->id,
+                    'started' => $timer->started
+                ]
+            ];
+            $order[] = $timer->id;
         }
-        $user->setFieldValues([
-            'timerStarted' => $user->now,
-            'timerTask' => [$taskId]
+        $blocks['new1'] = [
+            'type' => 'timer',
+            'fields' => [
+                'task' => [$taskId],
+                'started' => $user->now
+            ]
+        ];
+        $order[] = 'new1';
+        $user->setFieldValue('timer', [
+            'sortOrder' => $order,
+            'blocks' => $blocks
         ]);
         \Craft::$app->elements->saveElement($user, false);
     }
 
-    public function stop(): Entry
+    public function stop(int $taskId, User $user)
     {
         $user = \Craft::$app->user->identity;
-        if (!$user->timerStarted) {
+        $block = $this->timerBlock($taskId, $user);
+        if (!$block) {
             throw new Exception("Timer is not started");
         }
-        $task = $user->timerTask->one();
-        Timesheets::$plugin->timesheets->addTimesheet($task, $user->timerStarted, $user->now);
-        $user->setFieldValues([
-            'timerTask' => [],
-            'timerStarted' => null
+        $task = $block->task[0];
+        Timesheets::$plugin->timesheets->addTimesheet($task, $block->started, $user->now);
+        $timer = $user->timer instanceof Collection ? $user->timer : $user->timer->with('timer:task')->all();
+        $blocks = [];
+        $order = [];
+        foreach ($timer as $timer) {
+            if ($timer->id == $block->id) {
+                continue;
+            }
+            $blocks[$timer->id] = [
+                'type' => 'timer',
+                'fields' => [
+                    'task' => $timer->task[0]->id,
+                    'started' => $timer->started
+                ]
+            ];
+            $order[] = $timer->id;
+        }
+        $user->setFieldValue('timer', [
+            'sortOrder' => $order,
+            'blocks' => $blocks
         ]);
         \Craft::$app->elements->saveElement($user, false);
         return Entry::find()->id($task->id)->one();
+    }
+
+    public function timerStarted(int $taskId, User $user): ?DateTime
+    {
+        $block = $this->timerBlock($taskId, $user);
+        if ($block) {
+            return $block->started;
+        }
+        return null;
+    }
+
+    public function timerBlock(int $taskId, User $user): ?MatrixBlock
+    {
+        $timer = $user->timer instanceof Collection ? $user->timer : $user->timer->with('timer:task')->all();
+        foreach ($timer as $block) {
+            if ($block->task[0]->id == $taskId) {
+                return $block;
+            }
+        }
+        return null;
     }
 }

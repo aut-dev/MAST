@@ -1,30 +1,47 @@
-/* global $ App */
+/* global $ */
 
 class Timer
 {
-    $currentTimer;
-    started;
     interval;
 
     constructor()
     {
-        this.started = window.Globals.timerStarted;
-        this.$currentTimer = $('#current-timer');
-        this.initTimerLinks();
-        if (this.started) {
-            this.startPolling();
-        }
+        this.initTasksLinks();
+        this.updatePoll();
         console.log('Timer initialised');
     }
 
-    startPolling()
+    updatePoll()
     {
-        this.interval = setInterval(() => this.pollProgress(), 30000);
+        let started = $.map($('.task.timer-started'), (task) => {
+            return $(task).data('id');
+        });
+        if (started.length) {
+            if (!this.interval) {
+                this.interval = setInterval(() => this.pollProgress(), 10000);
+            }
+        } else {
+            clearInterval(this.interval);
+        }
     }
 
-    stopPolling()
+    initTasksLinks()
     {
-        clearInterval(this.interval);
+        $(document).on('click','.task', e => {
+            if ($(e.target).hasClass('click-through')) {
+                return;
+            }
+            e.preventDefault();
+            let taskId = $(e.currentTarget).data('id');
+            if (!taskId) {
+                return;
+            }
+            if ($(e.currentTarget).hasClass('timer-started')) {
+                this.stopTimer(taskId);
+            } else {
+                this.startTimer(taskId);
+            }
+        });
     }
 
     pollProgress()
@@ -32,50 +49,26 @@ class Timer
         $.ajax({
             url: '/?action=plugin-timer/timer/poll-progress'
         }).done((data) => {
-            let progress = $('.task[data-id=' + data.taskId + '] .progress-bar');
-            if (progress.length) {
-                progress.css('width', data.percent + '%');
-            }
+            let keys = Object.keys(data);
+            keys.forEach((id) => {
+                let progress = $('.task[data-id=' + id + '] .progress-bar');
+                if (progress.length) {
+                    progress.css('width', data[id].percent + '%');
+                }
+            });
         });
     }
 
-    initTimerLinks()
-    {
-        $(document).on('click','.js-toggle-timer', e => {
-            e.preventDefault();
-            let taskId = $(e.currentTarget).data('task-id');
-            if (!taskId) {
-                return;
-            }
-            let restart = $(e.currentTarget).find('.fa-play').length > 0;
-            if (this.started) {
-                this.stopTimer().done(() => {
-                    if (restart) {
-                        this.startTimer(taskId);
-                    }
-                });
-            } else {
-                this.startTimer(taskId);
-            }
-        });
-    }
-
-    stopTimer()
+    stopTimer(taskId)
     {
         return $.ajax({
             url: '/?action=plugin-timer/timer/stop',
-        }).done((data) => {
-            this.started = false;
-            $('.js-toggle-timer i').removeClass('fa-stop').addClass('fa-play');
-            this.$currentTimer.hide();
-            this.stopPolling();
-            if (data.complete) {
-                let task = $('.task[data-id=' + data.taskId + ']');
-                if (task.length) {
-                    task.find('.complete').show();
-                    task.find('.incomplete').hide();
-                }
+            data: {
+                taskId: taskId
             }
+        }).done(() => {
+            $('.task[data-id=' + taskId + ']').removeClass('timer-started');
+            this.updatePoll();
         });
     }
 
@@ -86,23 +79,10 @@ class Timer
             data: {
                 taskId: taskId
             }
-        }).done((data) => {
-            this.started = true;
-            this.updateCurrentTimer(data.current);
-            this.startPolling();
-            $('.js-toggle-timer[data-task-id=' + taskId + ']').find('i').removeClass('fa-play').addClass('fa-stop');
-        }).fail((response) => {
-            if (response.status == 400) {
-                App.addToast(response.responseJSON.error, 'danger');
-            } else {
-                App.unexpectedError();
-            }
+        }).done(() => {
+            $('.task[data-id=' + taskId + ']').addClass('timer-started');
+            this.updatePoll();
         });
-    }
-
-    updateCurrentTimer(html)
-    {
-        this.$currentTimer.html(html).show();
     }
 }
 

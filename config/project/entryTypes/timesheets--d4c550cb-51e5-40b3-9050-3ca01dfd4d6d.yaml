@@ -1,5 +1,5 @@
 fieldLayouts:
-  d87688c1-d93b-4a7a-be8f-4347c8b57bca:
+  44db7e3c-560d-4fb3-8b01-2c0dda5fe2d8:
     tabs:
       -
         elementCondition: null
@@ -26,54 +26,60 @@ fieldLayouts:
             tip: null
             title: null
             type: craft\fieldlayoutelements\entries\EntryTitleField
-            uid: c2d06c40-6ee3-456c-81cf-36694c0b9d05
+            uid: 24901bc8-fe97-4c30-8e0d-d6908b915a71
+            userCondition: null
+            warning: null
+            width: 75
+          -
+            elementCondition: null
+            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613 # Redirect to save card
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 552e3ec0-4e29-4138-873a-3058c8de918e
             userCondition: null
             warning: null
             width: 100
           -
             elementCondition: null
-            fieldUid: 79cfda90-52f0-4348-b604-fdb241c209cf # Task
+            fieldUid: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
             instructions: null
             label: null
-            required: true
+            required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 1cba1b95-a56d-4cec-9185-19648a46eb08
+            uid: 276d4825-edef-4c4a-85d9-b1139e885c90
             userCondition: null
             warning: null
-            width: 50
-          -
-            elementCondition: null
-            fieldUid: beb8aabf-7970-4442-9f8b-f70568d8757a # Start date
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 1709408c-a1ca-450a-be53-c993f8925c99
-            userCondition: null
-            warning: null
-            width: 50
-          -
-            elementCondition: null
-            fieldUid: 285c99c4-fa78-44f1-afd3-6eed1b0d5121 # End date
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: b5ee1978-21f3-489a-aa4c-50ac22714f2b
-            userCondition: null
-            warning: null
-            width: 50
+            width: 100
         name: Content
-        uid: 517fab63-1440-4eb0-a2a1-200d160e602a
+        uid: aef95062-e6a3-45c5-b2ef-2049189ff4f7
         userCondition: null
-handle: default
-hasTitleField: false
-name: Default
-section: 877c3423-006e-4942-bfdb-c44bac344c97 # Timesheet
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 8ad55fd2-2c4e-436b-a572-d9d4bef64524 # Basic Seo
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 8fd7e71a-96f2-4be9-9170-ed10f50b368a
+            userCondition: null
+            warning: null
+            width: 100
+        name: SEO
+        uid: 2a4fd533-2639-4f60-8d09-671437e220e3
+        userCondition: null
+handle: timesheets
+hasTitleField: true
+name: Timesheets
+section: 2fb10287-0857-4ab6-ae4e-bcce5dde9d87 # Timesheets
 sortOrder: 1
-titleFormat: '{{ task.one().title }}'
+titleFormat: '{section.name|raw}'
 titleTranslationKeyFormat: null
 titleTranslationMethod: site

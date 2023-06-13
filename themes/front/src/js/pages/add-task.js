@@ -9,7 +9,18 @@ class AddTask
         this.$form = $('#add-task-form');
         this.initSubmit();
         this.initWeeks();
+        this.initLength();
         console.log('Add task initialised');
+    }
+
+    initLength()
+    {
+        $('#length').keyup(() => {
+            let seconds = parseInt($('#length').val());
+            if (!isNaN(seconds)) {
+                $('#length-seconds').val(seconds * 60);
+            }
+        });
     }
 
     initWeeks()

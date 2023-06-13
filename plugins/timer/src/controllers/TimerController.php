@@ -4,6 +4,7 @@ namespace Plugins\Timer\controllers;
 
 use DateTime;
 use Exception;
+use Illuminate\Support\Collection;
 use Plugins\Timer\Timer;
 use craft\web\Controller;
 
@@ -12,46 +13,32 @@ class TimerController extends Controller
     public function actionStart()
     {
         $taskId = $this->request->getRequiredParam('taskId');
-        try {
-            Timer::$plugin->timer->start($taskId);
-        } catch (\Exception $e) {
-            $this->response->setStatusCode(400);
-            return $this->asJson(['error' => $e->getMessage()]);
-        }
-        return $this->asJson([
-            'current' => \Craft::$app->view->renderTemplate('_includes/current-timer')
-        ]);
+        $user = \Craft::$app->user->identity;
+        Timer::$plugin->timer->start($taskId, $user);
+        return $this->asJson([]);
     }
 
     public function actionStop()
     {
-        try {
-            $task = Timer::$plugin->timer->stop();
-        } catch (\Exception $e) {
-            $this->response->setStatusCode(400);
-            return $this->asJson(['error' => $e->getMessage()]);
-        }
-        return $this->asJson([
-            'complete' => $task->isComplete,
-            'taskId' => $task->id
-        ]);
+        $taskId = $this->request->getRequiredParam('taskId');
+        $user = \Craft::$app->user->identity;
+        Timer::$plugin->timer->stop($taskId, $user);
+        return $this->asJson([]);
     }
 
     public function actionPollProgress()
     {
         $user = \Craft::$app->user->identity;
-        $task = $user->timerTask->one();
-        if (!$task) {
-            return $this->asJson([
-                'running' => false
-            ]);
+        $timer = $user->timer instanceof Collection ? $user->timer : $user->timer->with('timer:task')->all();
+        $progress = [];
+        foreach ($timer as $block) {
+            $task = $block->task[0];
+            $time = $task->getTimeSpent();
+            $progress[$task->id] = [
+                'time' => $time,
+                'percent' => $task->getTodayDuration() ? $time / $task->getTodayDuration() * 100 : 0
+            ];
         }
-        $time = $task->timeSpent + $user->getTimerSpent($task);
-        return $this->asJson([
-            'running' => true,
-            'taskId' => $task->id,
-            'time' => $time,
-            'percent' => $time / $task->length * 100
-        ]);
+        return $this->asJson($progress);
     }
 }

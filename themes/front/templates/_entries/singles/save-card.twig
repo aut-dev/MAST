@@ -6,9 +6,6 @@
 {% do craft.puzzlers.registerGlobalJs('stripeKey', getenv('STRIPE_PUBLISHABLE_KEY')) %}
 {% do craft.puzzlers.registerGlobalJs('return_url', siteUrl ~ 'stripe-card-saved') %}
 {% do craft.app.view.registerJsFile('https://js.stripe.com/v3', {position: 1}) %}
-{% do craft.puzzlers.registerGlobalJs('csrfTokenName', craft.app.config.general.csrfTokenName) %}
-{% do craft.puzzlers.registerGlobalJs('csrfToken', craft.app.request.csrfToken) %}
-
 
 {% block after_content_matrix %}
     <div class="container d-flex justify-content-center">

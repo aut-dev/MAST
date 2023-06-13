@@ -4,6 +4,7 @@ namespace Plugins\Timesheets\behaviors;
 
 use DateTime;
 use Plugins\Tasks\Tasks;
+use Plugins\Tasks\helpers\DateHelper;
 use craft\elements\Entry;
 use yii\base\Behavior;
 
@@ -11,13 +12,13 @@ class TaskBehavior extends Behavior
 {
     public $owner;
 
-    public function getTimeSpent(): int
+    public function getTimesheetSpentToday(): int
     {
-        $sheets = Entry::find()->section('timesheet')->relatedTo($this->owner)->all();
+        $sheets = Entry::find()->section('timesheet')->relatedTo($this->owner);
+        DateHelper::addDateParamsBetween($sheets, $this->owner->author->today, $this->owner->author->endOfToday);
         $time = 0;
-        foreach ($sheets as $sheet) {
-            $diff = ($sheet->endTime)->diff($sheet->startTime);
-            $time += ($diff->d * 24 * 60) + ($diff->h * 60) + $diff->i;
+        foreach ($sheets->all() as $sheet) {
+            $time += ($sheet->endDate->getTimeStamp() - $sheet->startDate->getTimeStamp());
         }
         return $time;
     }

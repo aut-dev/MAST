@@ -24,12 +24,6 @@ class UsersService extends Component
                 $task->startDate = $date;
                 \Craft::$app->elements->saveElement($task, false);
             }
-            $tasks = Entry::find()->section('scheduledTask')->anyStatus()->all();
-            foreach ($tasks as $task) {
-                $date = (clone $task->startDate)->setTimezone(new DateTimeZone($user->timezone))->setTime(0, 0, 0);
-                $task->startDate = $date;
-                \Craft::$app->elements->saveElement($task, false);
-            }
         }
     }
 }

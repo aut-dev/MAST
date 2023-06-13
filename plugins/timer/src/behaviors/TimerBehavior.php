@@ -3,6 +3,7 @@
 namespace Plugins\Timer\behaviors;
 
 use DateTime;
+use Plugins\Timer\Timer;
 use craft\elements\Entry;
 use yii\base\Behavior;
 
@@ -10,20 +11,17 @@ class TimerBehavior extends Behavior
 {
     public $owner;
 
-    public function isTimerStarted()
+    public function timerStarted(int $taskId): ?DateTime
     {
-        return $this->owner->timerStarted != null;
+        return Timer::$plugin->timer->timerStarted($taskId, $this->owner);
     }
 
     public function getTimerSpent(Entry $task): int
     {
-        if (!$this->owner->timerStarted) {
+        $date = $this->timerStarted($task->id);
+        if (!$date) {
             return 0;
         }
-        if ($this->owner->timerTask->one()->id != $task->id) {
-            return 0;
-        }
-        $diff = $this->owner->now->diff($this->owner->timerStarted);
-        return ($diff->d * 24 * 60) + ($diff->h * 60) + $diff->i;
+        return $this->owner->now->getTimeStamp() - $date->getTimeStamp();
     }
 }

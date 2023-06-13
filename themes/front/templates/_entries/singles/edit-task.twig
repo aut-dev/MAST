@@ -3,9 +3,14 @@
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\AddTaskPage') %}
 
+{% set task = craft.entries.section('task').authorId(currentUser.id).id(craft.app.request.getRequiredParam('id')).one() %}
+{% if not task %}
+    {% exit 404 %}
+{% endif %}
+
 {% block content %}
     <div class="container">
-        <h1 class="text-center">{{ entry.title }}</h1>
+        <h1 class="text-center">{{ entry.title|t('site', {title: task.title}) }}</h1>
         <div class="d-flex justify-content-center">
             {% include "_includes/tasks/form" %}
         </div>

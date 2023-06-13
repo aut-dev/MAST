@@ -4,7 +4,7 @@ tabs:
     elements:
       -
         elementCondition: null
-        fieldUid: 646a52b6-154e-4e2e-846b-72c6d35feadf # Timer started
+        fieldUid: 646a52b6-154e-4e2e-846b-72c6d35feadf # Timer
         instructions: null
         label: null
         required: false
@@ -13,19 +13,7 @@ tabs:
         uid: 0f47deaa-e798-45c3-a88b-484fed362c9c
         userCondition: null
         warning: null
-        width: 50
-      -
-        elementCondition: null
-        fieldUid: 8f3e4bb6-78fd-4499-839b-7089e509aa78 # Timer task
-        instructions: null
-        label: null
-        required: false
-        tip: null
-        type: craft\fieldlayoutelements\CustomField
-        uid: eee95b70-0f43-4f0e-af56-03a82003755e
-        userCondition: null
-        warning: null
-        width: 50
+        width: 100
     name: Timer
     uid: 8a5aa9b0-01fa-40f1-b8a9-a7966bbbb51b
     userCondition: null

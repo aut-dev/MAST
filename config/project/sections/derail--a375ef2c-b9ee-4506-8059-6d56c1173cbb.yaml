@@ -1,7 +1,7 @@
 defaultPlacement: end
-enableVersioning: false
-handle: scheduledTask
-name: 'Scheduled task'
+enableVersioning: true
+handle: derail
+name: Derail
 previewTargets:
   -
     __assoc__:

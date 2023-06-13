@@ -8,23 +8,28 @@ use craft\base\Component;
 use craft\base\Element;
 use craft\elements\Entry;
 use craft\elements\User;
+use DateInterval;
 
 class TimesheetsService extends Component
 {
-    public function addTimesheet(Entry $task, DateTime $startTime, DateTime $endTime): Entry
+    public function addTimesheet(Entry $task, DateTime $startDate, DateTime $endDate): Entry
     {
         $section = \Craft::$app->sections->getSectionByHandle('timesheet');
         $types = $section->entryTypes;
         $type = reset($types);
+        if ($task->isComplete and $task->taskType->value == 'more') {
+            $startDate->add(new DateInterval('P1D'));
+            $endDate->add(new DateInterval('P1D'));
+        }
         $sheet = new Entry([
             'sectionId' => $section->id,
             'typeId' => $type->id,
             'authorId' => $task->authorId,
         ]);
         $sheet->setFieldValues([
-            'scheduledTask' => [$task->id],
-            'startTime' => $startTime,
-            'endTime' => $endTime,
+            'task' => [$task->id],
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ]);
         $sheet->scenario = Element::SCENARIO_LIVE;
         if (\Craft::$app->elements->saveElement($sheet)) {
@@ -33,15 +38,11 @@ class TimesheetsService extends Component
         throw new Exception("Couldn't save timesheet : " . print_r($sheet->errors, true));
     }
 
-    public function onTimesheetChange(Entry $sheet)
+    public function deleteForTask(Entry $task, bool $hardDelete)
     {
-        $task = $sheet->scheduledTask->one();
-        if (!$task or $task->isComplete) {
-            return;
-        }
-        if ($task->timeSpent > $task->length) {
-            $task->setFieldValue('isComplete', true);
-            \Craft::$app->elements->saveElement($task, false);
+        $sheets = Entry::find()->section('timesheet')->anyStatus()->trashed(null)->relatedTo($task)->all();
+        foreach ($sheets as $sheet) {
+            \Craft::$app->elements->deleteElement($sheet, $hardDelete);
         }
     }
 }

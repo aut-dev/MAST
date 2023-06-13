@@ -1,0 +1,144 @@
+{% set task = task ?? null %}
+
+{% macro week(block, type, index) %}
+    <div class="d-flex week">
+        <input type="hidden" class="type" name="fields[weeks][{{ index }}][type]" value="{{ type.id }}">
+        <input type="hidden" class="enabled" name="fields[weeks][{{ index }}][enabled]" value="1">
+        {% for day in ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] %}
+            <div class="d-flex flex-column me-1">
+                <label>{{ day|capitalize|t }}</label>
+                {{ input('number', 'fields[weeks][' ~ index ~ '][fields][' ~ day ~ ']', block ? block[day] : 1, {
+                    class: 'form-control day',
+                    min: 0,
+                    step: 0.1,
+                    data: {
+                        day: day
+                    }
+                }) }}
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+<form id="add-task-form">
+    {% set section = craft.app.sections.getSectionByHandle('task') %}
+    {{ csrfInput() }}
+    {{ actionInput('entries/save-entry') }}
+    {{ hiddenInput('sectionId', section.id) }}
+    {{ hiddenInput('enabled', '1') }}
+    {{ hiddenInput('entryVariable', 'task'|hash) }}
+    {{ redirectInput('/tasks') }}
+    {{ successMessageInput('Task saved'|t) }}
+    {{ failMessageInput('Could not save task'|t) }}
+    {% if task %}
+        {{ hiddenInput('entryId', task.id) }}
+    {% endif %}
+
+    <div class="form-group mb-3 field-title">
+        <label for="name" class="required">{{ 'Name'|t }}</label>
+        {{ input('text', 'title', task.title ?? '', {
+            id: 'title',
+            class: 'form-control'
+        }) }}
+    </div>
+
+    <div class="form-group mb-3 field-startDate">
+        <label for="startDate" class="required">{{ 'Start date'|t }}</label>
+        <input type="hidden" class="timezone" name="fields[startDate][timezone]" value="{{ currentUser.timezone }}">
+        {{ input('text', 'fields[startDate][date]', task ? task.startDate|date('Y-m-d', currentUser.timezone) : now|date('Y-m-d', currentUser.timezone), {
+            id: 'startDate',
+            class: 'form-control datepicker',
+            data: {
+                options: {
+                    minDate: now|date('Y-m-d', currentUser.timezone),
+                }
+            }
+        }) }}
+    </div>
+
+    <div class="form-group mb-3 field-taskType">
+        <label class="required">{{ 'More or less of something'|t }}</label>
+        <div>
+            <div class="form-check form-check-inline">
+                <input type="radio" name="fields[taskType]" id="type-more" value="more" {% if task and task.taskType == 'more' or not task %}checked{% endif %}>
+                <label class="form-check-label" for="type-more">
+                    {{ 'More'|t }}
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input type="radio" name="fields[taskType]" id="type-less" value="less" {% if task and task.taskType == 'less' %}checked{% endif %}>
+                <label class="form-check-label" for="type-less">
+                    {{ 'Less'|t }}
+                </label>
+            </div>
+        </div>
+    </div>
+
+    {{ hiddenInput('fields[length]', task ? task.length : 600, {
+        id: 'length-seconds'
+    }) }}
+    <div class="form-group mb-3 field-length">
+        <label for="length" class="required">{{ 'Work block length (minutes)'|t }}</label>
+        {{ input('number', null, task ? (task.length / 60)|round : 10, {
+            id: 'length',
+            class: 'form-control',
+            min: 1,
+            step: 1
+        }) }}
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="deadline" class="required">{{ 'Deadline'|t }}</label>
+        {{ input('text', 'fields[deadline]', task ? task.startDate|date('H:i', currentUser.timezone) : '23:59', {
+            id: 'deadline',
+            class: 'form-control datepicker',
+            data: {
+                options: {
+                    enableTime: true,
+                    noCalendar: true,
+                    time_24hr: true
+                }
+            }
+        }) }}
+    </div>
+
+    {% set weeks = task ? task.weeks.all() : null %}
+
+    <div class="form-group mb-3 field-repeat">
+        <label for="length" class="required">{{ 'Repeat your schedule every 1, 2, 3... weeks'|t }}</label>
+        {{ input('number', '', task ? weeks|length : 1, {
+            class: 'form-control',
+            id: 'repeat-input',
+            min: 1,
+            step: 1
+        }) }}
+    </div>
+
+    {% set field = craft.app.fields.getFieldByHandle('weeks') %}
+    {% set block_types = craft.superTable.getSuperTableBlocks(field.id) %}
+    {% set block_type = block_types.0 %}
+    <div class="form-group mb-3 field-weeks">
+        <label>{{ 'How many work blocks do you want to do each day?'|t }}</label>
+        {% if task %}
+            {% for week in weeks %}
+                {{ _self.week(week, block_type, week.id) }}
+            {% endfor %}
+        {% else %}
+            {{ _self.week(null, block_type, 'new1') }}
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-3 field-committed">
+        <label for="committed" class="required">{{ '$ committed per derail'|t }}</label>
+        {{ input('number', 'fields[committed][value]', task ? task.committed.amount / 100 : 1, {
+            id: 'committed',
+            class: 'form-control',
+            min: 1,
+            step: 1
+        }) }}
+    </div>
+
+    <div class="form-group mb-3">
+        <button type="sumit" class="btn btn-primary">{{ 'Submit'|t }}</button>
+    </div>
+</form>

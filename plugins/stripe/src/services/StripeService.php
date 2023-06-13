@@ -88,7 +88,7 @@ class StripeService extends Component
             return false;
         }
         try {
-            $amount = MoneyHelper::toNumber($task->task[0]->committed) * 100;
+            $amount = MoneyHelper::toNumber($task->committed) * 100;
             $this->getClient()->paymentIntents->create([
                 'amount' => $amount,
                 'currency' => 'usd',
@@ -98,7 +98,6 @@ class StripeService extends Component
                 'confirm' => true,
                 'description' => 'Derail for task ' . $task->title
             ]);
-            $task->setFieldValue('charged', $amount);
             return true;
         } catch (CardException $e) {
             \Craft::$app->errorHandler->logException($e);

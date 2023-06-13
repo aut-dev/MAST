@@ -1,0 +1,6 @@
+.task {
+    cursor: pointer;
+    &.timer-started {
+        border-style: dashed !important;
+    }
+}

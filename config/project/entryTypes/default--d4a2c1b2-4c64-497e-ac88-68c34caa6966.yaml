@@ -1,5 +1,5 @@
 fieldLayouts:
-  16dc3c2d-ff0a-452a-9fe3-c0909e218327:
+  ec2bf51d-f213-4bd7-8ab7-688b58a384f7:
     tabs:
       -
         elementCondition: null
@@ -26,7 +26,7 @@ fieldLayouts:
             tip: null
             title: null
             type: craft\fieldlayoutelements\entries\EntryTitleField
-            uid: e41367a5-a80f-4c40-9a90-a7f468b0aa28
+            uid: f5208d4d-5b3b-4574-866f-21945ddf7262
             userCondition: null
             warning: null
             width: 100
@@ -38,7 +38,7 @@ fieldLayouts:
             required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 017ae52f-60be-459e-bc4f-17fe7cc005db
+            uid: f7e4c25d-0e0d-41cc-ada4-0c0413a689ce
             userCondition: null
             warning: null
             width: 50
@@ -46,88 +46,46 @@ fieldLayouts:
             elementCondition: null
             fieldUid: beb8aabf-7970-4442-9f8b-f70568d8757a # Start date
             instructions: null
-            label: null
+            label: Date
             required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 76f992b7-0bc5-4234-abb9-094519f168db
+            uid: bc4d7e58-14e7-4391-ae79-f11f9dc8b630
             userCondition: null
             warning: null
             width: 50
           -
             elementCondition: null
-            fieldUid: 285c99c4-fa78-44f1-afd3-6eed1b0d5121 # End date
+            fieldUid: 4b8fd5c8-4aaa-4384-8956-861ce041def9 # Charge succeeded
             instructions: null
             label: null
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: b3b9ce4f-2535-4a67-941b-7006fc258b4e
+            uid: 98445968-964f-44c1-89a4-e7ff740424c2
             userCondition: null
             warning: null
             width: 50
           -
             elementCondition: null
-            fieldUid: 70279873-4261-4f79-b9d0-6dc067fb97b4 # Length
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: e0a5b545-6d26-45a2-b170-cfe6cababbc6
-            userCondition: null
-            warning: null
-            width: 50
-          -
-            elementCondition: null
-            fieldUid: d0af2316-3920-45e2-a0c7-5bf31b6f07ff # Is complete
+            fieldUid: 8ad10f9f-e461-4fb0-85a8-76ffc63cfb81 # Charge
             instructions: null
             label: null
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 6c7ad3db-4b38-4690-9120-1e3450e00ecf
+            uid: f8c7d1b1-935a-497f-9526-9463aeef66a1
             userCondition: null
             warning: null
             width: 50
         name: Content
-        uid: 09820409-0f3c-4854-953a-be99dbf26244
-        userCondition: null
-      -
-        elementCondition: null
-        elements:
-          -
-            elementCondition: null
-            fieldUid: 4b8fd5c8-4aaa-4384-8956-861ce041def9 # Charge attempted
-            instructions: null
-            label: null
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 5c3fc3b9-f698-497a-b7bf-1f573ae7028c
-            userCondition: null
-            warning: null
-            width: 50
-          -
-            elementCondition: null
-            fieldUid: 8ad10f9f-e461-4fb0-85a8-76ffc63cfb81 # Charged
-            instructions: null
-            label: null
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 44c79ee1-5207-436a-a986-02694a390b82
-            userCondition: null
-            warning: null
-            width: 50
-        name: Charge
-        uid: adf245af-3120-432d-be9f-2a65da6f2493
+        uid: cfa8e91f-1379-43f1-9dda-482c386d678d
         userCondition: null
 handle: default
 hasTitleField: false
 name: Default
-section: 35489b9b-396d-4bf5-b052-a28c816a8095 # Scheduled task
+section: a375ef2c-b9ee-4506-8059-6d56c1173cbb # Derail
 sortOrder: 1
-titleFormat: '{task.one().title}'
+titleFormat: '{{ task.one().title }} - {{ task.startDate|date(''d/m/Y'') }}'
 titleTranslationKeyFormat: null
 titleTranslationMethod: site

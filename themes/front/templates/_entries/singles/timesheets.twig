@@ -1,0 +1,20 @@
+{% extends "_layouts/matrix-content" %}
+{% requireLogin %}
+
+{% block after_content_matrix %}
+    <div class="container">
+        {% set sheets = craft.entries.section('timesheet').authorId(currentUser.id).with('task').all() %}
+        {% if sheets %}
+            <div class="row mt-2">
+                <div class="col-6 fw-bold">Task</div>
+                <div class="col-6 fw-bold">When</div>
+            </div>
+            {% for sheet in sheets %}
+                <div class="row mt-2">
+                    <div class="col-6">{{ sheet.task.first.title }}</div>
+                    <div class="col-6">{{ sheet.startDate|date('d/m/Y', currentUser.timezone) }} | {{ sheet.startDate|date('H:i:s', currentUser.timezone) }} - {{ sheet.endDate|date('H:i:s', currentUser.timezone) }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

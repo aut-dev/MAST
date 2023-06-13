@@ -1,9 +1,9 @@
 columnSuffix: vzjrqxqt
 contentColumnType: integer(10)
 fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
-handle: charged
+handle: charge
 instructions: null
-name: Charged
+name: Charge
 searchable: false
 settings:
   currency: USD

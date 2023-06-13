@@ -1,5 +1,5 @@
 fieldLayouts:
-  d87688c1-d93b-4a7a-be8f-4347c8b57bca:
+  d8e50ca7-a062-4b10-81cb-e912b98e23e1:
     tabs:
       -
         elementCondition: null
@@ -26,54 +26,48 @@ fieldLayouts:
             tip: null
             title: null
             type: craft\fieldlayoutelements\entries\EntryTitleField
-            uid: c2d06c40-6ee3-456c-81cf-36694c0b9d05
+            uid: 96739c60-d973-4e9c-ae32-c9e84565443b
             userCondition: null
             warning: null
             width: 100
           -
             elementCondition: null
-            fieldUid: 79cfda90-52f0-4348-b604-fdb241c209cf # Task
+            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613 # Redirect to save card
             instructions: null
             label: null
-            required: true
+            required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 1cba1b95-a56d-4cec-9185-19648a46eb08
+            uid: 65d6febe-a903-4c8f-a379-abe228160c7d
             userCondition: null
             warning: null
-            width: 50
-          -
-            elementCondition: null
-            fieldUid: beb8aabf-7970-4442-9f8b-f70568d8757a # Start date
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 1709408c-a1ca-450a-be53-c993f8925c99
-            userCondition: null
-            warning: null
-            width: 50
-          -
-            elementCondition: null
-            fieldUid: 285c99c4-fa78-44f1-afd3-6eed1b0d5121 # End date
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: b5ee1978-21f3-489a-aa4c-50ac22714f2b
-            userCondition: null
-            warning: null
-            width: 50
+            width: 100
         name: Content
-        uid: 517fab63-1440-4eb0-a2a1-200d160e602a
+        uid: 953e3c61-a957-4dd9-9dfc-9ace081236d3
         userCondition: null
-handle: default
-hasTitleField: false
-name: Default
-section: 877c3423-006e-4942-bfdb-c44bac344c97 # Timesheet
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 8ad55fd2-2c4e-436b-a572-d9d4bef64524 # Basic Seo
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: bc3381bc-c443-4313-adf1-767c39a1f0d3
+            userCondition: null
+            warning: null
+            width: 100
+        name: SEO
+        uid: 0bceaef4-309d-4be8-ba45-58e9cf37f1d4
+        userCondition: null
+handle: editTask
+hasTitleField: true
+name: 'Edit task'
+section: 15bf8716-9770-426b-859b-3251b11fd49e # Edit task
 sortOrder: 1
-titleFormat: '{{ task.one().title }}'
+titleFormat: '{section.name|raw}'
 titleTranslationKeyFormat: null
 titleTranslationMethod: site

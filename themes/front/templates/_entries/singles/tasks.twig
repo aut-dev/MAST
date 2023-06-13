@@ -3,12 +3,10 @@
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\TasksPage') %}
 
-{% block content %}
+{% block after_content_matrix %}
     <div class="container">
-        <h1 class="text-center">{{ entry.title }}</h1>
-        <a href="/tasks/new" class="btn btn-primary">{{ 'New task'|t }}</a>
-        <h2 class="my-3 text-center">{{ "Today's tasks"|t }}</h2>
-        {% set tasks = currentUser.getTodaysTasks %}
+        <a href="/tasks/new" class="btn btn-primary mb-4">{{ 'New task'|t }}</a>
+        {% set tasks = craft.entries.section('task').authorId(currentUser.id).all() %}
         {% if tasks %}
             <div class="row">
                 {% for task in tasks %}
@@ -17,8 +15,7 @@
                     </div>
                 {% endfor %}
             </div>
-        {% else %}
-            <p>{{ 'You have no tasks today'|t }}
         {% endif %}
     </div>
+    {% include "_includes/tasks/delete-modal" %}
 {% endblock %}

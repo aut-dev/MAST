@@ -27,6 +27,7 @@ class Timesheets extends Plugin
         $this->registerComponents();
         $this->registerBehaviors();
         $this->registerEvents();
+        $this->registerTasksEvents();
     }
 
     protected function registerComponents()
@@ -36,11 +37,21 @@ class Timesheets extends Plugin
         ]);
     }
 
+    protected function registerTasksEvents()
+    {
+        Event::on(Elements::class, Elements::EVENT_BEFORE_DELETE_ELEMENT, function (Event $event) {
+            $task = $event->element;
+            if ($task instanceof Entry and !ElementHelper::isDraftOrRevision($task) and $task->section->handle == 'task') {
+                Timesheets::$plugin->timesheets->deleteForTask($task, $event->hardDelete);
+            }
+        });
+    }
+
     protected function registerBehaviors()
     {
         Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function (Event $event) {
             if ($event->sender->sectionId) {
-                if ($event->sender->section->handle == 'scheduledTask') {
+                if ($event->sender->section->handle == 'task') {
                     $event->sender->attachBehavior('plugin-timesheets', TaskBehavior::class);
                 }
             }
@@ -49,17 +60,5 @@ class Timesheets extends Plugin
 
     protected function registerEvents()
     {
-        Event::on(Elements::class, Elements::EVENT_AFTER_SAVE_ELEMENT, function (Event $event) {
-            $element = $event->element;
-            if (!ElementHelper::isDraftOrRevision($element) and $element instanceof Entry and $element->section->handle == 'timesheet') {
-                Timesheets::$plugin->timesheets->onTimesheetChange($element);
-            }
-        });
-        Event::on(Elements::class, Elements::EVENT_AFTER_DELETE_ELEMENT, function (Event $event) {
-            $element = $event->element;
-            if (!ElementHelper::isDraftOrRevision($element) and $element instanceof Entry and $element->section->handle == 'timesheet') {
-                Timesheets::$plugin->timesheets->onTimesheetChange($element);
-            }
-        });
     }
 }

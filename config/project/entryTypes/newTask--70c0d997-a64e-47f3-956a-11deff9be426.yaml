@@ -45,6 +45,24 @@ fieldLayouts:
         name: Content
         uid: d587d831-bd70-4f82-a9bc-68024ea75421
         userCondition: null
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 8ad55fd2-2c4e-436b-a572-d9d4bef64524 # Basic Seo
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 15346234-375a-4f82-ba0d-8d30845f036c
+            userCondition: null
+            warning: null
+            width: 100
+        name: SEO
+        uid: a1dc3178-e612-447a-825f-69dc718c84b1
+        userCondition: null
 handle: newTask
 hasTitleField: true
 name: 'New task'

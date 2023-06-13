@@ -15,23 +15,23 @@ permissions:
   - administrateusers
   - 'assignusergroup:0c28a99f-cdd7-4c6f-ad5a-d543a3201eec' # Admin
   - assignuserpermissions
-  - 'createentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'createentries:35489b9b-396d-4bf5-b052-a28c816a8095'
   - 'createentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'createentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'createentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'createfolders:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - 'deleteassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - deleteemaillogs
-  - 'deleteentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'deleteentries:35489b9b-396d-4bf5-b052-a28c816a8095'
   - 'deleteentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'deleteentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'deleteentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'deletepeerassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
-  - 'deletepeerentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'deletepeerentries:35489b9b-396d-4bf5-b052-a28c816a8095'
   - 'deletepeerentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'deletepeerentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'deletepeerentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
-  - 'deletepeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'deletepeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095'
   - 'deletepeerentrydrafts:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'deletepeerentrydrafts:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
   - 'deletepeerentrydrafts:720dc906-57fd-4848-92a1-447acf4703f3' # Task
@@ -48,7 +48,7 @@ permissions:
   - 'editimages:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - 'editpeerimages:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - editusers
-  - 'ignoredeletionrestriction:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'ignoredeletionrestriction:35489b9b-396d-4bf5-b052-a28c816a8095'
   - 'ignoredeletionrestriction:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - 'ignoredeletionrestriction:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'ignoredeletionrestriction:720dc906-57fd-4848-92a1-447acf4703f3' # Task
@@ -67,7 +67,7 @@ permissions:
   - 'replacefiles:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - 'replacepeerfiles:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - 'saveassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
-  - 'saveentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'saveentries:35489b9b-396d-4bf5-b052-a28c816a8095'
   - 'saveentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'saveentries:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
   - 'saveentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
@@ -81,11 +81,11 @@ permissions:
   - 'saveentries:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
   - 'saveentries:e237d745-b0a6-4a3f-9003-984efa160459' # Page error
   - 'savepeerassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
-  - 'savepeerentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'savepeerentries:35489b9b-396d-4bf5-b052-a28c816a8095'
   - 'savepeerentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'savepeerentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'savepeerentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
-  - 'savepeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'savepeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095'
   - 'savepeerentrydrafts:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'savepeerentrydrafts:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
   - 'savepeerentrydrafts:720dc906-57fd-4848-92a1-447acf4703f3' # Task
@@ -109,7 +109,7 @@ permissions:
   - 'utility:system-report'
   - 'utility:updates'
   - 'viewassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
-  - 'viewentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'viewentries:35489b9b-396d-4bf5-b052-a28c816a8095'
   - 'viewentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'viewentries:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
   - 'viewentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
@@ -123,11 +123,11 @@ permissions:
   - 'viewentries:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
   - 'viewentries:e237d745-b0a6-4a3f-9003-984efa160459' # Page error
   - 'viewpeerassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
-  - 'viewpeerentries:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'viewpeerentries:35489b9b-396d-4bf5-b052-a28c816a8095'
   - 'viewpeerentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'viewpeerentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'viewpeerentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
-  - 'viewpeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095' # Scheduled task
+  - 'viewpeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095'
   - 'viewpeerentrydrafts:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'viewpeerentrydrafts:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
   - 'viewpeerentrydrafts:720dc906-57fd-4848-92a1-447acf4703f3' # Task
