@@ -1,7 +1,10 @@
 {% extends "_layouts/base" %}
 {% import "_helpers/images" as images %}
 
-{% if currentUser and not currentUser.hasValidPaymentMethod and (entry.redirectToSaveCard ?? true) %}
+{% if currentUser and not currentUser.hasValidMembership and (entry.requiresValidMembership ?? false) %}
+    {% redirect '/pay-membership' %}
+{% endif %}
+{% if currentUser and not currentUser.hasValidPaymentMethod and (entry.requiresValidMembership ?? false) %}
     {% redirect '/save-card' %}
 {% endif %}
 

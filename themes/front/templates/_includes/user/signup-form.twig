@@ -6,14 +6,11 @@
 {% if email_as_username %}
     {% set username_label = email_label %}
 {% endif %}
-{% set redirect_to = redirect_to ?? craft.app.request.getQueryParam('redirectTo') %}
 
 <form method="post" action="" accept-charset="UTF-8" id="signup-form">
     {{ csrfInput() }}
     {{ actionInput('users/save-user') }}
-    {% if redirect_to %}
-        {{ redirectInput(redirect_to) }}
-    {% endif %}
+    {{ redirectInput('pay-membership') }}
     {{ successMessageInput('Your account has been created'|t('site')) }}
     {{ failMessageInput('Unable to create your account'|t('site')) }}
 
@@ -94,7 +91,7 @@
         <select name="fields[timezone]" class="form-control" required>
             <option value="">{{ 'Select'|t }}</option>
             {% for item in craft.cp.getTimeZoneOptions() %}
-                <option value="{{ item.value }}">{{ item.value }} - {{ item.label }}</option>
+                <option value="{{ item.value }}" {% if user is defined and user.timezone == item.value %}selected{% endif %}>{{ item.value }} - {{ item.label }}</option>
             {% endfor %}
         </select>
 

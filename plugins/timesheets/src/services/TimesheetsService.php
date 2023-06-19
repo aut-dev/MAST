@@ -2,25 +2,30 @@
 
 namespace Plugins\Timesheets\services;
 
+use DateInterval;
 use DateTime;
 use Exception;
+use Plugins\Tasks\helpers\DateHelper;
 use craft\base\Component;
 use craft\base\Element;
 use craft\elements\Entry;
 use craft\elements\User;
-use DateInterval;
 
 class TimesheetsService extends Component
 {
+    /**
+     * Add a timesheet for a task.
+     * May create 2 timesheets if the dates are between the deadline of the task
+     *
+     * @param Entry    $task
+     * @param DateTime $startDate
+     * @param DateTime $endDate
+     */
     public function addTimesheet(Entry $task, DateTime $startDate, DateTime $endDate): Entry
     {
         $section = \Craft::$app->sections->getSectionByHandle('timesheet');
         $types = $section->entryTypes;
         $type = reset($types);
-        if ($task->isComplete and $task->taskType->value == 'more') {
-            $startDate->add(new DateInterval('P1D'));
-            $endDate->add(new DateInterval('P1D'));
-        }
         $sheet = new Entry([
             'sectionId' => $section->id,
             'typeId' => $type->id,
@@ -38,11 +43,52 @@ class TimesheetsService extends Component
         throw new Exception("Couldn't save timesheet : " . print_r($sheet->errors, true));
     }
 
+    /**
+     * Get the time (in seconds) recorded in timesheets between 2 dates for a task
+     *
+     * @param  Entry    $task
+     * @param  DateTime $start
+     * @param  DateTime $end
+     * @return int
+     */
+    public function getTimeRecorded(Entry $task, DateTime $start, DateTime $end): int
+    {
+        $sheets = Entry::find()->section('timesheet')->relatedTo($task);
+        DateHelper::addDateParamsBetween($sheets, $start, $end);
+        $time = 0;
+        foreach ($sheets->all() as $sheet) {
+            $endDate = $sheet->endDate;
+            if ($endDate > $end) {
+                $endDate = $end;
+            }
+            $time += ($endDate->getTimeStamp() - $sheet->startDate->getTimeStamp());
+        }
+        return $time;
+    }
+
+    /**
+     * Delete all timesheets for a task
+     *
+     * @param  Entry  $task
+     * @param  bool   $hardDelete
+     */
     public function deleteForTask(Entry $task, bool $hardDelete)
     {
         $sheets = Entry::find()->section('timesheet')->anyStatus()->trashed(null)->relatedTo($task)->all();
         foreach ($sheets as $sheet) {
             \Craft::$app->elements->deleteElement($sheet, $hardDelete);
+        }
+    }
+
+    /**
+     * Timesheet custom validation rules
+     *
+     * @param  Entry  $sheet
+     */
+    public function validateTimesheet(Entry $sheet)
+    {
+        if ($sheet->startDate and $sheet->endDate and $sheet->startDate >= $sheet->endDate) {
+            $sheet->addError('startDate', \Craft::t('site', 'Start date must be before end date'));
         }
     }
 }

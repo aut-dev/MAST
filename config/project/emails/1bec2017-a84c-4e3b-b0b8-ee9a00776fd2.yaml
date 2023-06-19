@@ -2,10 +2,10 @@ bcc: ''
 cc: ''
 from: ''
 fromName: ''
-heading: '[Admin] Derail charge failed'
+heading: '[Admin] Membership charge failed'
 instructions: ''
-key: admin_derail_charge_failed
+key: admin_membership_charge_failed
 redactorConfig: ''
 replyTo: ''
 saveLogs: ''
-system: 0
+system: false

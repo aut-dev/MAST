@@ -1,5 +1,5 @@
 fieldLayouts:
-  4bf8fb8f-03f0-4901-aae2-7211153a01ac:
+  ecb39324-e6e9-4e4f-99ac-113da781fa4a:
     tabs:
       -
         elementCondition: null
@@ -26,7 +26,7 @@ fieldLayouts:
             tip: null
             title: null
             type: craft\fieldlayoutelements\entries\EntryTitleField
-            uid: afd1d150-4cc5-40a4-8156-e97022d0e7b7
+            uid: 2f090ec7-8eae-4818-8c3e-b6eead6ab90c
             userCondition: null
             warning: null
             width: 75
@@ -38,22 +38,10 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 05cefad3-6216-4cf0-82d6-12d172485202
+            uid: 316fea9b-c734-49cf-9ff2-3e31dd4c7af4
             userCondition: null
             warning: null
             width: 25
-          -
-            elementCondition: null
-            fieldUid: c02d8ea3-fd26-4084-890d-83260c7fc0dd # Banner Images
-            instructions: null
-            label: null
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: f6f86cbd-6cf5-4ba6-95b0-ec1bba032305
-            userCondition: null
-            warning: null
-            width: 100
           -
             elementCondition: null
             fieldUid: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
@@ -62,12 +50,12 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 15c977df-6609-45db-b699-bb814383af37
+            uid: 6ad613a1-e14e-4af1-852d-649f80713c8a
             userCondition: null
             warning: null
             width: 100
         name: Content
-        uid: dc735a46-2623-4004-8601-d47d04ef71df
+        uid: d563b5dd-f748-4ca1-a8cb-87ad806fb224
         userCondition: null
       -
         elementCondition: null
@@ -80,17 +68,17 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: d5faf6cc-000b-4fa4-bdcd-6164f08fd61a
+            uid: 7bf3f37b-8691-4262-917c-cbc796151258
             userCondition: null
             warning: null
             width: 100
         name: SEO
-        uid: c078b100-2b33-46d7-957e-59fe25cf3771
+        uid: a341c66f-d718-4a45-a4f6-d04437774fdf
         userCondition: null
-handle: pageNotFound
+handle: payMembership
 hasTitleField: true
-name: 'Page not found'
-section: c95e7ea6-ef14-4d2b-af3e-da848760500f # Page not found
+name: 'Pay membership'
+section: a260febd-af3b-4bda-ba4c-67c7a8edb8d4 # Pay membership
 sortOrder: 1
 titleFormat: '{section.name|raw}'
 titleTranslationKeyFormat: null

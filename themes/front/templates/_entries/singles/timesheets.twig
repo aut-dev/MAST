@@ -1,20 +1,34 @@
 {% extends "_layouts/matrix-content" %}
 {% requireLogin %}
 
+{% do craft.app.view.registerAssetBundle('themes\\front\\assets\\TimesheetsPage') %}
+
 {% block after_content_matrix %}
     <div class="container">
         {% set sheets = craft.entries.section('timesheet').authorId(currentUser.id).with('task').all() %}
         {% if sheets %}
             <div class="row mt-2">
-                <div class="col-6 fw-bold">Task</div>
-                <div class="col-6 fw-bold">When</div>
+                <div class="col-5 fw-bold">Task</div>
+                <div class="col-5 fw-bold">When</div>
+                <div class="col-2 fw-bold"></div>
             </div>
             {% for sheet in sheets %}
-                <div class="row mt-2">
-                    <div class="col-6">{{ sheet.task.first.title }}</div>
-                    <div class="col-6">{{ sheet.startDate|date('d/m/Y', currentUser.timezone) }} | {{ sheet.startDate|date('H:i:s', currentUser.timezone) }} - {{ sheet.endDate|date('H:i:s', currentUser.timezone) }}</div>
+                <div class="row mt-2 timesheet" data-id="{{ sheet.id }}">
+                    <div class="col-5">{{ sheet.task.first.title }}</div>
+                    <div class="col-5">
+                        <span class="start-date">
+                            {{ sheet.startDate|date('d/m/Y H:i:s', currentUser.timezone) }}
+                        </span> - 
+                        <span class="end-date">
+                            {{ sheet.endDate|date('d/m/Y H:i:s', currentUser.timezone) }}
+                        </span>
+                    </div>
+                    <div class="col-2">
+                        <a href="#" class="js-edit" data-id="{{ sheet.id }}"><i class="fa-solid fa-pen-to-square"></i></a>
+                    </div>
                 </div>
             {% endfor %}
         {% endif %}
     </div>
+    {% include "_includes/timesheets/edit-modal" %}
 {% endblock %}

@@ -1,4 +1,4 @@
-{% set expires = task.expiringDate %}
+{% set expires = task.todayDeadline %}
 {% set started = currentUser.timerStarted(task.id) %}
 
 {% set status = task.isActiveToday ? 'active' : 'inative' %}

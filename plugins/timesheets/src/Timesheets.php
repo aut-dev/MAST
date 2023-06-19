@@ -28,6 +28,7 @@ class Timesheets extends Plugin
         $this->registerBehaviors();
         $this->registerEvents();
         $this->registerTasksEvents();
+        $this->registerTimesheetsEvents();
     }
 
     protected function registerComponents()
@@ -35,6 +36,16 @@ class Timesheets extends Plugin
         $this->setComponents([
             'timesheets' => TimesheetsService::class,
         ]);
+    }
+
+    protected function registerTimesheetsEvents()
+    {
+        Event::on(Entry::class, Entry::EVENT_AFTER_VALIDATE, function (Event $event) {
+            $entry = $event->sender;
+            if (!ElementHelper::isDraftOrRevision($entry) and $entry->section->handle == 'timesheet') {
+                Timesheets::$plugin->timesheets->validateTimesheet($entry);
+            }
+        });
     }
 
     protected function registerTasksEvents()

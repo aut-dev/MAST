@@ -14,7 +14,27 @@ class TaskBehavior extends Behavior
     protected $_todayDuration;
     protected $_spent;
 
-    public function getIsComplete()
+    /**
+     * Get the time spent in seconds since last deadline. Includes timesheets + timer (if started)
+     *
+     * @return int
+     */
+    public function getTimeSpent(): int
+    {
+        if ($this->_spent === null) {
+            $timer = $this->owner->author->getTimerSpent($this->owner);
+            $sheets = $this->owner->getTimesheetSpentSinceLastDeadline();
+            $this->_spent = $timer + $sheets;
+        }
+        return $this->_spent;
+    }
+
+    /**
+     * Is a task complete
+     *
+     * @return bool
+     */
+    public function getIsComplete(): bool
     {
         if (!$this->getIsActiveToday() or $this->getIsExpired()) {
             return false;
@@ -25,7 +45,12 @@ class TaskBehavior extends Behavior
         return $this->getTimeSpent() <= $this->getTodayDuration();
     }
 
-    public function getIsDerailed()
+    /**
+     * Is a task derailed
+     *
+     * @return bool
+     */
+    public function getIsDerailed(): bool
     {
         if (!$this->getIsActiveToday()) {
             return false;
@@ -39,36 +64,60 @@ class TaskBehavior extends Behavior
         return $this->getTimeSpent() > $this->getTodayDuration();
     }
 
-    public function getTimeSpent(): int
-    {
-        if ($this->_spent === null) {
-            $timer = $this->owner->author->getTimerSpent($this->owner);
-            $sheets = $this->owner->getTimesheetSpentToday();
-            $this->_spent = $timer + $sheets;
-        }
-        return $this->_spent;
-    }
-
-    public function getExpiringDate(): DateTime
-    {
-        $date = $this->owner->author->endOfToday;
-        $date->setTime($this->owner->deadline->format('H'), $this->owner->deadline->format('i'), 59);
-        return $date;
-    }
-
+    /**
+     * Is this task expired
+     *
+     * @return bool
+     */
     public function getIsExpired(): bool
     {
-        return $this->getIsActiveToday() and $this->getExpiringDate() < DateTimeHelper::toDateTime('now');
+        return $this->getIsActiveToday() and $this->getTodayDeadline() < DateTimeHelper::toDateTime('now');
     }
 
+    /**
+     * Is this task active today
+     *
+     * @return bool
+     */
+    public function getIsActiveToday(): bool
+    {
+        return $this->getTodayDuration() > 0;
+    }
+
+    /**
+     * Get today's deadline
+     *
+     * @return DateTime
+     */
+    public function getTodayDeadline(): DateTime
+    {
+        return (clone $this->owner->author->today)->setTime($this->owner->deadline->format('H'), $this->owner->deadline->format('i'), 0);
+    }
+
+    /**
+     * Get yesterday's deadline
+     *
+     * @return DateTime
+     */
+    public function getYesterdayDeadline(): DateTime
+    {
+        return (clone $this->getTodayDeadline())->sub(new DateInterval('P1D'));
+    }
+
+    /**
+     * Get the duration in seconds for today
+     *
+     * @return int
+     */
     public function getTodayDuration(): int
     {
         if ($this->_todayDuration === null) {
             $this->_todayDuration = 0;
             $today = $this->owner->author->today;
-            if ($this->owner->startDate <= $today) {
+            $startDate = (clone $this->owner->startDate)->setTime(0, 0, 0);
+            if ($startDate <= $today) {
                 $thisWeek = $this->beginningOfWeek(clone $today);
-                $start = $this->beginningOfWeek(clone $this->owner->startDate);
+                $start = $this->beginningOfWeek($startDate);
                 $current = 0;
                 $weeks = $this->owner->weeks instanceof Collection ? $this->owner->weeks : $this->owner->weeks->all();
                 $max = sizeof($weeks);
@@ -88,11 +137,11 @@ class TaskBehavior extends Behavior
         return $this->_todayDuration;
     }
 
-    public function getIsActiveToday()
-    {
-        return $this->getTodayDuration() > 0;
-    }
-
+    /**
+     * Set a date to the beginning of the week
+     *
+     * @param  DateTime $date
+     */
     protected function beginningOfWeek(DateTime $date)
     {
         while ($date->format('D') != 'Mon') {

@@ -1,0 +1,19 @@
+columnSuffix: xlzqwdoy
+contentColumnType:
+  - 'date:datetime'
+  - 'tz:string'
+fieldGroup: 2e3e24ad-d20e-48fc-ba6a-453f1ac66748 # User
+handle: membershipExpires
+instructions: null
+name: 'Membership expires'
+searchable: false
+settings:
+  max: null
+  min: null
+  minuteIncrement: 5
+  showDate: true
+  showTime: true
+  showTimeZone: true
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Date

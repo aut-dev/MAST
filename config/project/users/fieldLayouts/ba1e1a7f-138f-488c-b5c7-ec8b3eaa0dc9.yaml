@@ -62,6 +62,18 @@ tabs:
         userCondition: null
         warning: null
         width: 50
-    name: Stripe
+      -
+        elementCondition: null
+        fieldUid: 8f1638fd-59fe-4a3d-924c-f35248de5837 # Membership expires
+        instructions: null
+        label: null
+        required: false
+        tip: null
+        type: craft\fieldlayoutelements\CustomField
+        uid: 02d9acbb-38e8-4495-a470-a0cc2224149c
+        userCondition: null
+        warning: null
+        width: 50
+    name: Payments
     uid: 45ce7292-c287-440e-8ada-e73520920ffd
     userCondition: null

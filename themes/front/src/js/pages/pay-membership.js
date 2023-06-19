@@ -1,12 +1,12 @@
 import { SetupIntent } from '../components/setup-intent';
 
-class SaveCard
+class PayMembership
 {
     constructor () 
     {
         new SetupIntent;
-        console.log('Save card initialised');
+        console.log('Pay membership initialised');
     }
 }
 
-new SaveCard;
+new PayMembership;

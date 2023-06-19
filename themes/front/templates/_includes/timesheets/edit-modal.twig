@@ -1,0 +1,57 @@
+<div class="modal fade" tabindex="-1" id="edit-timesheet-modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ 'Edit timesheet'|t }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    {% set section = craft.app.sections.getSectionByHandle('timesheet') %}
+                    {{ csrfInput() }}
+                    {{ actionInput('entries/save-entry') }}
+                    {{ hiddenInput('sectionId', section.id) }}
+                    {{ hiddenInput('entryId', '') }}
+                    <div class="form-group mb-3 field-startDate">
+                        <label for="startDate" class="required">{{ 'Start date'|t }}</label>
+                        <input type="hidden" class="timezone" name="fields[startDate][timezone]" value="{{ currentUser.timezone }}">
+                        {{ input('text', 'fields[startDate][datetime]', '', {
+                            id: 'startDate',
+                            class: 'form-control datepicker',
+                            data: {
+                                options: {
+                                    enableTime: true,
+                                    enableSeconds: true,
+                                    minuteIncrement: 1,
+                                    time_24hr: true,
+                                    dateFormat: 'Y-m-d H:i:S'
+                                }
+                            }
+                        }) }}
+                    </div>
+                    <div class="form-group mb-3 field-endDate">
+                        <label for="endDate" class="required">{{ 'End date'|t }}</label>
+                        <input type="hidden" class="timezone" name="fields[endDate][timezone]" value="{{ currentUser.timezone }}">
+                        {{ input('text', 'fields[endDate][datetime]', '', {
+                            id: 'endDate',
+                            class: 'form-control datepicker',
+                            data: {
+                                options: {
+                                    enableTime: true,
+                                    enableSeconds: true,
+                                    minuteIncrement: 1,
+                                    time_24hr: true,
+                                    dateFormat: 'Y-m-d H:i:S'
+                                }
+                            }
+                        }) }}
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close'|t }}</button>
+                <button type="button" class="js-save btn btn-primary">{{ 'Save'|t }}</button>
+            </div>
+        </div>
+    </div>
+</div>

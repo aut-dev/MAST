@@ -2,8 +2,10 @@
 
 namespace Plugins\Stripe\services;
 
+use DateInterval;
 use Plugins\Tasks\Tasks;
 use Stripe\Customer;
+use Stripe\Exception\ApiErrorException;
 use Stripe\Exception\CardException;
 use Stripe\PaymentIntent;
 use Stripe\PaymentMethod;
@@ -20,43 +22,52 @@ class StripeService extends Component
 
     protected $client;
 
+    /**
+     * Get or create the Stripe customer for a user
+     *
+     * @param  User   $user
+     * @return Customer
+     */
     public function getOrCreateCustomer(User $user): Customer
     {
         if ($user->stripeCustomer) {
-            return $this->getClient()->customers->retrieve(
-                $user->stripeCustomer,
-                []
-            );
-        } else {
-            return $this->createCustomer($user);
+            try {
+                return $this->getClient()->customers->retrieve(
+                    $user->stripeCustomer,
+                    []
+                );
+            } catch (ApiErrorException $e) {
+            }
         }
+        return $this->createCustomer($user);
     }
 
-    public function createCustomer(User $user): Customer
-    {
-        $customer = $this->getClient()->customers->create([
-            'name' => $user->fullName,
-            'email' => $user->email
-        ]);
-        $user->setFieldValue('stripeCustomer', $customer->id);
-        \Craft::$app->elements->saveElement($user, false);
-        return $customer;
-    }
-
+    /**
+     * Create a setup intent
+     *
+     * @param  User   $user
+     * @return SetupIntent
+     */
     public function createSetupIntent(User $user): SetupIntent
     {
         $customer = $this->getOrCreateCustomer($user);
         return $this->getClient()->setupIntents->create([
             'payment_method_types' => ['card'],
-            'customer' => $customer->id
+            'customer' => $customer->id,
         ]);
     }
 
-    public function savePaymentMethod(string $intentId): ?SetupIntent
+    /**
+     * Saves a user payment method
+     *
+     * @param  string $intentId
+     * @param  User   $user
+     * @return ?SetupIntent
+     */
+    public function savePaymentMethod(string $intentId, User $user): ?SetupIntent
     {
         $intent = $this->getClient()->setupIntents->retrieve($intentId);
         if ($intent->status == 'succeeded') {
-            $user = \Craft::$app->user->identity;
             $user->setFieldValue('paymentMethod', $intent->payment_method);
             \Craft::$app->elements->saveElement($user, false);
             $this->clearPaymentMethodCache($user);
@@ -64,6 +75,51 @@ class StripeService extends Component
         return $intent;
     }
 
+    /**
+     * Charge a user for its membership
+     *
+     * @param  User   $user
+     * @return bool
+     */
+    public function chargeForMembership(User $user): bool
+    {
+        if (!$user->stripeCustomer or !$user->paymentMethod) {
+            return false;
+        }
+        try {
+            $amount = Entry::find()->section('membership')->one()->monthlyCost->getAmount();
+            $this->getClient()->paymentIntents->create([
+                'amount' => $amount,
+                'currency' => 'usd',
+                'customer' => $user->stripeCustomer,
+                'payment_method' => $user->paymentMethod,
+                'off_session' => true,
+                'confirm' => true,
+                'description' => 'Monthly membership'
+            ]);
+            $user->setFieldValues([
+                'membershipExpires' => (clone $user->now)->setTime(0, 0, 0)->add(new DateInterval('P1M'))
+            ]);
+            \Craft::$app->elements->saveElement($user, false);
+            return true;
+        } catch (CardException $e) {
+            \Craft::$app->errorHandler->logException($e);
+            $email = \Craft::$app->mailer->composeFromKey('admin_membership_charge_failed', [
+                'amount' => $amount / 100,
+                'user' => $user,
+                'error' => $e->getMessage()
+            ]);
+            $email->setTo(Tasks::getAdminEmails())->send();
+        }
+        return false;
+    }
+
+    /**
+     * Get a user stripe payment method, the result will be cached for a day
+     *
+     * @param  User   $user
+     * @return ?PaymentMethod
+     */
     public function getPaymentMethod(User $user): ?PaymentMethod
     {
         if (!$user->paymentMethod or!$user->stripeCustomer) {
@@ -77,11 +133,22 @@ class StripeService extends Component
         return $data;
     }
 
+    /**
+     * Clear a userpayment method cache
+     *
+     * @param  User   $user
+     */
     public function clearPaymentMethodCache(User $user)
     {
         \Craft::$app->cache->delete(self::PAYMENT_METHOD_CACHE_KEY . $user->id);
     }
 
+    /**
+     * Charge for a task derail
+     *
+     * @param  Entry  $task
+     * @return bool
+     */
     public function chargeForDerail(Entry $task): bool
     {
         if (!$task->author->stripeCustomer or !$task->author->paymentMethod) {
@@ -101,7 +168,7 @@ class StripeService extends Component
             return true;
         } catch (CardException $e) {
             \Craft::$app->errorHandler->logException($e);
-            $email = \Craft::$app->mailer->composeFromKey('admin_charge_failed', [
+            $email = \Craft::$app->mailer->composeFromKey('admin_derail_charge_failed', [
                 'task' => $task,
                 'amount' => $amount / 100,
                 'user' => $task->author,
@@ -112,6 +179,28 @@ class StripeService extends Component
         return false;
     }
 
+    /**
+     * Create a stripe customer
+     *
+     * @param  User   $user
+     * @return Customer
+     */
+    protected function createCustomer(User $user): Customer
+    {
+        $customer = $this->getClient()->customers->create([
+            'name' => $user->fullName,
+            'email' => $user->email
+        ]);
+        $user->setFieldValue('stripeCustomer', $customer->id);
+        \Craft::$app->elements->saveElement($user, false);
+        return $customer;
+    }
+
+    /**
+     * Get Stripe client
+     *
+     * @return StripeClient
+     */
     protected function getClient(): StripeClient
     {
         if ($this->client === null) {

@@ -1,5 +1,5 @@
 fieldLayouts:
-  bc1b4670-b7b8-4b39-b1d4-571ae9e84bac:
+  f078e33a-9bdd-4540-abe9-2c9d4f07b37e:
     tabs:
       -
         elementCondition: null
@@ -26,47 +26,29 @@ fieldLayouts:
             tip: null
             title: null
             type: craft\fieldlayoutelements\entries\EntryTitleField
-            uid: 40e8df1f-dfaa-404c-8f68-302970b92f59
-            userCondition: null
-            warning: null
-            width: 75
-          -
-            elementCondition: null
-            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613 # Requires valid membership
-            instructions: null
-            label: null
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 268766c3-083a-477a-8891-a675e736f3ab
-            userCondition: null
-            warning: null
-            width: 25
-        name: Content
-        uid: d587d831-bd70-4f82-a9bc-68024ea75421
-        userCondition: null
-      -
-        elementCondition: null
-        elements:
-          -
-            elementCondition: null
-            fieldUid: 8ad55fd2-2c4e-436b-a572-d9d4bef64524 # Basic Seo
-            instructions: null
-            label: null
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 15346234-375a-4f82-ba0d-8d30845f036c
+            uid: cc2d4adf-d030-4f97-b605-5691236491f6
             userCondition: null
             warning: null
             width: 100
-        name: SEO
-        uid: a1dc3178-e612-447a-825f-69dc718c84b1
+          -
+            elementCondition: null
+            fieldUid: 8122ce08-dc90-469d-92e1-2cba139319de # Monthly cost
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: d8f1308d-0dac-4ccb-b3cd-b7a9d88f17c4
+            userCondition: null
+            warning: null
+            width: 100
+        name: Cost
+        uid: dc57e787-48de-44a4-ba58-70389044d8f7
         userCondition: null
-handle: newTask
-hasTitleField: true
-name: 'New task'
-section: bf477c2a-b2b3-4dde-a0e0-0978de99ab77 # New task
+handle: membership
+hasTitleField: false
+name: Membership
+section: afa64420-8c60-4556-a478-15dfdd6bcd52 # Membership
 sortOrder: 1
 titleFormat: '{section.name|raw}'
 titleTranslationKeyFormat: null

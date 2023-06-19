@@ -1,0 +1,17 @@
+columnSuffix: fgmudnco
+contentColumnType: integer(10)
+fieldGroup: 0ba8d9d5-2692-4324-acd8-0187c46d6e82 # Common
+handle: monthlyCost
+instructions: null
+name: 'Monthly cost'
+searchable: false
+settings:
+  currency: USD
+  defaultValue: null
+  max: null
+  min: 0
+  showCurrency: true
+  size: null
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Money

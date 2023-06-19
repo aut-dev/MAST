@@ -1,0 +1,36 @@
+{% extends "_layouts/matrix-content" %}
+
+{% if not currentUser %}
+    {% set user_id = craft.app.session.get('membership-user-id') %}
+    {% if not user_id %}
+        {% exit 403 %}
+    {% endif %}
+    {% set user = craft.users.id(user_id).one() %}
+    {% if not user %}
+        {% exit 403 %}
+    {% endif %}
+{% endif %}
+
+{% set redirect_to_save_card = false %}
+{% do craft.app.view.registerAssetBundle('themes\\front\\assets\\PayMembershipPage') %}
+{% do craft.puzzlers.registerGlobalJs('stripeKey', getenv('STRIPE_PUBLISHABLE_KEY')) %}
+{% do craft.puzzlers.registerGlobalJs('return_url', siteUrl ~ 'stripe-card-membership') %}
+{% do craft.app.view.registerJsFile('https://js.stripe.com/v3', {position: 1}) %}
+
+{% block after_content_matrix %}
+    <div class="container d-flex justify-content-center">
+        <form id="card-form">
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <div id="card-element">
+                      <!-- A Stripe card Element will be inserted here. -->
+                    </div>
+                    <div class="alert alert-danger mt-3" id="card-errors" style="display:none"></div>
+                </div>
+                <div class="col-12 text-center">
+                    <input type="submit" class="btn btn-primary" value="{{ 'Submit'|t }}" style="display:none">
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

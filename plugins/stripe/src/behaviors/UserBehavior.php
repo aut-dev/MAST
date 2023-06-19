@@ -9,6 +9,14 @@ class UserBehavior extends Behavior
 {
     public $owner;
 
+    public function getHasValidMembership()
+    {
+        if (!$this->owner->membershipExpires) {
+            return false;
+        }
+        return $this->owner->now < $this->owner->membershipExpires;
+    }
+
     public function getHasValidPaymentMethod()
     {
         $method = Stripe::$plugin->stripe->getPaymentMethod($this->owner);
