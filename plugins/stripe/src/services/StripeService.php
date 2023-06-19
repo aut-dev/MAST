@@ -37,6 +37,7 @@ class StripeService extends Component
                     []
                 );
             } catch (ApiErrorException $e) {
+                return $this->createCustomer($user);
             }
         }
         return $this->createCustomer($user);
