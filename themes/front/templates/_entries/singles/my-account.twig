@@ -1,8 +1,32 @@
 {% extends "_layouts/matrix-content" %}
 {% requireLogin %}
 
+{% set method = currentUser.getPaymentMethod() %}
+
 {% block after_content_matrix %}
-    <div class="container">
+    <div class="container text-center">
+        <h2>{{ 'My Membership'}}</h2>
+        {% if currentUser.hasValidMembership %}
+            <p>{{ 'Your membership is active and will be renewed the {date}.'|t('site', {
+                date: currentUser.membershipExpires|date('d/m/Y')
+            }) }}
+        {% else %}
+            <p>{{ 'Your membership is not active, {tag}Start it{endtag}.'|t('site', {
+                tag: '<a href="/pay-membership">',
+                endtag: '<a>'
+            })|raw }}</p>
+        {% endif %}
+        <h2>{{ 'Payment method'|t }}</h2>
+        {% if method %}
+            <p>{{ '{type} ending in {ends}'|t('site', {
+                type: method.card.brand|ucfirst,
+                ends: method.card.last4
+                }) }}{% if method.card.exp_year %}{{ ', expiring in {date}'|t('site', {
+                    date: method.card.exp_month ~ '/' ~ method.card.exp_year
+                }) }}{% endif %}</p>
+        {% endif %}
+        <a href="/save-card" class="btn btn-primary mb-3" target="_blank">{{ 'Change payment method'|t }}</a>
+        <h2>{{ 'Update details'|t }}</h2>
         <div class="d-flex justify-content-center">
             {% include "_includes/user/account-form" %}
         </div>

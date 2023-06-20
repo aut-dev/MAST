@@ -10,6 +10,11 @@ class UserBehavior extends Behavior
 {
     public $owner;
 
+    /**
+     * Get the user timezone instance
+     *
+     * @return ?DateTimeZone
+     */
     public function getTimezoneInstance(): ?DateTimeZone
     {
         if ($this->owner->timezone) {
@@ -18,6 +23,11 @@ class UserBehavior extends Behavior
         return null;
     }
 
+    /**
+     * Get the now DateTime
+     *
+     * @return ?DateTime
+     */
     public function getNow(): ?DateTime
     {
         if ($this->owner->timezone) {
@@ -26,18 +36,15 @@ class UserBehavior extends Behavior
         return null;
     }
 
+    /**
+     * Get the beggining of today DateTime
+     *
+     * @return ?DateTime
+     */
     public function getToday(): ?DateTime
     {
         if ($this->owner->timezone) {
             return $this->getNow()->setTime(0, 0, 0);
-        }
-        return null;
-    }
-
-    public function getEndOfToday(): ?DateTime
-    {
-        if ($this->owner->timezone) {
-            return $this->getNow()->setTime(23, 59, 59);
         }
         return null;
     }

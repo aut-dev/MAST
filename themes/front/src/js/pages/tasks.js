@@ -1,5 +1,9 @@
 /* global $ App Globals */
 
+import 'jquery-ui/themes/base/core.css';
+import 'jquery-ui/themes/base/theme.css';
+import 'jquery-ui/ui/core';
+import 'jquery-ui/ui/widgets/sortable';
 import '../../css/app/components/tasks.scss';
 
 class Tasks
@@ -15,7 +19,16 @@ class Tasks
             this.initModal();
         });
         this.initDeleteLinks();
+        this.initSortable();
         console.log('Tasks initialised');
+    }
+
+    initSortable()
+    {
+        $('#sortable').sortable({
+            handle: ".handle",
+            stop: this.updatePositions
+        });
     }
 
     initDeleteLinks()
@@ -29,6 +42,27 @@ class Tasks
     {
         this.$modal.find('.js-delete').click((e) => {
             this.deleteTask($(e.currentTarget).data('id'));
+        });
+    }
+
+    updatePositions()
+    {
+        let data = [];
+        $.each($('.task'), (i, item) => {
+            data.push({
+                id: $(item).data('id'),
+                order: i
+            });
+        });
+        $.ajax({
+            method: 'post',
+            url: '/?action=plugin-tasks/tasks/reorder',
+            data: {
+                data: data
+            },
+            headers: {
+                "X-CSRF-Token": Globals.csrfToken
+            }
         });
     }
 

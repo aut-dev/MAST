@@ -6,11 +6,11 @@
 {% block after_content_matrix %}
     <div class="container">
         <a href="/tasks/new" class="btn btn-primary mb-4">{{ 'New task'|t }}</a>
-        {% set tasks = craft.entries.section('task').authorId(currentUser.id).all() %}
+        {% set tasks = craft.entries.section('task').authorId(currentUser.id).orderBy('order').all() %}
         {% if tasks %}
-            <div class="row">
+            <div class="row" id="sortable">
                 {% for task in tasks %}
-                    <div class="col-12 col-md-3 my-2">
+                    <div class="col-12 col-md-3 py-3 task-wrapper">
                         {% include "_includes/tasks/square" %}
                     </div>
                 {% endfor %}

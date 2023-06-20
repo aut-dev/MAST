@@ -13,6 +13,12 @@ use craft\elements\User;
 
 class TimerService extends Component
 {
+    /**
+     * Start the time for a task
+     *
+     * @param  int    $taskId
+     * @param  User   $user
+     */
     public function start(int $taskId, User $user)
     {
         if ($this->timerStarted($taskId, $user)) {
@@ -46,6 +52,12 @@ class TimerService extends Component
         \Craft::$app->elements->saveElement($user, false);
     }
 
+    /**
+     * Stop the timer for a task
+     *
+     * @param  int    $taskId
+     * @param  User   $user
+     */
     public function stop(int $taskId, User $user)
     {
         $user = \Craft::$app->user->identity;
@@ -79,6 +91,13 @@ class TimerService extends Component
         return Entry::find()->id($task->id)->one();
     }
 
+    /**
+     * Get the date the timer was started for a task
+     *
+     * @param  int    $taskId
+     * @param  User   $user
+     * @return ?DateTime
+     */
     public function timerStarted(int $taskId, User $user): ?DateTime
     {
         $block = $this->timerBlock($taskId, $user);
@@ -88,6 +107,13 @@ class TimerService extends Component
         return null;
     }
 
+    /**
+     * Get the timer block related to a task
+     *
+     * @param  int    $taskId
+     * @param  User   $user
+     * @return ?MatrixBlock
+     */
     public function timerBlock(int $taskId, User $user): ?MatrixBlock
     {
         $timer = $user->timer instanceof Collection ? $user->timer : $user->timer->with('timer:task')->all();

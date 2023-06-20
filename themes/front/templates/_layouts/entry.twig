@@ -21,7 +21,7 @@
 {% set seo = entry.basicSeo %}
 {% set body_classes = 'entry ' ~ entry.slug %}
 {% set favicon = imagery.favicon.first %}
-{% set main_classes = 'py-5' %}
+{% set main_classes = 'py-3' %}
 
 {% block head_extra %}
     {% hook "jsGlobals" %}
@@ -43,33 +43,38 @@
 {% block header %}
     {% block header_top %}
         {% cache %}
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-12 col-md">
-                        <a href="/" class="d-flex">
-                            <div class="logo">
-                                {% if imagery.image.0 is defined %}
-                                    {{ images.responsiveImg(imagery.image.first, [
-                                        {width: 55}
-                                    ], {}, 55) }}
-                                {% endif %}
-                            </div>
-                            <div class="site-name">{{ siteName }}</div>
-                        </a>
-                    </div>
-                    <div class="col-12 col-md d-flex justify-content-end">
-                        {% set menu = craft.menus.getMenu('main-navigation') %}
-                        {% if menu %}
-                            <nav class="navbar navbar-expand-lg navbar-light">
-                                {% include "_menus/menu" %}
-                                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#{{ menu.htmlId }}">
-                                    <span class="navbar-toggler-icon"></span>
-                                </button>
-                            </nav>
-                        {% endif %}
+            <div class="header-fixed position-fixed w-100 py-2">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <a href="/" class="d-flex">
+                                <div class="logo">
+                                    {% if imagery.image.0 is defined %}
+                                        {{ images.responsiveImg(imagery.image.first, [
+                                            {width: 55}
+                                        ], {}, 55) }}
+                                    {% endif %}
+                                </div>
+                                <div class="site-name">{{ siteName }}</div>
+                            </a>
+                        </div>
+                        <div class="col d-flex justify-content-end">
+                            {% set menu = craft.menus.getMenu('main-navigation') %}
+                            {% if menu %}
+                                <nav class="navbar navbar-expand-lg navbar-light text-center">
+                                    {% include "_menus/menu" %}
+                                    <button class="mobilenav-toggler collapsed d-flex d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#{{ menu.htmlId }}">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </button>
+                                </nav>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="header-height"></div>
         {% endcache %}
     {% endblock %}
 

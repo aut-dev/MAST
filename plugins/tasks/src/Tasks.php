@@ -3,7 +3,6 @@
 namespace Plugins\Tasks;
 
 use Plugins\Tasks\behaviors\TaskBehavior;
-use Plugins\Tasks\behaviors\UserBehavior;
 use Plugins\Tasks\services\TasksService;
 use Plugins\Tasks\services\UsersService;
 use craft\base\Plugin;
@@ -66,9 +65,6 @@ class Tasks extends Plugin
 
     protected function registerBehaviors()
     {
-        Event::on(User::class, User::EVENT_DEFINE_BEHAVIORS, function (Event $event) {
-            $event->sender->attachBehavior('plugin-tasks', UserBehavior::class);
-        });
         Event::on(Entry::class, Entry::EVENT_DEFINE_BEHAVIORS, function (Event $event) {
             if ($event->sender->sectionId) {
                 if ($event->sender->section->handle == 'task') {

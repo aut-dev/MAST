@@ -1,6 +1,22 @@
 .task {
     cursor: pointer;
+    background: white;
     &.timer-started {
         border-style: dashed !important;
+    }
+}
+
+@media all and (min-width: 1024px) {
+    .task-wrapper {
+        &:nth-child(4n+1) {
+            padding-left: 0;
+        }
+        &:nth-child(4n) {
+            padding-right: 0;
+        }
+    }
+
+    #sortable {
+        padding: 0 calc(var(--bs-gutter-x) * 0.5);
     }
 }

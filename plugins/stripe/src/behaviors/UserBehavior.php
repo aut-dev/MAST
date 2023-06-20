@@ -3,13 +3,19 @@
 namespace Plugins\Stripe\behaviors;
 
 use Plugins\Stripe\Stripe;
+use Stripe\PaymentMethod;
 use yii\base\Behavior;
 
 class UserBehavior extends Behavior
 {
     public $owner;
 
-    public function getHasValidMembership()
+    /**
+     * Does the user has a valid membership
+     *
+     * @return bool
+     */
+    public function getHasValidMembership(): bool
     {
         if (!$this->owner->membershipExpires) {
             return false;
@@ -17,7 +23,12 @@ class UserBehavior extends Behavior
         return $this->owner->now < $this->owner->membershipExpires;
     }
 
-    public function getHasValidPaymentMethod()
+    /**
+     * Does the user have a valid payment method (which hasn't expired)
+     *
+     * @return bool
+     */
+    public function getHasValidPaymentMethod(): bool
     {
         $method = Stripe::$plugin->stripe->getPaymentMethod($this->owner);
         if (!$method) {
@@ -34,7 +45,12 @@ class UserBehavior extends Behavior
         return true;
     }
 
-    public function getPaymentMethodExpiresSoon()
+    /**
+     * Does the saved payment method expire soon (in less than a month)
+     *
+     * @return bool
+     */
+    public function getPaymentMethodExpiresSoon(): bool
     {
         $method = Stripe::$plugin->stripe->getPaymentMethod($this->owner);
         if (!$method) {
@@ -43,5 +59,15 @@ class UserBehavior extends Behavior
         $card = $method->card;
         $now = $this->owner->now;
         return ($card->exp_year == $now->format('Y') and $card->exp_month == ($now->format('n') - 1));
+    }
+
+    /**
+     * Get the stripe payment method saved for the user
+     *
+     * @return ?PaymentMethod
+     */
+    public function getPaymentMethod(): ?PaymentMethod
+    {
+        return Stripe::$plugin->stripe->getPaymentMethod($this->owner);
     }
 }

@@ -12,6 +12,9 @@ class StripeController extends Controller
 {
     protected array|bool|int $allowAnonymous = ['create-setup-intent', 'card-membership'];
 
+    /**
+     * Create a setup intent
+     */
     public function actionCreateSetupIntent()
     {
         $this->requireAcceptsJson();
@@ -27,6 +30,9 @@ class StripeController extends Controller
         ]);
     }
 
+    /**
+     * Callback for setup intent, for membership
+     */
     public function actionCardMembership()
     {
         $user = \Craft::$app->user->identity;
@@ -39,13 +45,18 @@ class StripeController extends Controller
         }
         switch ($intent->status) {
             case 'succeeded':
-                Stripe::$plugin->stripe->chargeForMembership($user);
-                \Craft::$app->session->setNotice(\Craft::t('site', 'Your membership is now active'));
-                \Craft::$app->session->remove('membership-user-id');
-                return $this->redirect('tasks');
+                if (Stripe::$plugin->stripe->chargeForMembership($user)) {
+                    \Craft::$app->session->setNotice(\Craft::t('site', 'Your membership is now active'));
+                    \Craft::$app->session->remove('membership-user-id');
+                    return $this->redirect('tasks');
+                } else {
+                    \Craft::$app->session->setNotice(\Craft::t('site', 'We\'ve been unable to charge your card, please try another one'));
+                    return $this->redirect('pay-membership');
+                }
+                // no break
             case 'processing':
                 return $this->redirect('card-processing');
-            case 'succeeded':
+            case 'payment_failed':
                 \Craft::$app->session->setNotice(\Craft::t('site', 'Payment for the membership has failed, please try another card'));
                 return $this->redirect('pay-membership');
         }
@@ -64,7 +75,7 @@ class StripeController extends Controller
                 return $this->redirect('tasks');
             case 'processing':
                 return $this->redirect('card-processing');
-            case 'succeeded':
+            case 'payment_failed':
                 \Craft::$app->session->setNotice(\Craft::t('site', 'Your card could not be saved, please try another one'));
                 return $this->redirect('save-card');
         }
