@@ -18,8 +18,8 @@ class TimesheetsController extends Controller
             throw new ForbiddenHttpException('Timesheet not found');
         }
         return $this->asJson([
-            'start' => $sheet->startDate->format('Y-m-d H:i:s'),
-            'end' => $sheet->endDate->format('Y-m-d H:i:s')
+            'start' => $sheet->startDate->setTimezone($user->getTimezoneInstance())->format('Y-m-d H:i:s'),
+            'end' => $sheet->endDate->setTimezone($user->getTimezoneInstance())->format('Y-m-d H:i:s')
         ]);
     }
 }

@@ -16,20 +16,20 @@ class UsersService extends Component
      */
     public function beforeSavingUser(User $user)
     {
-        $old = User::find()->id($user->id)->one();
-        if ($old->timezone and $user->timezone and $user->timezone != $old->timezone) {
-            $tasks = Entry::find()->section('task')->authorId($user->id)->anyStatus()->all();
-            foreach ($tasks as $task) {
-                $date = (clone $task->startDate)->setTimezone(new DateTimeZone($user->timezone))->setTime(0, 0, 0);
-                $task->startDate = $date;
-                \Craft::$app->elements->saveElement($task, false);
-            }
-            $derails = Entry::find()->section('derail')->authorId($user->id)->anyStatus()->all();
-            foreach ($derails as $derail) {
-                $date = (clone $derail->startDate)->setTimezone(new DateTimeZone($user->timezone));
-                $derail->startDate = $date;
-                \Craft::$app->elements->saveElement($derail, false);
-            }
-        }
+        // $old = User::find()->id($user->id)->one();
+        // if ($old->timezone and $user->timezone and $user->timezone != $old->timezone) {
+        //     $tasks = Entry::find()->section('task')->authorId($user->id)->anyStatus()->all();
+        //     foreach ($tasks as $task) {
+        //         $date = (clone $task->startDate)->setTimezone(new DateTimeZone($user->timezone))->setTime(0, 0, 0);
+        //         $task->startDate = $date;
+        //         \Craft::$app->elements->saveElement($task, false);
+        //     }
+        //     $derails = Entry::find()->section('derail')->authorId($user->id)->anyStatus()->all();
+        //     foreach ($derails as $derail) {
+        //         $date = (clone $derail->startDate)->setTimezone(new DateTimeZone($user->timezone));
+        //         $derail->startDate = $date;
+        //         \Craft::$app->elements->saveElement($derail, false);
+        //     }
+        // }
     }
 }

@@ -1,4 +1,4 @@
-dateModified: 1687245034
+dateModified: 1687876466
 elementSources:
   craft\elements\Entry:
     -
@@ -56,7 +56,7 @@ elementSources:
       key: 'single:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
       type: native
     -
-      key: 'single:2fb10287-0857-4ab6-ae4e-bcce5dde9d87' # Timesheets
+      key: 'single:2fb10287-0857-4ab6-ae4e-bcce5dde9d87'
       type: native
     -
       heading: Channels
@@ -99,6 +99,7 @@ elementSources:
         - 'field:a25335f0-9a1f-4a5a-bb1b-f3d4480f55b1' # Committed
         - author
         - postDate
+        - link
       type: native
     -
       defaultSort:
@@ -129,9 +130,6 @@ elementSources:
         - author
         - link
       type: native
-    -
-      heading: ''
-      type: heading
 email:
   fromEmail: noreply@puzzlers.run
   fromName: Craft
@@ -165,7 +163,6 @@ meta:
     2e3e24ad-d20e-48fc-ba6a-453f1ac66748: User # User
     2e6b3d96-afd5-4f91-b04b-28c8111df017: Favicon # Favicon
     2e428424-4539-4e04-b9c1-66cd7ca17911: Form # Form
-    2fb10287-0857-4ab6-ae4e-bcce5dde9d87: Timesheets # Timesheets
     3be80663-0614-4a4d-9626-631d2bfd20bb: Public # Public
     4af59c54-88a6-4ada-b492-3246b6f6ea7c: 'Standard Page' # Standard Page
     4b8fd5c8-4aaa-4384-8956-861ce041def9: 'Charge succeeded' # Charge succeeded
@@ -249,7 +246,6 @@ meta:
     d0af2316-3920-45e2-a0c7-5bf31b6f07ff: 'Is complete' # Is complete
     d0cf64d0-59b8-4a50-80de-0e5df63ec975: Tue # Tue
     d4a2c1b2-4c64-497e-ac88-68c34caa6966: Default # Default
-    d4c550cb-51e5-40b3-9050-3ca01dfd4d6d: Timesheets # Timesheets
     d22f9b6b-afc7-49f4-af07-d03a17f0a2af: 'Page Maintenance' # Page Maintenance
     d998792d-65c7-42c6-83f1-1f53db6dc772: Tuesday # Tuesday
     d9996114-81a4-47b8-82f7-9f4f219d67f9: 'Success message' # Success message

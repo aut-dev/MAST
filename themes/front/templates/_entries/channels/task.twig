@@ -1,0 +1,66 @@
+{% extends "_layouts/entry" %}
+{% requireLogin %}
+
+{% if currentUser.id != entry.author.id %}
+    {% exit 403 %}
+{% endif %}
+
+{% do craft.app.view.registerAssetBundle('themes\\front\\assets\\TaskPage') %}
+
+{% block content %}
+    <div class="container">
+        <h1>{{ entry.title }}</h1>
+        <div class="row">
+            <div class="col-6">{{ 'Starting date'|t }}</div>
+            <div class="col-6">{{ entry.startDate|date('d/m/Y', currentUser.timezone) }}</div>
+            <div class="col-6">{{ 'Deadline'|t }}</div>
+            <div class="col-6">{{ entry.deadline|date('H:i', currentUser.timezone) }}</div>
+            <div class="col-6">{{ 'Type'|t }}</div>
+            <div class="col-6">{{ entry.taskType|ucfirst }}</div>
+            <div class="col-6">{{ 'Length'|t }}</div>
+            <div class="col-6">{{ entry.length / 60 }}min</div>
+            <div class="col-6">{{ 'Committed'|t }}</div>
+            <div class="col-6">{{ entry.committed|money }}</div>
+            <div class="col-12 mt-3">
+                <a class="btn btn-primary" href="/edit-task?id={{ entry.id }}">{{ 'Edit'|t }}</a>
+            </div>
+        </div>
+        <h2 class="mt-3">{{ 'Time entries'|t }}</h2>
+        <div class="my-3">
+            <a href="#" class="btn btn-primary js-add">{{ 'Add time entry'|t }}</a>
+        </div>
+        <div class="row mt-2 timesheet timesheet-skeleton d-none">
+            <div class="col-5"></div>
+            <div class="col-5">
+                <span class="start-date">
+                </span> -
+                <span class="end-date">
+                </span>
+            </div>
+            <div class="col-2">
+                <a href="#" class="js-edit"><i class="fa-solid fa-pen-to-square"></i></a>
+            </div>
+        </div>
+        <div id="timesheet-list">
+            {% set sheets = craft.entries.section('timesheet').authorId(currentUser.id).with('task').relatedTo(entry).all() %}
+            {% if sheets %}
+                {% for sheet in sheets %}
+                    <div class="row mt-2 timesheet" data-id="{{ sheet.id }}">
+                        <div class="col-10">
+                            <span class="start-date">
+                                {{ sheet.startDate|date('d/m/Y H:i:s', currentUser.timezone) }}
+                            </span> -
+                            <span class="end-date">
+                                {{ sheet.endDate|date('d/m/Y H:i:s', currentUser.timezone) }}
+                            </span>
+                        </div>
+                        <div class="col-2">
+                            <a href="#" class="js-edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    {% include "_includes/timesheets/edit-modal" with {task: entry} %}
+{% endblock %}

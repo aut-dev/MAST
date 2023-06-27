@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">{{ 'Edit timesheet'|t }}</h5>
+                <h5 class="modal-title" data-add-title="{{ 'Add time entry'|t }}" data-edit-title="{{ 'Edit time entry'|t }}"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -12,6 +12,7 @@
                     {{ actionInput('entries/save-entry') }}
                     {{ hiddenInput('sectionId', section.id) }}
                     {{ hiddenInput('entryId', '') }}
+                    {{ hiddenInput('fields[task][]', task.id) }}
                     <div class="form-group mb-3 field-startDate">
                         <label for="startDate" class="required">{{ 'Start date'|t }}</label>
                         <input type="hidden" class="timezone" name="fields[startDate][timezone]" value="{{ currentUser.timezone }}">
@@ -24,7 +25,8 @@
                                     enableSeconds: true,
                                     minuteIncrement: 1,
                                     time_24hr: true,
-                                    dateFormat: 'Y-m-d H:i:S'
+                                    dateFormat: 'Y-m-d H:i:S',
+                                    maxDate: now|date('Y-m-d H:i:S', currentUser.timezone)
                                 }
                             }
                         }) }}
@@ -41,7 +43,8 @@
                                     enableSeconds: true,
                                     minuteIncrement: 1,
                                     time_24hr: true,
-                                    dateFormat: 'Y-m-d H:i:S'
+                                    dateFormat: 'Y-m-d H:i:S',
+                                    maxDate: now|date('Y-m-d H:i:S', currentUser.timezone)
                                 }
                             }
                         }) }}

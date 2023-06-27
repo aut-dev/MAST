@@ -105,6 +105,22 @@ class TaskBehavior extends Behavior
     }
 
     /**
+     * Get the next deadline
+     *
+     * @return DateTime
+     */
+    public function getNextDeadline(): DateTime
+    {
+        $today = $this->owner->author->today;
+        $duration = 0;
+        while ($duration == 0) {
+            $today->add(new DateInterval('P1D'));
+            $duration = $this->getDuration($today);
+        }
+        return $today->setTime($this->owner->deadline->format('H'), $this->owner->deadline->format('i'), 0);
+    }
+
+    /**
      * Get the duration in seconds for today
      *
      * @return int
@@ -112,27 +128,7 @@ class TaskBehavior extends Behavior
     public function getTodayDuration(): int
     {
         if ($this->_todayDuration === null) {
-            $this->_todayDuration = 0;
-            $today = $this->owner->author->today;
-            $startDate = (clone $this->owner->startDate)->setTime(0, 0, 0);
-            if ($startDate <= $today) {
-                $thisWeek = $this->beginningOfWeek(clone $today);
-                $start = $this->beginningOfWeek($startDate);
-                $current = 0;
-                $weeks = $this->owner->weeks instanceof Collection ? $this->owner->weeks : $this->owner->weeks->all();
-                $max = sizeof($weeks);
-                while ($start < $thisWeek) {
-                    $current++;
-                    if ($current >= $max) {
-                        $current = 0;
-                    }
-                    $start->add(new DateInterval('P7D'));
-                }
-                $week = $weeks[$current];
-                $day = strtolower($today->format('D'));
-                $length = $week[$day];
-                $this->_todayDuration = $length * $this->owner->length;
-            }
+            $this->_todayDuration = $this->getDuration($this->owner->author->today);
         }
         return $this->_todayDuration;
     }
@@ -148,5 +144,35 @@ class TaskBehavior extends Behavior
             $date->sub(new DateInterval('P1D'));
         }
         return $date;
+    }
+
+    /**
+     * Get the time duration for any given day
+     *
+     * @param  DateTime $day
+     * @return float
+     */
+    protected function getDuration(DateTime $day): float
+    {
+        $startDate = (clone $this->owner->startDate)->setTime(0, 0, 0);
+        if ($startDate <= $day) {
+            $thisWeek = $this->beginningOfWeek(clone $day);
+            $start = $this->beginningOfWeek($startDate);
+            $current = 0;
+            $weeks = $this->owner->weeks instanceof Collection ? $this->owner->weeks : $this->owner->weeks->all();
+            $max = sizeof($weeks);
+            while ($start < $thisWeek) {
+                $current++;
+                if ($current >= $max) {
+                    $current = 0;
+                }
+                $start->add(new DateInterval('P7D'));
+            }
+            $week = $weeks[$current];
+            $day = strtolower($day->format('D'));
+            $length = $week[$day];
+            return $length * $this->owner->length;
+        }
+        return 0;
     }
 }

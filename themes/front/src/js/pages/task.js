@@ -2,7 +2,7 @@
 
 import dateFormat from "dateformat";
 
-class TimeSheets
+class Task
 {
     $modal;
     modal;
@@ -14,8 +14,9 @@ class TimeSheets
             this.modal = new bootstrap.Modal(document.getElementById('edit-timesheet-modal'));
             this.initModal();
         });
-        this.initEditLinks();
-        console.log('TimeSheets initialised');
+        this.initEditLinks($('body'));
+        this.initAddLink();
+        console.log('Task initialised');
     }
 
     initModal()
@@ -32,10 +33,11 @@ class TimeSheets
                 dataType: 'json'
             }).done((data) => {
                 let sheet = $('.timesheet[data-id=' + data.id + "]");
-                let date = new Date(data.model.startDate.date);
-                sheet.find('.start-date').html(dateFormat(date, 'yyyy/mm/dd HH:MM:ss'));
-                date = new Date(data.model.endDate.date);
-                sheet.find('.end-date').html(dateFormat(date, 'yyyy/mm/dd HH:MM:ss'));
+                if (!sheet.length) {
+                    window.location.reload();
+                    return;
+                }
+                this.updateSheet(sheet, data);
                 this.modal.hide();
                 App.addToast('Timesheet saved');
             }).fail(response => {
@@ -44,11 +46,26 @@ class TimeSheets
         });
     }
 
-    initEditLinks()
+    initAddLink()
     {
-        $('.js-edit').click((e) => {
+        $('.js-add').click((e) => {
             e.preventDefault();
-            let id = $(e.currentTarget).data('id');
+            let $title = this.$modal.find('h5.modal-title');
+            this.$modal.find('[name=entryId]').val('');
+            $title.html($title.data('add-title'));
+            this.$modal.find('#startDate')[0]._flatpickr.setDate(null);
+            this.$modal.find('#endDate')[0]._flatpickr.setDate(null);
+            this.modal.show();
+        });
+    }
+
+    initEditLinks($elem)
+    {
+        $elem.find('.js-edit').click((e) => {
+            e.preventDefault();
+            let id = $(e.currentTarget).closest('.timesheet').data('id');
+            let $title = this.$modal.find('h5.modal-title');
+            $title.html($title.data('edit-title'));
             $.ajax({
                 url: '/?action=plugin-timesheets/timesheets/get&id=' + id
             }).done(data => {
@@ -59,6 +76,14 @@ class TimeSheets
             });
         });
     }
+
+    updateSheet(sheet, data)
+    {
+        let date = new Date(data.model.startDate.date);
+        sheet.find('.start-date').html(dateFormat(date, 'dd/mm/yyyy HH:MM:ss'));
+        date = new Date(data.model.endDate.date);
+        sheet.find('.end-date').html(dateFormat(date, 'dd/mm/yyyy HH:MM:ss'));
+    }
 }
 
-new TimeSheets;
+new Task;
