@@ -14,7 +14,7 @@
             <div class="col-6">{{ 'Starting date'|t }}</div>
             <div class="col-6">{{ entry.startDate|date('d/m/Y', currentUser.timezone) }}</div>
             <div class="col-6">{{ 'Deadline'|t }}</div>
-            <div class="col-6">{{ entry.deadline|date('H:i', currentUser.timezone) }}</div>
+            <div class="col-6">{{ entry.deadline|date('H:i') }}</div>
             <div class="col-6">{{ 'Type'|t }}</div>
             <div class="col-6">{{ entry.taskType|ucfirst }}</div>
             <div class="col-6">{{ 'Length'|t }}</div>

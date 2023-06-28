@@ -3,6 +3,7 @@
 class Timer
 {
     interval;
+    polling = false;
 
     constructor()
     {
@@ -18,7 +19,7 @@ class Timer
         });
         if (started.length) {
             if (!this.interval) {
-                this.interval = setInterval(() => this.pollProgress(), 10000);
+                this.interval = setInterval(() => this.pollProgress(), 1000);
             }
         } else {
             clearInterval(this.interval);
@@ -46,6 +47,10 @@ class Timer
 
     pollProgress()
     {
+        if (this.polling) {
+            return;
+        }
+        this.polling = true;
         $.ajax({
             url: '/?action=plugin-timer/timer/poll-progress'
         }).done((data) => {
@@ -56,6 +61,7 @@ class Timer
                     progress.css('width', data[id].percent + '%');
                 }
             });
+            this.polling = false;
         });
     }
 
