@@ -1,4 +1,4 @@
-dateModified: 1687876466
+dateModified: 1687941217
 elementSources:
   craft\elements\Entry:
     -
@@ -243,7 +243,6 @@ meta:
     cd77c662-a80d-447b-9ca0-dd1aa44d6e6f: 'Login form' # Login form
     ce94cb33-2051-4b81-9e4f-4e2c7d3c0cb3: Default # Default
     ce461ea7-466c-4a18-ab4f-dddeb94af716: Weeks # Weeks
-    d0af2316-3920-45e2-a0c7-5bf31b6f07ff: 'Is complete' # Is complete
     d0cf64d0-59b8-4a50-80de-0e5df63ec975: Tue # Tue
     d4a2c1b2-4c64-497e-ac88-68c34caa6966: Default # Default
     d22f9b6b-afc7-49f4-af07-d03a17f0a2af: 'Page Maintenance' # Page Maintenance

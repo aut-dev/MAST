@@ -28,7 +28,6 @@ class TasksService extends Component
         $total = 0;
         foreach ($tasks as $task) {
             if ($this->hasTaskDerailed($task)) {
-                $this->taskHasDerailed($task);
                 $total++;
             }
         }
@@ -36,37 +35,48 @@ class TasksService extends Component
     }
 
     /**
-     * Has a task derailed, will return false if there's already a derail saved for that task
+     * Has a task derailed, will return false if there's already a derail saved for that task.
+     * If this was called at midnight, it would check derails for the day before
      *
      * @param  Entry   $task
      * @return boolean
      */
     protected function hasTaskDerailed(Entry $task): bool
     {
-        if (!$task->isDerailed) {
+        $day = $task->author->now;
+        $oneMinAgo = (clone $day)->sub(new DateInterval('PT1M'));
+        if ($day->format('d') != $oneMinAgo->format('d')) {
+            $day = $oneMinAgo;
+            $day->setTime(23, 59, 59);
+        }
+        if (!$task->hasDerailed($day)) {
             return false;
         }
         $derail = Entry::find()->section('derail')->relatedTo($task);
-        DateHelper::addDateParamsBetween($derail, $task->yesterdayDeadline, $task->todayDeadline);
+        $start = (clone $day)->setTime(0, 0, 0);
+        $end = (clone $day)->setTime(23, 59, 59);
+        DateHelper::addDateParamsBetween($derail, $start, $end);
         if ($derail->one()) {
             return false;
         }
+        $this->taskHasDerailed($task, $day);
         return true;
     }
 
     /**
      * Actions when a task has derailed, will create a derail entry and charge the user
      *
-     * @param  Entry  $task
+     * @param  Entry    $task
+     * @param  DateTime $day
      */
-    protected function taskHasDerailed(Entry $task)
+    protected function taskHasDerailed(Entry $task, DateTime $day)
     {
         $chargeSucceeded = false;
         $amount = MoneyHelper::toNumber($task->committed);
         if ($amount > 0) {
             $chargeSucceeded = Stripe::$plugin->stripe->chargeForDerail($task);
         }
-        $this->createDerail($task, $chargeSucceeded, $amount);
+        $this->createDerail($task, $chargeSucceeded, $day);
         $email = \Craft::$app->mailer->composeFromKey('charged_for_derail', [
             'task' => $task,
             'amount' => $amount
@@ -77,11 +87,12 @@ class TasksService extends Component
     /**
      * Create a derail entry
      *
-     * @param  Entry  $task
-     * @param  bool   $chargeSucceeded
+     * @param  Entry    $task
+     * @param  bool     $chargeSucceeded
+     * @param  DateTime $day
      * @return ?Entry
      */
-    protected function createDerail(Entry $task, bool $chargeSucceeded): ?Entry
+    protected function createDerail(Entry $task, bool $chargeSucceeded, DateTime $day): ?Entry
     {
         $section = \Craft::$app->sections->getSectionByHandle('derail');
         $types = $section->entryTypes;
@@ -93,7 +104,7 @@ class TasksService extends Component
         ]);
         $derail->setFieldValues([
             'task' => [$task->id],
-            'startDate' => $task->author->now,
+            'startDate' => $day,
             'chargeSucceeded' => $chargeSucceeded,
             'charge' => $task->committed
         ]);

@@ -4,6 +4,7 @@ namespace Plugins\Tasks\helpers;
 
 use craft\db\Query;
 use craft\helpers\Db;
+use DateTime;
 
 class DateHelper
 {
@@ -29,5 +30,10 @@ class DateHelper
     {
         $dateField = 'content.field_' . $field . '_' . \Craft::$app->fields->getFieldByHandle($field)->columnSuffix;
         $query->where(['=', $dateField, Db::prepareDateForDb($date)]);
+    }
+
+    public static function isSameDay(DateTime $day1, DateTime $day2): bool
+    {
+        return $day1->format('Y-m-d') == $day2->format('Y-m-d');
     }
 }

@@ -2,86 +2,110 @@
 
 namespace Plugins\Tasks\behaviors;
 
+use DateInterval;
 use DateTime;
 use Plugins\Tasks\Tasks;
+use Plugins\Tasks\helpers\DateHelper;
 use craft\helpers\DateTimeHelper;
 use yii\base\Behavior;
-use DateInterval;
 
 class TaskBehavior extends Behavior
 {
     public $owner;
-    protected $_todayDuration;
-    protected $_spent;
 
     /**
-     * Get the time spent in seconds since last deadline. Includes timesheets + timer (if started)
+     * Get the time spent in seconds for any given day, defaults to today if null.
+     * Includes timesheets + timer (if started and day is today)
+     * if $includeAfterDeadline is true it will return all the time recorded after the deadline has passed (until midnight),
+     * otherwise will only return until the deadline
      *
+     * @param  ?DateTime $day
      * @return int
      */
-    public function getTimeSpent(): int
+    public function getTimeSpent(?DateTime $day = null, bool $includeAfterDeadline = false): int
     {
-        if ($this->_spent === null) {
-            $timer = $this->owner->author->getTimerSpent($this->owner);
-            $sheets = $this->owner->getTimesheetSpentSinceLastDeadline();
-            $this->_spent = $timer + $sheets;
+        if ($day === null) {
+            $day = $this->owner->author->today;
         }
-        return $this->_spent;
+        $today = $this->owner->author->today;
+        $total = 0;
+        if (DateHelper::isSameDay($day, $today)) {
+            $total += $includeAfterDeadline ? $this->owner->author->getTimerSpent($this->owner) : $this->owner->author->getTimerSpentUntilDeadline($this->owner);
+        }
+        $total += $includeAfterDeadline ? $this->owner->getTimesheetSpent($day) : $this->owner->getTimesheetSpentUntilDeadline($day);
+        return $total;
     }
 
     /**
-     * Is a task complete
+     * Is a task complete for any given day, defaults to today if null
      *
+     * @param  ?DateTime $day
      * @return bool
      */
-    public function getIsComplete(): bool
+    public function isComplete(?DateTime $day = null): bool
     {
-        if (!$this->getIsActiveToday() or $this->getIsExpired()) {
+        if ($day === null) {
+            $day = $this->owner->author->today;
+        }
+        $today = $this->owner->author->today;
+        if (!$this->isActive($day)) {
+            return false;
+        }
+        if (DateHelper::isSameDay($day, $today) and $this->isExpired()) {
             return false;
         }
         if ($this->owner->taskType->value == 'more') {
-            return $this->getTimeSpent() >= $this->getTodayDuration();
+            return $this->getTimeSpent($day) >= $this->getDuration($day);
         }
-        return $this->getTimeSpent() <= $this->getTodayDuration();
+        return $this->getTimeSpent($day) <= $this->getDuration($day);
     }
 
     /**
-     * Is a task derailed
+     * Has a task derailed for any given day, defaults to today if null
      *
+     * @param ?DateTime $day
      * @return bool
      */
-    public function getIsDerailed(): bool
+    public function hasDerailed(?DateTime $day = null): bool
     {
-        if (!$this->getIsActiveToday()) {
-            return false;
+        if ($day === null) {
+            $day = $this->owner->author->today;
         }
-        if ($this->owner->taskType->value == 'more' and !$this->getIsExpired()) {
+        $today = $this->owner->author->today;
+        if (!$this->isActive($day)) {
             return false;
         }
         if ($this->owner->taskType->value == 'more') {
-            return $this->getTimeSpent() < $this->getTodayDuration();
+            if (DateHelper::isSameDay($day, $today) and !$this->isExpired()) {
+                return false;
+            }
+            return $this->getTimeSpent($day) < $this->getDuration($day);
         }
-        return $this->getTimeSpent() > $this->getTodayDuration();
+        return $this->getTimeSpent($day) > $this->getDuration($day);
     }
 
     /**
-     * Is this task expired
+     * Is this task expired today
      *
      * @return bool
      */
-    public function getIsExpired(): bool
+    public function isExpired(): bool
     {
-        return $this->getIsActiveToday() and $this->getTodayDeadline() < DateTimeHelper::toDateTime('now');
+        return $this->isActive() and $this->getTodayDeadline() < DateTimeHelper::toDateTime('now');
     }
 
     /**
-     * Is this task active today
+     * Is this task active on any given day, defaults to today if null
      *
+     * @param ?DateTime $day
      * @return bool
      */
-    public function getIsActiveToday(): bool
+    public function isActive(?DateTime $day = null): bool
     {
-        return $this->getTodayDuration() > 0;
+        if ($day === null) {
+            $day = $this->owner->author->today;
+        }
+        return $this->getDuration($day) > 0;
     }
 
     /**
@@ -91,7 +115,7 @@ class TaskBehavior extends Behavior
      */
     public function getTodayDeadline(): DateTime
     {
-        return (clone $this->owner->author->today)->setTime($this->owner->deadline->format('H'), $this->owner->deadline->format('i'), 0);
+        return $this->owner->author->today->setTime($this->owner->deadline->format('H'), $this->owner->deadline->format('i'), 59);
     }
 
     /**
@@ -117,43 +141,20 @@ class TaskBehavior extends Behavior
             $today->add(new DateInterval('P1D'));
             $duration = $this->getDuration($today);
         }
-        return $today->setTime($this->owner->deadline->format('H'), $this->owner->deadline->format('i'), 0);
+        return $today->setTime($this->owner->deadline->format('H'), $this->owner->deadline->format('i'), 59);
     }
 
     /**
-     * Get the duration in seconds for today
+     * Get the time duration for any given day, default to today if null
      *
-     * @return int
-     */
-    public function getTodayDuration(): int
-    {
-        if ($this->_todayDuration === null) {
-            $this->_todayDuration = $this->getDuration($this->owner->author->today);
-        }
-        return $this->_todayDuration;
-    }
-
-    /**
-     * Set a date to the beginning of the week
-     *
-     * @param  DateTime $date
-     */
-    protected function beginningOfWeek(DateTime $date)
-    {
-        while ($date->format('D') != 'Mon') {
-            $date->sub(new DateInterval('P1D'));
-        }
-        return $date;
-    }
-
-    /**
-     * Get the time duration for any given day
-     *
-     * @param  DateTime $day
+     * @param  ?DateTime $day
      * @return float
      */
-    protected function getDuration(DateTime $day): float
+    public function getDuration(?DateTime $day = null): float
     {
+        if ($day === null) {
+            $day = $this->owner->author->today;
+        }
         $startDate = (clone $this->owner->startDate)->setTime(0, 0, 0);
         if ($startDate <= $day) {
             $thisWeek = $this->beginningOfWeek(clone $day);
@@ -174,5 +175,18 @@ class TaskBehavior extends Behavior
             return $length * $this->owner->length;
         }
         return 0;
+    }
+
+    /**
+     * Set a date to the beginning of the week
+     *
+     * @param  DateTime $date
+     */
+    protected function beginningOfWeek(DateTime $date)
+    {
+        while ($date->format('D') != 'Mon') {
+            $date->sub(new DateInterval('P1D'));
+        }
+        return $date;
     }
 }
