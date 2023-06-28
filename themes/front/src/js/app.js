@@ -14,8 +14,18 @@ class App
         this.initForms($('form'));
         this.initFontAwesome();
         this.initTimer();
+        this.initMatrixContent();
         $('body').css('opacity', 1);
         console.log('App initialized');
+    }
+
+    initMatrixContent()
+    {
+        if ($('.matrix-block').length) {
+            import(/* webpackChunkName: "timer" */ './components/matrixContent').then(chunk => {
+                new chunk.MatrixContent;
+            });
+        }
     }
 
     initTimer()

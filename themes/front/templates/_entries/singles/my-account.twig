@@ -1,6 +1,7 @@
 {% extends "_layouts/matrix-content" %}
 {% requireLogin %}
 
+{% do craft.app.view.registerAssetBundle('themes\\front\\assets\\MyAccountPage') %}
 {% set method = currentUser.getPaymentMethod() %}
 
 {% block after_content_matrix %}
