@@ -1,7 +1,5 @@
 /* globals App $ */
 
-import dateFormat from "dateformat";
-
 class Task
 {
     $modal;
@@ -31,15 +29,8 @@ class Task
                 method: 'post',
                 data: this.$modal.find('form').serialize(),
                 dataType: 'json'
-            }).done((data) => {
-                let sheet = $('.timesheet[data-id=' + data.id + "]");
-                if (!sheet.length) {
-                    window.location.reload();
-                    return;
-                }
-                this.updateSheet(sheet, data);
-                this.modal.hide();
-                App.addToast('Timesheet saved');
+            }).done(() => {
+                window.location.reload();
             }).fail(response => {
                 App.handleError(response, this.$modal.find('form'));
             });
@@ -75,14 +66,6 @@ class Task
                 this.modal.show();
             });
         });
-    }
-
-    updateSheet(sheet, data)
-    {
-        let date = new Date(data.model.startDate.date);
-        sheet.find('.start-date').html(dateFormat(date, 'dd/mm/yyyy HH:MM:ss'));
-        date = new Date(data.model.endDate.date);
-        sheet.find('.end-date').html(dateFormat(date, 'dd/mm/yyyy HH:MM:ss'));
     }
 }
 

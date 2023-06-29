@@ -46,13 +46,16 @@
             {% if sheets %}
                 {% for sheet in sheets %}
                     <div class="row mt-2 timesheet" data-id="{{ sheet.id }}">
-                        <div class="col-10">
+                        <div class="col-8">
                             <span class="start-date">
                                 {{ sheet.startDate|date('d/m/Y H:i:s', currentUser.timezone) }}
                             </span> -
                             <span class="end-date">
                                 {{ sheet.endDate|date('d/m/Y H:i:s', currentUser.timezone) }}
                             </span>
+                        </div>
+                        <div class="col-2">
+                            {{ sheet.friendlySpentTime }}
                         </div>
                         <div class="col-2">
                             <a href="#" class="js-edit"><i class="fa-solid fa-pen-to-square"></i></a>
