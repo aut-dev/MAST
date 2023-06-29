@@ -2,7 +2,7 @@ columnSuffix: kdqjuohq
 contentColumnType: boolean
 fieldGroup: 0ba8d9d5-2692-4324-acd8-0187c46d6e82 # Common
 handle: requiresValidSubscription
-instructions: 'Redirect to save a card page if the user doesn''t have a valid membership'
+instructions: 'Redirect to pay subscription page if the user doesn''t have a valid subscription'
 name: 'Requires valid subscription'
 searchable: false
 settings:
