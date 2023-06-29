@@ -3,6 +3,7 @@
 namespace Plugins\Stripe\services;
 
 use DateInterval;
+use DateTime;
 use Plugins\Tasks\Tasks;
 use Stripe\BillingPortal\Session as PortalSession;
 use Stripe\Checkout\Session;
@@ -129,7 +130,7 @@ class StripeService extends Component
      */
     public function getPaymentMethod(User $user): ?PaymentMethod
     {
-        if (!$user->paymentMethod or!$user->stripeCustomer) {
+        if (!$user->paymentMethod or !$user->stripeCustomer) {
             return null;
         }
         $data = \Craft::$app->cache->get(self::PAYMENT_METHOD_CACHE_KEY . $user->id);
