@@ -39,7 +39,7 @@ permissions:
   - 'deletepeerentrydrafts:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'deletepeerentrydrafts:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
   - 'deletepeerentrydrafts:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
-  - 'deletepeerentrydrafts:b4f3d0dd-ea59-4971-910f-751b839ab358' # Save card
+  - 'deletepeerentrydrafts:b4f3d0dd-ea59-4971-910f-751b839ab358'
   - 'deletepeerentrydrafts:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
   - 'deletepeerentrydrafts:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
   - 'deletepeerentrydrafts:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
@@ -75,7 +75,7 @@ permissions:
   - 'saveentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'saveentries:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
   - 'saveentries:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
-  - 'saveentries:b4f3d0dd-ea59-4971-910f-751b839ab358' # Save card
+  - 'saveentries:b4f3d0dd-ea59-4971-910f-751b839ab358'
   - 'saveentries:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
   - 'saveentries:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
   - 'saveentries:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
@@ -93,7 +93,7 @@ permissions:
   - 'savepeerentrydrafts:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'savepeerentrydrafts:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
   - 'savepeerentrydrafts:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
-  - 'savepeerentrydrafts:b4f3d0dd-ea59-4971-910f-751b839ab358' # Save card
+  - 'savepeerentrydrafts:b4f3d0dd-ea59-4971-910f-751b839ab358'
   - 'savepeerentrydrafts:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
   - 'savepeerentrydrafts:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
   - 'savepeerentrydrafts:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
@@ -117,7 +117,7 @@ permissions:
   - 'viewentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'viewentries:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
   - 'viewentries:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
-  - 'viewentries:b4f3d0dd-ea59-4971-910f-751b839ab358' # Save card
+  - 'viewentries:b4f3d0dd-ea59-4971-910f-751b839ab358'
   - 'viewentries:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
   - 'viewentries:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
   - 'viewentries:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
@@ -135,7 +135,7 @@ permissions:
   - 'viewpeerentrydrafts:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'viewpeerentrydrafts:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
   - 'viewpeerentrydrafts:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
-  - 'viewpeerentrydrafts:b4f3d0dd-ea59-4971-910f-751b839ab358' # Save card
+  - 'viewpeerentrydrafts:b4f3d0dd-ea59-4971-910f-751b839ab358'
   - 'viewpeerentrydrafts:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
   - 'viewpeerentrydrafts:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
   - 'viewpeerentrydrafts:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance

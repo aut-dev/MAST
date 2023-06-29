@@ -3,6 +3,8 @@
 namespace Plugins\Stripe\controllers;
 
 use Plugins\Stripe\Stripe;
+use Stripe\Checkout\Session;
+use Stripe\Price;
 use Stripe\SetupIntent;
 use craft\elements\User;
 use craft\web\Controller;
@@ -10,87 +12,26 @@ use yii\web\ForbiddenHttpException;
 
 class StripeController extends Controller
 {
-    protected array|bool|int $allowAnonymous = ['create-setup-intent', 'card-membership'];
-
-    /**
-     * Create a setup intent
-     */
-    public function actionCreateSetupIntent()
+    public function actionCreateCheckoutSession()
     {
-        $this->requireAcceptsJson();
         $this->requirePostRequest();
-        $user = \Craft::$app->user->identity;
-        if (!$user) {
-            $user = $this->getUserFromSession();
-        }
-        $intent = Stripe::$plugin->stripe->createSetupIntent($user);
-        return $this->asJson([
-            'id' => $intent->id,
-            'client_secret' => $intent->client_secret
-        ]);
+        $session = Stripe::$plugin->stripe->createCheckoutSession(\Craft::$app->user->identity);
+        return $this->redirect($session->url);
     }
 
-    /**
-     * Callback for setup intent, for membership
-     */
-    public function actionCardMembership()
+    public function actionCreatePortalSession()
     {
-        $user = \Craft::$app->user->identity;
-        if (!$user) {
-            $user = $this->getUserFromSession();
-        }
-        $intent = Stripe::$plugin->stripe->savePaymentMethod(\Craft::$app->request->getRequiredParam('setup_intent'), $user);
-        if (!$intent) {
-            throw new NotFoundHttpException('Intent not found');
-        }
-        switch ($intent->status) {
-            case 'succeeded':
-                if (Stripe::$plugin->stripe->chargeForMembership($user)) {
-                    \Craft::$app->session->setNotice(\Craft::t('site', 'Your membership is now active'));
-                    \Craft::$app->session->remove('membership-user-id');
-                    return $this->redirect('tasks');
-                } else {
-                    \Craft::$app->session->setNotice(\Craft::t('site', 'We\'ve been unable to charge your card, please try another one'));
-                    return $this->redirect('pay-membership');
-                }
-                // no break
-            case 'processing':
-                return $this->redirect('card-processing');
-            case 'payment_failed':
-                \Craft::$app->session->setNotice(\Craft::t('site', 'Payment for the membership has failed, please try another card'));
-                return $this->redirect('pay-membership');
-        }
+        $this->requirePostRequest();
+        $session = Stripe::$plugin->stripe->createPortalSession(\Craft::$app->user->identity);
+        return $this->redirect($session->url);
     }
 
-    public function actionCardSaved()
+    public function actionSubscriptionSuccess()
     {
+        $session_id = $this->request->getRequiredParam('session_id');
         $user = \Craft::$app->user->identity;
-        $intent = Stripe::$plugin->stripe->savePaymentMethod(\Craft::$app->request->getRequiredParam('setup_intent'), $user);
-        if (!$intent) {
-            throw new NotFoundHttpException('Intent not found');
-        }
-        switch ($intent->status) {
-            case 'succeeded':
-                \Craft::$app->session->setNotice(\Craft::t('site', 'Your card has been saved'));
-                return $this->redirect('tasks');
-            case 'processing':
-                return $this->redirect('card-processing');
-            case 'payment_failed':
-                \Craft::$app->session->setNotice(\Craft::t('site', 'Your card could not be saved, please try another one'));
-                return $this->redirect('save-card');
-        }
-    }
-
-    protected function getUserFromSession(): User
-    {
-        $userId = \Craft::$app->session->get('membership-user-id');
-        if (!$userId) {
-            throw new ForbiddenHttpException('User id not found');
-        }
-        $user = User::find()->id($userId)->one();
-        if (!$user) {
-            throw new ForbiddenHttpException('User not found');
-        }
-        return $user;
+        $user->setFieldValue('stripeSessionId', $session_id);
+        \Craft::$app->elements->saveElement($user, false);
+        return $this->redirect('my-account?subscription_paid=1');
     }
 }

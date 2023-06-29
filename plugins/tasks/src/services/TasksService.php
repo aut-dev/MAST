@@ -27,6 +27,9 @@ class TasksService extends Component
         $tasks = Entry::find()->section('task')->all();
         $total = 0;
         foreach ($tasks as $task) {
+            if ($task->author->subscriptionStatus != 'active') {
+                continue;
+            }
             if ($this->hasTaskDerailed($task)) {
                 $total++;
             }

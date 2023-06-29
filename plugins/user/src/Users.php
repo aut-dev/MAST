@@ -34,16 +34,6 @@ class Users extends Plugin
         Event::on(User::class, User::EVENT_AFTER_VALIDATE, function (Event $event) {
             Users::$plugin->users->validateUser($event->sender);
         });
-        if (\Craft::$app->request->isSiteRequest) {
-            //Save user id in session after sign up
-            Event::on(Elements::class, Elements::EVENT_AFTER_SAVE_ELEMENT, function (Event $event) {
-                $user = $event->element;
-                $path = \Craft::$app->request->getPathInfo();
-                if ($user instanceof User and $path == 'sign-up') {
-                    \Craft::$app->session->set('membership-user-id', $user->id);
-                }
-            });
-        }
     }
 
     protected function registerComponents()

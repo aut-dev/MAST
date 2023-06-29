@@ -4,23 +4,101 @@ namespace Plugins\Stripe\services;
 
 use DateInterval;
 use Plugins\Tasks\Tasks;
+use Stripe\BillingPortal\Session as PortalSession;
+use Stripe\Checkout\Session;
 use Stripe\Customer;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Exception\CardException;
 use Stripe\PaymentIntent;
 use Stripe\PaymentMethod;
 use Stripe\SetupIntent;
+use Stripe\Stripe;
 use Stripe\StripeClient;
+use Stripe\Subscription;
 use craft\base\Component;
 use craft\elements\Entry;
 use craft\elements\User;
 use craft\helpers\MoneyHelper;
+use craft\helpers\UrlHelper;
 
 class StripeService extends Component
 {
     public const PAYMENT_METHOD_CACHE_KEY = 'stripe-payment-method-';
 
-    protected $client;
+    protected $_client;
+
+    /**
+     * Get Stripe client
+     *
+     * @return StripeClient
+     */
+    public function getClient(): StripeClient
+    {
+        if ($this->_client === null) {
+            $this->_client = new StripeClient(getenv('STRIPE_SECRET_KEY'));
+        }
+        return $this->_client;
+    }
+
+    public function createCheckoutSession(User $user): Session
+    {
+        return $this->getClient()->checkout->sessions->create([
+            'line_items' => [[
+                'price' => getenv('STRIPE_PRICE_ID'),
+                'quantity' => 1,
+            ]],
+            'customer_email' => $user->email,
+            'mode' => 'subscription',
+            'success_url' => UrlHelper::siteUrl('stripe-subscription-success?session_id={CHECKOUT_SESSION_ID}'),
+            'cancel_url' => UrlHelper::siteUrl('pay-subscription'),
+        ]);
+    }
+
+    public function createPortalSession(User $user): PortalSession
+    {
+        $session = $this->getClient()->checkout->sessions->retrieve($user->stripeSessionId);
+        return $this->getClient()->billingPortal->sessions->create([
+            'customer' => $session->customer,
+            'return_url' => UrlHelper::siteUrl('my-account'),
+        ]);
+    }
+
+    public function updateSubscription(Subscription $subscription)
+    {
+        $customer = $this->getClient()->customers->retrieve($subscription->customer);
+        if (!$customer->email) {
+            throw StripeException("Customer doesn't have an email");
+        }
+        $user = User::find()->email($customer->email)->anyStatus()->one();
+        if (!$user) {
+            throw StripeException("User with email {$customer->email} doesn't exist");
+        }
+        $user->setFieldValues([
+            'stripeCustomer' => $subscription->customer,
+            'paymentMethod' => $subscription->default_payment_method ?? '',
+            'subscriptionStatus' => $subscription->status,
+            'subscriptionExpires' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
+        ]);
+        \Craft::$app->elements->saveElement($user, false);
+    }
+
+    public function deleteSubscription(Subscription $subscription)
+    {
+        $customer = $this->getClient()->customers->retrieve($subscription->customer);
+        if (!$customer->email) {
+            throw StripeException("Customer doesn't have an email");
+        }
+        $user = User::find()->email($customer->email)->anyStatus()->one();
+        if (!$user) {
+            throw StripeException("User with email {$customer->email} doesn't exist");
+        }
+        $user->setFieldValues([
+            'subscriptionStatus' => null,
+            'subscriptionExpires' => null,
+            'paymentMethod' => null
+        ]);
+        \Craft::$app->elements->saveElement($user, false);
+    }
 
     /**
      * Get or create the Stripe customer for a user
@@ -41,78 +119,6 @@ class StripeService extends Component
             }
         }
         return $this->createCustomer($user);
-    }
-
-    /**
-     * Create a setup intent
-     *
-     * @param  User   $user
-     * @return SetupIntent
-     */
-    public function createSetupIntent(User $user): SetupIntent
-    {
-        $customer = $this->getOrCreateCustomer($user);
-        return $this->getClient()->setupIntents->create([
-            'payment_method_types' => ['card'],
-            'customer' => $customer->id,
-        ]);
-    }
-
-    /**
-     * Saves a user payment method
-     *
-     * @param  string $intentId
-     * @param  User   $user
-     * @return ?SetupIntent
-     */
-    public function savePaymentMethod(string $intentId, User $user): ?SetupIntent
-    {
-        $intent = $this->getClient()->setupIntents->retrieve($intentId);
-        if ($intent->status == 'succeeded') {
-            $user->setFieldValue('paymentMethod', $intent->payment_method);
-            \Craft::$app->elements->saveElement($user, false);
-            $this->clearPaymentMethodCache($user);
-        }
-        return $intent;
-    }
-
-    /**
-     * Charge a user for its membership
-     *
-     * @param  User   $user
-     * @return bool
-     */
-    public function chargeForMembership(User $user): bool
-    {
-        if (!$user->stripeCustomer or !$user->paymentMethod) {
-            return false;
-        }
-        try {
-            $amount = Entry::find()->section('membership')->one()->monthlyCost->getAmount();
-            $this->getClient()->paymentIntents->create([
-                'amount' => $amount,
-                'currency' => 'usd',
-                'customer' => $user->stripeCustomer,
-                'payment_method' => $user->paymentMethod,
-                'off_session' => true,
-                'confirm' => true,
-                'description' => 'Monthly membership'
-            ]);
-            $user->setFieldValues([
-                'membershipExpires' => (clone $user->now)->setTime(0, 0, 0)->add(new DateInterval('P1M'))
-            ]);
-            \Craft::$app->elements->saveElement($user, false);
-            return true;
-        } catch (CardException $e) {
-            \Craft::$app->errorHandler->logException($e);
-            $email = \Craft::$app->mailer->composeFromKey('admin_membership_charge_failed', [
-                'amount' => $amount / 100,
-                'user' => $user,
-                'error' => $e->getMessage()
-            ]);
-            $email->setTo(Tasks::getAdminEmails())->send();
-        }
-        return false;
     }
 
     /**
@@ -178,35 +184,5 @@ class StripeService extends Component
             $email->setTo(Tasks::getAdminEmails())->send();
         }
         return false;
-    }
-
-    /**
-     * Create a stripe customer
-     *
-     * @param  User   $user
-     * @return Customer
-     */
-    protected function createCustomer(User $user): Customer
-    {
-        $customer = $this->getClient()->customers->create([
-            'name' => $user->fullName,
-            'email' => $user->email
-        ]);
-        $user->setFieldValue('stripeCustomer', $customer->id);
-        \Craft::$app->elements->saveElement($user, false);
-        return $customer;
-    }
-
-    /**
-     * Get Stripe client
-     *
-     * @return StripeClient
-     */
-    protected function getClient(): StripeClient
-    {
-        if ($this->client === null) {
-            $this->client = new StripeClient(getenv('STRIPE_SECRET_KEY'));
-        }
-        return $this->client;
     }
 }

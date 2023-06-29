@@ -33,8 +33,8 @@ class Stripe extends Plugin
     {
         Event::on(UrlManager::class, UrlManager::EVENT_REGISTER_SITE_URL_RULES, function (Event $event) {
             $event->rules = array_merge($event->rules, [
-                'stripe-card-saved' => 'plugin-stripe/stripe/card-saved',
-                'stripe-card-membership' => 'plugin-stripe/stripe/card-membership'
+                'stripe-subscription-success' => 'plugin-stripe/stripe/subscription-success',
+                'stripe-subscription-changed' => 'plugin-stripe/webhooks/subscription-changed'
             ]);
         });
     }

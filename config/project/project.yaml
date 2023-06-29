@@ -1,4 +1,4 @@
-dateModified: 1688012598
+dateModified: 1688031291
 elementSources:
   craft\elements\Entry:
     -
@@ -47,10 +47,10 @@ elementSources:
       key: 'single:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
       type: native
     -
-      key: 'single:a260febd-af3b-4bda-ba4c-67c7a8edb8d4' # Pay membership
+      key: 'single:a260febd-af3b-4bda-ba4c-67c7a8edb8d4' # Pay subscription
       type: native
     -
-      key: 'single:b4f3d0dd-ea59-4971-910f-751b839ab358' # Save card
+      key: 'single:b4f3d0dd-ea59-4971-910f-751b839ab358'
       type: native
     -
       key: 'single:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
@@ -180,7 +180,7 @@ meta:
     8ad10f9f-e461-4fb0-85a8-76ffc63cfb81: Charge # Charge
     8ad55fd2-2c4e-436b-a572-d9d4bef64524: 'Basic Seo' # Basic Seo
     8e16df26-189c-4cab-bfe1-658ff8db2d14: Default # Default
-    8f1638fd-59fe-4a3d-924c-f35248de5837: 'Membership expires' # Membership expires
+    8f1638fd-59fe-4a3d-924c-f35248de5837: 'Subscription expires' # Subscription expires
     8fd53ce4-059f-4154-8ef4-f1d0c5a0d8ce: Small # Small
     15bf8716-9770-426b-859b-3251b11fd49e: 'Edit task' # Edit task
     18ad884e-ff55-4513-8822-fb6222c76f60: Imagery # Imagery
@@ -207,11 +207,10 @@ meta:
     9786f806-b266-4b7c-8bc4-a21eab3ddef4: Imagery # Imagery
     9806b1c0-5f4e-476f-8f76-3301b70e9415: Tasks # Tasks
     9950af26-8378-4f58-a7ae-f7717f8870d7: 'Payment method' # Payment method
-    55362a93-bdb6-4413-9313-4aaefbf24d51: 'Pay membership' # Pay membership
+    55362a93-bdb6-4413-9313-4aaefbf24d51: 'Pay subscription' # Pay subscription
     88153a03-a6b7-41a0-8649-8331ae28fe84: 'Redactor (full)' # Redactor (full)
     786514c8-8adf-4d05-a1ce-0b054ab04b67: Craft # Craft
     794938f1-5646-4fb9-ac19-350aee00d94d: Wednesday # Wednesday
-    919531a9-88ce-4153-b327-da4c999e00dc: 'Save card' # Save card
     8888327a-ccb9-49c2-bdec-7465c0dfa6bf: SEO # SEO
     36524402-a8ca-4776-8343-8885cac88d21: Medium # Medium
     70279873-4261-4f79-b9d0-6dc067fb97b4: Length # Length
@@ -220,7 +219,7 @@ meta:
     a6a6cc39-5cd4-495c-ac23-6804047c2640: 'Page Maintenance' # Page Maintenance
     a7c9164e-c77f-412f-8498-26092f7a0289: Deadline # Deadline
     a220a4df-7337-4099-807d-b7ac71becd03: 'Redactor (simple)' # Redactor (simple)
-    a260febd-af3b-4bda-ba4c-67c7a8edb8d4: 'Pay membership' # Pay membership
+    a260febd-af3b-4bda-ba4c-67c7a8edb8d4: 'Pay subscription' # Pay subscription
     a375ef2c-b9ee-4506-8059-6d56c1173cbb: Derail # Derail
     a25335f0-9a1f-4a5a-bb1b-f3d4480f55b1: Committed # Committed
     aa5c9cbc-3fc7-44fd-aca8-a2410d75570e: 'Redactor (standard)' # Redactor (standard)
@@ -228,7 +227,6 @@ meta:
     ab6a1072-3bb0-460a-bf36-bbb4b5dac8da: 'Page not found' # Page not found
     af8b97a9-5da5-416b-8c43-7222862e0d19: Thu # Thu
     afa64420-8c60-4556-a478-15dfdd6bcd52: Membership # Membership
-    b4f3d0dd-ea59-4971-910f-751b839ab358: 'Save card' # Save card
     b39f1bdf-5ce7-4286-9e4f-3162f9c70830: Full # Full
     b4520f72-9c23-445d-84c9-ed6bb056271f: 'Edit task' # Edit task
     b6662c40-1d50-47d9-bc6d-45c902bbca73: 'Reset password form' # Reset password form
@@ -236,6 +234,7 @@ meta:
     bf477c2a-b2b3-4dde-a0e0-0978de99ab77: 'New task' # New task
     c02d8ea3-fd26-4084-890d-83260c7fc0dd: 'Banner Images' # Banner Images
     c95e7ea6-ef14-4d2b-af3e-da848760500f: 'Page not found' # Page not found
+    c9082cbb-9b75-4045-9758-066e0c93d453: 'Subscription status' # Subscription status
     c23328f2-0994-4997-be38-0ea95701ed16: Image # Image
     cb5a68ab-f470-4387-8531-bea8103c221b: Sunday # Sunday
     cd77c662-a80d-447b-9ca0-dd1aa44d6e6f: 'Login form' # Login form
@@ -246,13 +245,14 @@ meta:
     d22f9b6b-afc7-49f4-af07-d03a17f0a2af: 'Page Maintenance' # Page Maintenance
     d998792d-65c7-42c6-83f1-1f53db6dc772: Tuesday # Tuesday
     d9996114-81a4-47b8-82f7-9f4f219d67f9: 'Success message' # Success message
+    da63acfe-db82-4781-98a1-7fe653f511c8: 'Stripe session id' # Stripe session id
     e4dc77ff-7c96-4d98-b434-ed37c72fa8be: 'Matrix Content' # Matrix Content
     e237d745-b0a6-4a3f-9003-984efa160459: 'Page error' # Page error
     ea72fbbd-5d58-4612-9f76-ad3abbaa8870: Form # Form
     eca48186-ef8a-40ab-bb78-26a70ea56bb0: Text # Text
     f7edb11b-5202-431b-b3c7-0c227fe1ebed: week # week
     f95157d7-1eac-4192-855e-c8bdb66fba9b: Monday # Monday
-    f4994683-7a71-491d-b14b-0a986b8ec613: 'Requires valid membership' # Requires valid membership
+    f4994683-7a71-491d-b14b-0a986b8ec613: 'Requires valid subscription' # Requires valid subscription
     fa53f651-84c9-437f-9bed-edaead3bf8ed: Home # Home
     fb9eba24-cb32-4bf5-8a07-ba003842b35f: Tasks # Tasks
     ffcbe586-fcdc-4583-8682-0098aae96672: Fri # Fri

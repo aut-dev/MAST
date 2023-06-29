@@ -1,0 +1,11 @@
+{% extends "_layouts/matrix-content" %}
+
+{% block after_content_matrix %}
+    <div class="container d-flex justify-content-center">
+        <form method="post">
+            {{ actionInput('plugin-stripe/stripe/create-checkout-session') }}
+            {{ csrfInput() }}
+            <button class="btn btn-primary" type="submit">Checkout</button>
+        </form>
+    </div>
+{% endblock %}

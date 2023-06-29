@@ -11,19 +11,6 @@ class UserBehavior extends Behavior
     public $owner;
 
     /**
-     * Does the user has a valid membership
-     *
-     * @return bool
-     */
-    public function getHasValidMembership(): bool
-    {
-        if (!$this->owner->membershipExpires) {
-            return false;
-        }
-        return $this->owner->now < $this->owner->membershipExpires;
-    }
-
-    /**
      * Does the user have a valid payment method (which hasn't expired)
      *
      * @return bool

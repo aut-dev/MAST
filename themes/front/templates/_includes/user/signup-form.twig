@@ -10,8 +10,8 @@
 <form method="post" action="" accept-charset="UTF-8" id="signup-form">
     {{ csrfInput() }}
     {{ actionInput('users/save-user') }}
-    {{ redirectInput('pay-membership') }}
-    {{ successMessageInput('Your account has been created'|t('site')) }}
+    {{ redirectInput('login') }}
+    {{ successMessageInput('Your account has been created, check your inbox for a validation email'|t('site')) }}
     {{ failMessageInput('Unable to create your account'|t('site')) }}
 
     <div class="form-group mb-3">

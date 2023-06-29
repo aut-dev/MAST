@@ -1,5 +1,5 @@
 fieldLayouts:
-  5462f893-d33d-4369-b7f1-afc7cd08724e:
+  ecb39324-e6e9-4e4f-99ac-113da781fa4a:
     tabs:
       -
         elementCondition: null
@@ -26,19 +26,19 @@ fieldLayouts:
             tip: null
             title: null
             type: craft\fieldlayoutelements\entries\EntryTitleField
-            uid: 7fce8fd3-17bc-480d-a093-53064d7d9f70
+            uid: 2f090ec7-8eae-4818-8c3e-b6eead6ab90c
             userCondition: null
             warning: null
             width: 75
           -
             elementCondition: null
-            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613 # Requires valid membership
+            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613 # Requires valid subscription
             instructions: null
             label: null
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: eb11605f-8314-40eb-a8dd-9221021efcec
+            uid: 316fea9b-c734-49cf-9ff2-3e31dd4c7af4
             userCondition: null
             warning: null
             width: 25
@@ -50,12 +50,12 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 328579ed-b878-437b-ac7d-da127864e98b
+            uid: 6ad613a1-e14e-4af1-852d-649f80713c8a
             userCondition: null
             warning: null
             width: 100
         name: Content
-        uid: cb4368aa-243d-49dd-890f-d0377b8237c5
+        uid: d563b5dd-f748-4ca1-a8cb-87ad806fb224
         userCondition: null
       -
         elementCondition: null
@@ -68,17 +68,17 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 3dccca03-db7a-4073-ae7f-67024328ef3b
+            uid: 7bf3f37b-8691-4262-917c-cbc796151258
             userCondition: null
             warning: null
             width: 100
         name: SEO
-        uid: a5335a70-15c2-4a0f-a011-b18905c5cbd4
+        uid: a341c66f-d718-4a45-a4f6-d04437774fdf
         userCondition: null
-handle: saveCard
+handle: paySubscription
 hasTitleField: true
-name: 'Save card'
-section: b4f3d0dd-ea59-4971-910f-751b839ab358 # Save card
+name: 'Pay subscription'
+section: a260febd-af3b-4bda-ba4c-67c7a8edb8d4 # Pay subscription
 sortOrder: 1
 titleFormat: '{section.name|raw}'
 titleTranslationKeyFormat: null

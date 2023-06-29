@@ -1,7 +1,7 @@
 defaultPlacement: end
 enableVersioning: true
-handle: payMembership
-name: 'Pay membership'
+handle: paySubscription
+name: 'Pay subscription'
 previewTargets:
   -
     __assoc__:
@@ -19,6 +19,6 @@ siteSettings:
   6a9e4f78-0e55-4b7b-9e55-4fc31c721794: # Mast
     enabledByDefault: true
     hasUrls: true
-    template: _entries/singles/pay-membership
-    uriFormat: pay-membership
+    template: _entries/singles/pay-subscription
+    uriFormat: pay-subscription
 type: single

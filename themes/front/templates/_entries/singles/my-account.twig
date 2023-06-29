@@ -6,16 +6,13 @@
 
 {% block after_content_matrix %}
     <div class="container text-center">
-        <h2>{{ 'My Membership'|t }}</h2>
-        {% if currentUser.hasValidMembership %}
-            <p>{{ 'Your membership is active and will be renewed the {date}.'|t('site', {
-                date: currentUser.membershipExpires|date('d/m/Y')
-            }) }}
-        {% else %}
-            <p>{{ 'Your membership is not active, {tag}Start it{endtag}.'|t('site', {
-                tag: '<a href="/pay-membership">',
-                endtag: '<a>'
-            })|raw }}</p>
+        <h2>{{ 'My Subscription'|t }}</h2>
+        {% if currentUser.stripeSessionId %}
+            <form method="post">
+                {{ actionInput('plugin-stripe/stripe/create-portal-session') }}
+                {{ csrfInput() }}
+                <button class="btn btn-primary" type="submit">{{ 'Manage my subscription'|t }}</button>
+            </form>
         {% endif %}
         <h2>{{ 'Payment method'|t }}</h2>
         {% if method %}
@@ -26,7 +23,6 @@
                     date: method.card.exp_month ~ '/' ~ method.card.exp_year
                 }) }}{% endif %}</p>
         {% endif %}
-        <a href="/save-card" class="btn btn-primary mb-3" target="_blank">{{ 'Change payment method'|t }}</a>
         <h2>{{ 'Update details'|t }}</h2>
         <div class="d-flex justify-content-center">
             {% include "_includes/user/account-form" %}
