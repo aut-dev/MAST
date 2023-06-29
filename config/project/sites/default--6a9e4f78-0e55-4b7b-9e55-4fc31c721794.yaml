@@ -3,7 +3,7 @@ enabled: true
 handle: default
 hasUrls: true
 language: en-GB
-name: Autonomy
+name: Mast
 primary: true
 siteGroup: 786514c8-8adf-4d05-a1ce-0b054ab04b67 # Craft
 sortOrder: 1

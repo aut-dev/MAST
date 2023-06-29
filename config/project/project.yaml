@@ -1,4 +1,4 @@
-dateModified: 1687941217
+dateModified: 1688012598
 elementSources:
   craft\elements\Entry:
     -
@@ -132,15 +132,13 @@ elementSources:
       type: native
 email:
   fromEmail: noreply@puzzlers.run
-  fromName: Craft
+  fromName: Mast
   replyToEmail: null
-  template: null
+  template: ''
   transportSettings:
-    encryptionMethod: $EMAIL_ENCRYPTION
     host: $EMAIL_HOST
     password: $EMAIL_PASSWORD
     port: $EMAIL_PORT
-    timeout: '10'
     useAuthentication: $EMAIL_AUTHENTICATION
     username: $EMAIL_USERNAME
   transportType: craft\mail\transportadapters\Smtp
@@ -172,7 +170,7 @@ meta:
     4ede571c-eeba-4a8f-b11f-07e744c2c12a: 'My account' # My account
     5c62d201-a99d-45f2-bc77-eecf4383c50a: Timezone # Timezone
     5d9bfa29-8f27-45dd-b445-818b98020132: Saturday # Saturday
-    6a9e4f78-0e55-4b7b-9e55-4fc31c721794: Autonomy # Autonomy
+    6a9e4f78-0e55-4b7b-9e55-4fc31c721794: Mast # Mast
     6a56660b-9d07-41fe-8cc0-e27a35e9d466: Form # Form
     6d8a0ee5-61b5-4e2e-a5aa-4942e529a165: 'Contact us' # Contact us
     6d707569-67a4-4a4e-868e-31a9a6eef835: 'Set password form' # Set password form
@@ -552,7 +550,7 @@ plugins:
 system:
   edition: pro
   live: true
-  name: Autonomy
+  name: Mast
   retryDuration: 200
   schemaVersion: 4.4.0.4
   timeZone: Europe/London

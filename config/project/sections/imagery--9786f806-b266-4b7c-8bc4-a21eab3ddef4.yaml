@@ -4,7 +4,7 @@ handle: imagery
 name: Imagery
 propagationMethod: all
 siteSettings:
-  6a9e4f78-0e55-4b7b-9e55-4fc31c721794: # Autonomy
+  6a9e4f78-0e55-4b7b-9e55-4fc31c721794: # Mast
     enabledByDefault: true
     hasUrls: true
     template: null
