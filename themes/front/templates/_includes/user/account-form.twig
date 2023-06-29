@@ -68,7 +68,7 @@
         {{ input('password', 'newPassword', null, {
             id: 'new-password',
             class: 'form-control ' ~ (user.hasErrors('newPassword') ? 'is-invalid'),
-            autocomplete: 'new-password',
+            autocomplete: 'new-password-do-not-autocomplete',
             placeholder: 'New Password'
         }) }}
         {{ errors.errorList(user.getErrors('newPassword')) }}
@@ -80,7 +80,7 @@
         {{ input('password', 'password', null, {
             id: 'current-password',
             class: 'form-control ' ~ (user.hasErrors('currentPassword') ? 'is-invalid'),
-            autocomplete: 'current-password',
+            autocomplete: 'current-password-do-not-autocomplete',
             placeholder: 'Current password'
         }) }}
         {{ errors.errorList(passerrors) }}
