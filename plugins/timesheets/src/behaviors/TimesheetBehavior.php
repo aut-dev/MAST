@@ -19,7 +19,7 @@ class TimesheetBehavior extends Behavior
             $friendly .= $diff->d . 'd';
         }
         if ($diff->h) {
-            $friendly .= $diff->h . 'm';
+            $friendly .= $diff->h . 'h';
         }
         if ($diff->i) {
             $friendly .= $diff->i . 'm';
