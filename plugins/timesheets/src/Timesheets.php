@@ -65,6 +65,9 @@ class Timesheets extends Plugin
                 if ($event->sender->section->handle == 'task') {
                     $event->sender->attachBehavior('plugin-timesheets', TaskBehavior::class);
                 }
+                if ($event->sender->section->handle == 'timesheet') {
+                    $event->sender->attachBehavior('plugin-timesheets', TimesheetBehavior::class);
+                }
             }
         });
     }
