@@ -11,7 +11,7 @@
             <form method="post">
                 {{ actionInput('plugin-stripe/stripe/create-portal-session') }}
                 {{ csrfInput() }}
-                <button class="btn btn-primary" type="submit">{{ 'Manage my subscription'|t }}</button>
+                <button class="btn btn-primary my-3" type="submit">{{ 'Manage my subscription'|t }}</button>
             </form>
         {% endif %}
         <h2>{{ 'Payment method'|t }}</h2>
@@ -27,5 +27,8 @@
         <div class="d-flex justify-content-center">
             {% include "_includes/user/account-form" %}
         </div>
+        <h2>{{ 'Password'|t }}</h2>
+        <a href="#change-password-modal" class="btn btn-primary my-3" type="button" data-bs-toggle="modal">{{ 'Change password'|t }}</a>
     </div>
+    {% include "_includes/user/change-password-modal" %}
 {% endblock %}

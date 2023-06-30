@@ -63,17 +63,6 @@
         {{ errors.errorList(user.getErrors('timezone')) }}
     </div>
 
-    <div class="form-group mb-3">
-        <label for="new-password">{{ 'New Password'|t }}</label>
-        {{ input('password', 'newPassword', null, {
-            id: 'new-password',
-            class: 'form-control ' ~ (user.hasErrors('newPassword') ? 'is-invalid'),
-            autocomplete: 'new-password-do-not-autocomplete',
-            placeholder: 'New Password'
-        }) }}
-        {{ errors.errorList(user.getErrors('newPassword')) }}
-    </div>
-
     {% set passerrors = user.getErrors('currentPassword') %}
     <div class="form-group mb-3" {% if not passerrors|length %}style="display: none;"{% endif %} id="current-password-field">
         <label for="current-password">{{ 'Enter your current password to allow your changes'|t }}</label>

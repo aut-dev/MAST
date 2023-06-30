@@ -1,21 +1,46 @@
-/* global $ */
+/* global $ App */
 
 class MyAccount
 {
-    $form;
+    $accountForm;
+    $passwordForm;
+    passwordModal;
     newEmail = false;
-    newPassword = false;
 
     constructor () 
     {
-        this.$form = $('#profile-form');
-        this.initForm();
+        this.$accountForm = $('#profile-form');
+        this.$passwordForm = $('#password-form');
+        this.initAccountForm();
+        this.initPasswordForm();
+        App.getBootstrap().then((bootstrap) => {
+            this.passwordModal = new bootstrap.Modal(document.getElementById('change-password-modal'));
+        });
         console.log('My account initialised');
     }
 
-    initForm()
+    initPasswordForm()
     {
-        let $email = this.$form.find('[name=email]');
+        this.$passwordForm.submit((e) => {
+            e.preventDefault();
+            $.ajax({
+                url: '/',
+                method: 'post',
+                dataType: 'json',
+                data: this.$passwordForm.serialize()
+            }).done(() => {
+                App.addToast('Your password has been changed');
+                this.passwordModal.hide();
+                this.$passwordForm.reset();
+            }).fail((response) => {
+                App.handleError(response, this.$passwordForm);
+            });
+        });
+    }
+
+    initAccountForm()
+    {
+        let $email = this.$accountForm.find('[name=email]');
         $email.keyup(() => {
             this.newEmail = false;
             if ($email.val() != $email.data('current')) {
@@ -23,20 +48,12 @@ class MyAccount
             }
             this.toggleNewPassword();
         });
-        let $pass = this.$form.find('[name=newPassword]')
-        $pass.keyup(() => {
-            this.newPassword = false;
-            if ($pass.val()) {
-                this.newPassword = true;
-            }
-            this.toggleNewPassword();
-        });
     }
 
     toggleNewPassword()
     {
-        let $newpass = this.$form.find('#current-password-field');
-        if (this.newEmail || this.newPassword) {
+        let $newpass = this.$accountForm.find('#current-password-field');
+        if (this.newEmail) {
             $newpass.slideDown('fast');
         } else {
             $newpass.slideUp('fast');
