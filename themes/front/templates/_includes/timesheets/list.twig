@@ -1,0 +1,22 @@
+{% set sheets = craft.entries.section('timesheet').authorId(currentUser.id).with('task').relatedTo(task).all() %}
+{% if sheets %}
+    {% for sheet in sheets %}
+        <div class="row mt-2 timesheet" data-id="{{ sheet.id }}">
+            <div class="col-8">
+                <span class="start-date">
+                    {{ sheet.startDate|date('d/m/Y H:i:s', currentUser.timezone) }}
+                </span> -
+                <span class="end-date">
+                    {{ sheet.endDate|date('d/m/Y H:i:s', currentUser.timezone) }}
+                </span>
+            </div>
+            <div class="col-2">
+                {{ sheet.friendlySpentTime }}
+            </div>
+            <div class="col-2">
+                <a href="#" class="js-edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                <a href="#" class="js-delete ms-2" data-id="{{ sheet.id }}"><i class="fa-solid fa-trash"></i></a>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}

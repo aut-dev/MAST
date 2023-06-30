@@ -1,0 +1,11 @@
+{% if not currentUser %}
+    {% exit 404 %}
+{% endif %}
+
+{% set task = craft.entries.section('task').id(craft.app.request.getRequiredParam('taskId')).authorId(currentUser.id).one() %}
+
+{% if not task %}
+    {% exit 404 %}
+{% endif %}
+
+{% include "_includes/timesheets/list" %}

@@ -41,29 +41,10 @@
                 <a href="#" class="js-edit"><i class="fa-solid fa-pen-to-square"></i></a>
             </div>
         </div>
-        <div id="timesheet-list">
-            {% set sheets = craft.entries.section('timesheet').authorId(currentUser.id).with('task').relatedTo(entry).all() %}
-            {% if sheets %}
-                {% for sheet in sheets %}
-                    <div class="row mt-2 timesheet" data-id="{{ sheet.id }}">
-                        <div class="col-8">
-                            <span class="start-date">
-                                {{ sheet.startDate|date('d/m/Y H:i:s', currentUser.timezone) }}
-                            </span> -
-                            <span class="end-date">
-                                {{ sheet.endDate|date('d/m/Y H:i:s', currentUser.timezone) }}
-                            </span>
-                        </div>
-                        <div class="col-2">
-                            {{ sheet.friendlySpentTime }}
-                        </div>
-                        <div class="col-2">
-                            <a href="#" class="js-edit"><i class="fa-solid fa-pen-to-square"></i></a>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
+        <div id="timesheet-list" data-id="{{ entry.id }}">
+            {% include "_includes/timesheets/list" with {task: entry} %}
         </div>
     </div>
     {% include "_includes/timesheets/edit-modal" with {task: entry} %}
+    {% include "_includes/timesheets/delete-modal" %}
 {% endblock %}

@@ -2,37 +2,75 @@
 
 class Task
 {
-    $modal;
-    modal;
+    $editModal;
+    editModal;
+    $deleteModal;
+    deleteModal;
+    $timesheetList;
 
     constructor () 
     {
-        this.$modal = $('#edit-timesheet-modal');
+        this.$editModal = $('#edit-timesheet-modal');
+        this.$deleteModal = $('#delete-timesheet-modal');
+        this.$timesheetList = $('#timesheet-list');
         App.getBootstrap().then((bootstrap) => {
-            this.modal = new bootstrap.Modal(document.getElementById('edit-timesheet-modal'));
-            this.initModal();
+            this.editModal = new bootstrap.Modal(document.getElementById('edit-timesheet-modal'));
+            this.deleteModal = new bootstrap.Modal(document.getElementById('delete-timesheet-modal'));
+            this.initEditModal();
+            this.initDeleteModal();
         });
-        this.initEditLinks($('body'));
         this.initAddLink();
+        this.initEditLinks(this.$timesheetList);
+        this.initDeleteLinks(this.$timesheetList);
         console.log('Task initialised');
     }
 
-    initModal()
+    initDeleteLinks($elem)
     {
-        this.$modal.find('.js-save').click(() => {
-            this.$modal.find('form').submit();
+        $elem.find('.js-delete').click((e) => {
+            let id = $(e.currentTarget).data('id');
+            this.$deleteModal.find('[name=elementId]').val(id);
+            this.deleteModal.show();
         });
-        this.$modal.find('form').submit(e => {
+    }
+
+    initEditModal()
+    {
+        this.$editModal.find('.js-save').click(() => {
+            this.$editModal.find('form').submit();
+        });
+        this.$editModal.find('form').submit(e => {
             e.preventDefault()
             $.ajax({
                 url: '/',
                 method: 'post',
-                data: this.$modal.find('form').serialize(),
+                data: this.$editModal.find('form').serialize(),
                 dataType: 'json'
             }).done(() => {
-                window.location.reload();
+                this.reloadTimesheets();
+                App.addToast('Time entry saved');
+                this.editModal.hide();
             }).fail(response => {
-                App.handleError(response, this.$modal.find('form'));
+                App.handleError(response, this.$editModal.find('form'));
+            });
+        });
+    }
+
+    initDeleteModal()
+    {
+        this.$deleteModal.find('form').submit(e => {
+            e.preventDefault()
+            $.ajax({
+                url: '/',
+                method: 'post',
+                data: this.$deleteModal.find('form').serialize(),
+                dataType: 'json'
+            }).done(() => {
+                $('.timesheet[data-id=' + this.$deleteModal.find('[name=elementId]').val() + ']').remove();
+                this.deleteModal.hide();
+                App.addToast('Time entry deleted');
+            }).fail(response => {
+                App.handleError(response, this.$deleteModal.find('form'));
             });
         });
     }
@@ -41,12 +79,12 @@ class Task
     {
         $('.js-add').click((e) => {
             e.preventDefault();
-            let $title = this.$modal.find('h5.modal-title');
-            this.$modal.find('[name=entryId]').val('');
+            let $title = this.$editModal.find('h5.modal-title');
+            this.$editModal.find('[name=entryId]').val('');
             $title.html($title.data('add-title'));
-            this.$modal.find('#startDate')[0]._flatpickr.setDate(null);
-            this.$modal.find('#endDate')[0]._flatpickr.setDate(null);
-            this.modal.show();
+            this.$editModal.find('#startDate')[0]._flatpickr.setDate(null);
+            this.$editModal.find('#endDate')[0]._flatpickr.setDate(null);
+            this.editModal.show();
         });
     }
 
@@ -55,17 +93,31 @@ class Task
         $elem.find('.js-edit').click((e) => {
             e.preventDefault();
             let id = $(e.currentTarget).closest('.timesheet').data('id');
-            let $title = this.$modal.find('h5.modal-title');
+            let $title = this.$editModal.find('h5.modal-title');
             $title.html($title.data('edit-title'));
             $.ajax({
                 url: '/?action=plugin-timesheets/timesheets/get&id=' + id
             }).done(data => {
-                this.$modal.find('[name=entryId]').val(id);
-                this.$modal.find('#startDate')[0]._flatpickr.setDate(data.start);
-                this.$modal.find('#endDate')[0]._flatpickr.setDate(data.end);
-                this.modal.show();
+                this.$editModal.find('[name=entryId]').val(id);
+                this.$editModal.find('#startDate')[0]._flatpickr.setDate(data.start);
+                this.$editModal.find('#endDate')[0]._flatpickr.setDate(data.end);
+                this.editModal.show();
             });
         });
+    }
+
+    reloadTimesheets()
+    {
+        $.ajax({
+            url: '/ajax/timesheets',
+            data: {
+                taskId: this.$timesheetList.data('id')
+            }
+        }).done((data) => {
+            this.$timesheetList.html(data);
+            this.initDeleteLinks(this.$timesheetList);
+            this.initEditLinks(this.$timesheetList);
+        })
     }
 }
 
