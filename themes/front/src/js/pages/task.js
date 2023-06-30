@@ -50,6 +50,7 @@ class Task
                 this.reloadTimesheets();
                 App.addToast('Time entry saved');
                 this.editModal.hide();
+                App.removeErrors(this.$editModal);
             }).fail(response => {
                 App.handleError(response, this.$editModal.find('form'));
             });

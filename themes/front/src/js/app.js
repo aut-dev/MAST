@@ -141,13 +141,18 @@ class App
     showErrors($elem, errors)
     {
         let $item;
-        $elem.find('.invalid-feedback').remove();
+        this.removeErrors($elem);
         for (let [name, list] of Object.entries(errors)) {
             $item = $elem.find('.field-' + name);
             for (let error of list) {
                 $item.append('<div class="invalid-feedback">' + error + '</div>');
             }
         }
+    }
+
+    removeErrors($elem)
+    {
+        $elem.find('.invalid-feedback').remove();
     }
 
     unexpectedError()

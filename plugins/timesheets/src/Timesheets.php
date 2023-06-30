@@ -47,19 +47,6 @@ class Timesheets extends Plugin
                 Timesheets::$plugin->timesheets->validateTimesheet($entry);
             }
         });
-
-        if (\Craft::$app->request->isSiteRequest and \Craft::$app->request->isActionRequest) {
-            $action = implode('/', \Craft::$app->request->getActionSegments() ?? []);
-            if ($action == 'entries/save-entry') {
-                Event::on(Elements::class, Elements::EVENT_AFTER_SAVE_ELEMENT, function (Event $event) {
-                    $sheet  =$event->element;
-                    if ($sheet instanceof Entry and !ElementHelper::isDraftOrRevision($sheet) and $sheet->section->handle == 'timesheet') {
-                        $sheet = $event->element;
-                        \Craft::$app->session->setNotice(\Craft::t('site', 'Time entry saved'));
-                    }
-                });
-            }
-        }
     }
 
     protected function registerTasksEvents()
