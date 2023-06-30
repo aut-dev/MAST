@@ -118,7 +118,7 @@ class TimerService extends Component
     {
         $timer = $user->timer instanceof Collection ? $user->timer : $user->timer->with('timer:task')->all();
         foreach ($timer as $block) {
-            if ($block->task[0]->id == $taskId) {
+            if (sizeof($block->task) and $block->task[0]->id == $taskId) {
                 return $block;
             }
         }
