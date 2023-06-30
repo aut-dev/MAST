@@ -1,4 +1,4 @@
-/* global $ */
+/* global $ Globals */
 
 class App
 {
@@ -15,8 +15,30 @@ class App
         this.initFontAwesome();
         this.initTimer();
         this.initMatrixContent();
+        this.initDetectTimezone();
         $('body').css('opacity', 1);
         console.log('App initialized');
+    }
+
+    initDetectTimezone()
+    {
+        let userTimezone = Globals.timezone;
+        let refused = Globals.refusedTimezoneChange;
+        if (!userTimezone || refused) {
+            return;
+        }
+        let current = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (current != userTimezone) {
+            $('#change-timezone-message .current').html(current);
+            $('#change-timezone-message').fadeIn();
+        }
+        $('#change-timezone-message .js-no').click((e) => {
+            e.preventDefault();
+            $.ajax({
+                url: '/?action=plugin-users/users/refused-timezone-change'
+            });
+            $('#change-timezone-message').fadeOut();
+        });
     }
 
     initMatrixContent()

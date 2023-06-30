@@ -23,7 +23,7 @@
         margin-right: 10px;
     }
     .header-height {
-        height: 66px;
+        height: 72px;
     }
     .header-fixed {
         background-color: $gray-300;
@@ -63,6 +63,11 @@
 }
 
 @media all and (max-width: 1024px) {
+    #header{
+        .header-height {
+            height: 66px;
+        }
+    }
     #navbarNav {
         position: fixed;
         top: 66px;
