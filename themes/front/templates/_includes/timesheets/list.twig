@@ -2,7 +2,7 @@
 {% if sheets %}
     {% for sheet in sheets %}
         <div class="row mt-2 timesheet" data-id="{{ sheet.id }}">
-            <div class="col-8">
+            <div class="col-12 col-lg-8 mb-2 mb-lg-0">
                 <span class="start-date">
                     {{ sheet.startDate|date('d/m/Y H:i:s', currentUser.timezone) }}
                 </span> -
@@ -10,12 +10,12 @@
                     {{ sheet.endDate|date('d/m/Y H:i:s', currentUser.timezone) }}
                 </span>
             </div>
-            <div class="col-2">
+            <div class="col-6 col-lg-2">
                 {{ sheet.friendlySpentTime }}
             </div>
-            <div class="col-2">
+            <div class="col-6 col-lg-2">
                 <a href="#" class="js-edit"><i class="fa-solid fa-pen-to-square"></i></a>
-                <a href="#" class="js-delete ms-2" data-id="{{ sheet.id }}"><i class="fa-solid fa-trash"></i></a>
+                <a href="#" class="js-delete ms-3" data-id="{{ sheet.id }}"><i class="fa-solid fa-trash"></i></a>
             </div>
         </div>
     {% endfor %}

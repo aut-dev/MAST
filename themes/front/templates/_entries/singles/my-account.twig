@@ -6,15 +6,15 @@
 
 {% block after_content_matrix %}
     <div class="container text-center">
-        <h2>{{ 'My Subscription'|t }}</h2>
+        <h2 class="mb-3">{{ 'My Subscription'|t }}</h2>
         {% if currentUser.stripeSessionId %}
             <form method="post">
                 {{ actionInput('plugin-stripe/stripe/create-portal-session') }}
                 {{ csrfInput() }}
-                <button class="btn btn-primary my-3" type="submit">{{ 'Manage my subscription'|t }}</button>
+                <button class="btn btn-primary" type="submit">{{ 'Manage my subscription'|t }}</button>
             </form>
         {% endif %}
-        <h2>{{ 'Payment method'|t }}</h2>
+        <h2 class="my-3">{{ 'Payment method'|t }}</h2>
         {% if method %}
             <p>{{ '{type} ending in {ends}'|t('site', {
                 type: method.card.brand|ucfirst,
@@ -23,12 +23,12 @@
                     date: method.card.exp_month ~ '/' ~ method.card.exp_year
                 }) }}{% endif %}</p>
         {% endif %}
-        <h2>{{ 'Update details'|t }}</h2>
+        <h2 class="my-3">{{ 'Update details'|t }}</h2>
         <div class="d-flex justify-content-center">
             {% include "_includes/user/account-form" %}
         </div>
-        <h2>{{ 'Password'|t }}</h2>
-        <a href="#change-password-modal" class="btn btn-primary my-3" type="button" data-bs-toggle="modal">{{ 'Change password'|t }}</a>
+        <h2 class="my-3">{{ 'Password'|t }}</h2>
+        <a href="#change-password-modal" class="btn btn-primary" type="button" data-bs-toggle="modal">{{ 'Change password'|t }}</a>
     </div>
     {% include "_includes/user/change-password-modal" %}
 {% endblock %}
