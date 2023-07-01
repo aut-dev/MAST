@@ -5,7 +5,7 @@
     {% if task.isComplete %}
         {% set status = 'complete' %}
     {% elseif (task.isExpired) %}
-        {% set status = expired %}
+        {% set status = 'expired' %}
     {% endif %}
     {% if task.hasDerailed %}
         {% set status = 'expired' %}
