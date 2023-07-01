@@ -47,11 +47,7 @@ class TaskBehavior extends Behavior
         if ($day === null) {
             $day = $this->owner->author->today;
         }
-        $today = $this->owner->author->today;
         if (!$this->isActive($day)) {
-            return false;
-        }
-        if (DateHelper::isSameDay($day, $today) and $this->isExpired()) {
             return false;
         }
         if ($this->owner->taskType->value == 'more') {

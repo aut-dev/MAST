@@ -39,6 +39,18 @@ class App
             });
             $('#change-timezone-message').fadeOut();
         });
+        $('#change-timezone-message .js-yes').click((e) => {
+            e.preventDefault();
+            $.ajax({
+                url: '/?action=plugin-users/users/change-timezone',
+                data: {
+                    timezone: current
+                }
+            }).done(() => {
+                App.addToast('Your timezone has been changed to ' + current);
+            });
+            $('#change-timezone-message').fadeOut();
+        });
     }
 
     initMatrixContent()
