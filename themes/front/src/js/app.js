@@ -47,7 +47,7 @@ class App
                     timezone: current
                 }
             }).done(() => {
-                App.addToast('Your timezone has been changed to ' + current);
+                this.addToast('Your timezone has been changed to ' + current);
             });
             $('#change-timezone-message').fadeOut();
         });
