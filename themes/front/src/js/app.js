@@ -107,7 +107,7 @@ class App
         if ($elems.length) {
             this.getBootstrap().then((bootstrap) => {
                 $.each($elems, function (i, elem) {
-                    new bootstrap.Toast(elem);
+                    bootstrap.Toast.getOrCreateInstance(elem).show();
                 });
             });
         }
@@ -126,8 +126,8 @@ class App
 
     addToast(message, type = "success", autoHide = true)
     {
-        let _class = "show align-items-center text-white border-0 mt-2 toast bg-" + type;
-        let toast = $('<div class="' + _class + '" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="' + (autoHide ? 'true' : 'false') + '"><div class="d-flex"><div class="toast-body">' + message + '</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+        let _class = "align-items-center text-white border-0 toast bg-" + type;
+        let toast = $('<div class="' + _class + '" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000" data-bs-autohide="' + (autoHide ? 'true' : 'false') + '"><div class="d-flex"><div class="toast-body">' + message + '</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
         toast.appendTo($('#global-messages'));
         this.initToasts(toast);
     }
