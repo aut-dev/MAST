@@ -14,6 +14,28 @@ class TaskBehavior extends Behavior
     public $owner;
 
     /**
+     * Get the task status, can be either 'active', 'inactive', 'complete', 'derailed' or 'expired'
+     *
+     * @return string
+     */
+    public function getTaskStatus(): string
+    {
+        if ($this->isActive()) {
+            if ($this->hasDerailed()) {
+                return 'derailed';
+            }
+            if ($this->isComplete()) {
+                return 'complete';
+            }
+            if ($this->isExpired()) {
+                return 'expired';
+            }
+            return 'active';
+        }
+        return 'inactive';
+    }
+
+    /**
      * Get the time spent in seconds for any given day, defaults to today if null.
      * Includes timesheets + timer (if started and day is today)
      * if $includeAfterDeadline is true it will return all the time recorded after the deadline has passed (until midnight),

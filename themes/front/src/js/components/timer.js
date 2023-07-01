@@ -3,7 +3,7 @@
 class Timer
 {
     interval;
-    polling = false;
+    taskRefreshed = [];
 
     constructor()
     {
@@ -23,6 +23,7 @@ class Timer
             }
         } else {
             clearInterval(this.interval);
+            this.interval = null;
         }
     }
 
@@ -47,21 +48,31 @@ class Timer
 
     pollProgress()
     {
-        if (this.polling) {
-            return;
-        }
-        this.polling = true;
+        $.each($('.task.timer-started'), (i, task) => {
+            let $task = $(task);
+            let persec = parseFloat($task.data('persec'));
+            let progress = parseFloat($task.data('progress'));
+            let id = $task.data('id');
+            progress = progress + persec;
+            $task.data('progress', progress);
+            $task.find('.progress-bar').css('width', progress + '%');
+            if (progress > 101 && !this.taskRefreshed.includes(id)) {
+                this.refreshTask(id);
+            }
+        });
+    }
+
+    refreshTask(taskId)
+    {
+        this.taskRefreshed.push(taskId);
         $.ajax({
-            url: '/?action=plugin-timer/timer/poll-progress'
+            url: '/?action=plugin-tasks/tasks/status',
+            data: {
+                id: taskId
+            }
         }).done((data) => {
-            let keys = Object.keys(data);
-            keys.forEach((id) => {
-                let progress = $('.task[data-id=' + id + '] .progress-bar');
-                if (progress.length) {
-                    progress.css('width', data[id].percent + '%');
-                }
-            });
-            this.polling = false;
+            let $task = $('.task[data-id=' + taskId + ']');
+            $task.removeClass(['border-task-active', 'border-task-complete', 'border-task-expired']).addClass('border-task-' + data.status);
         });
     }
 

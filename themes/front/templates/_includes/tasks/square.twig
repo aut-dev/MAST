@@ -1,24 +1,20 @@
 {% set started = currentUser.timerStarted(task.id) %}
+{% set status = task.taskStatus %}
 
-{% set status = task.isActive ? 'active' : 'inactive' %}
+{% set progress = 0 %}
+{% set persec = 0 %}
 {% if task.isActive %}
-    {% if task.isComplete %}
-        {% set status = 'complete' %}
-    {% elseif (task.isExpired) %}
-        {% set status = 'expired' %}
-    {% endif %}
-    {% if task.hasDerailed %}
-        {% set status = 'expired' %}
-    {% endif %}
+    {% set spent = task.getTimeSpent(null, true) %}
+    {% set progress = spent / task.duration * 100 %}
+    {% set persec = 1 / task.duration * 100 %}
 {% endif %}
 
-<div class="square task p-3 bg-task border border-2 rounded border-task-{{ status }} {% if started %}timer-started{% endif %}" data-id="{{ task.id }}">
+<div class="square task p-3 bg-task border border-2 rounded border-task-{{ status }} {% if started %}timer-started{% endif %}" data-id="{{ task.id }}" data-active="{{ task.isActive }}" data-progress="{{ progress }}" data-persec="{{ persec }}">
     <h4 class="mb-0">{{ task.title }}</h4>
     <p>{{ task.taskType|ucfirst }} than {{ (task.length / 60)|round }} min</p>
     {% if task.isActive %}
-        {% set spent = task.getTimeSpent(null, true) %}
         <div class="progress border border-primary">
-            <div class="progress-bar" role="progressbar" style="width: {{ spent / task.duration * 100 }}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         {% if task.isExpired %}
             <p>{{ 'Next deadline : {time}'|t('site', {time: task.nextDeadline|date('d/m/Y H:i', currentUser.timezone)}) }}</p>
