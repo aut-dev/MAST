@@ -1,4 +1,4 @@
-dateModified: 1688038562
+dateModified: 1688209744
 elementSources:
   craft\elements\Entry:
     -
@@ -171,7 +171,6 @@ meta:
     5c62d201-a99d-45f2-bc77-eecf4383c50a: Timezone # Timezone
     5d9bfa29-8f27-45dd-b445-818b98020132: Saturday # Saturday
     6a9e4f78-0e55-4b7b-9e55-4fc31c721794: Mast # Mast
-    6a56660b-9d07-41fe-8cc0-e27a35e9d466: Form # Form
     6d8a0ee5-61b5-4e2e-a5aa-4942e529a165: 'Contact us' # Contact us
     6d707569-67a4-4a4e-868e-31a9a6eef835: 'Set password form' # Set password form
     6df6f10a-5ece-4a68-8fb6-68c2af85721f: 'Page error' # Page error
@@ -246,7 +245,6 @@ meta:
     da63acfe-db82-4781-98a1-7fe653f511c8: 'Stripe session id' # Stripe session id
     e4dc77ff-7c96-4d98-b434-ed37c72fa8be: 'Matrix Content' # Matrix Content
     e237d745-b0a6-4a3f-9003-984efa160459: 'Page error' # Page error
-    ea72fbbd-5d58-4612-9f76-ad3abbaa8870: Form # Form
     eca48186-ef8a-40ab-bb78-26a70ea56bb0: Text # Text
     f7edb11b-5202-431b-b3c7-0c227fe1ebed: week # week
     f95157d7-1eac-4192-855e-c8bdb66fba9b: Monday # Monday
@@ -287,22 +285,7 @@ plugins:
     edition: standard
     enabled: true
     schemaVersion: 1.0.0
-  formidable:
-    edition: standard
-    enabled: true
-    schemaVersion: 2.2.0
-    settings:
-      acceptableScore: '7'
-      deleteSpamThreshold: '30'
-      deleteSubmissionsThreshold: ''
-      secretKey: $RECAPTCHA_SECRET_KEY
-      siteKey: $RECAPTCHA_SITE_KEY
-      useQueue: '1'
   front-theme:
-    edition: standard
-    enabled: true
-    schemaVersion: 1.0.0
-  gtag:
     edition: standard
     enabled: true
     schemaVersion: 1.0.0
@@ -310,10 +293,6 @@ plugins:
     edition: standard
     enabled: true
     schemaVersion: 2.0.0
-  monitor404s:
-    edition: standard
-    enabled: true
-    schemaVersion: 2.0.3
   plugin-stripe:
     edition: standard
     enabled: true
@@ -373,23 +352,6 @@ plugins:
     edition: standard
     enabled: true
     schemaVersion: 2.3.0
-  restrict-deletion:
-    edition: standard
-    enabled: true
-    schemaVersion: 1.0.0
-    settings:
-      adminCanOverride: ''
-      disableForConsoleRequests: ''
-      disableForFrontRequests: ''
-      policies:
-        __assoc__:
-          -
-            - 4af59c54-88a6-4ada-b492-3246b6f6ea7c # Standard Page
-            - noRevisions
-          -
-            - 3be80663-0614-4a4d-9626-631d2bfd20bb # Public
-            - noRevisions
-      userPolicy: noRevisions
   schedule:
     edition: standard
     enabled: true
@@ -511,10 +473,6 @@ plugins:
                 -
                   - clientSecret
                   - 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
-  spam-check:
-    edition: standard
-    enabled: true
-    schemaVersion: 1.0.0
   super-table:
     edition: standard
     enabled: true
