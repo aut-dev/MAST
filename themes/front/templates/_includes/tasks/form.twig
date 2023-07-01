@@ -27,7 +27,7 @@
     {{ hiddenInput('sectionId', section.id) }}
     {{ hiddenInput('enabled', '1') }}
     {{ hiddenInput('entryVariable', 'task'|hash) }}
-    {{ redirectInput(task.url) }}
+    {{ redirectInput((task.id ?? null) ? task.url : '/tasks') }}
     {{ successMessageInput('Task saved'|t) }}
     {{ failMessageInput('Could not save task'|t) }}
     {% if task %}
