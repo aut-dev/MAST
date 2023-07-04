@@ -49,6 +49,9 @@ class StripeService extends Component
                 'quantity' => 1,
             ]],
             'customer_email' => $user->email,
+            'payment_intent_data' => [
+                'setup_future_usage' => 'off_session'
+            ],
             'mode' => 'subscription',
             'success_url' => UrlHelper::siteUrl('stripe-subscription-success?session_id={CHECKOUT_SESSION_ID}'),
             'cancel_url' => UrlHelper::siteUrl('pay-subscription'),
