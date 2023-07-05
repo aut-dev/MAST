@@ -1,4 +1,4 @@
-{% set sheets = craft.entries.section('timesheet').authorId(currentUser.id).with('task').relatedTo(task).all() %}
+{% paginate craft.entries.section('timesheet').authorId(currentUser.id).with('task').relatedTo(task).limit(10) as pageInfo, sheets %}
 {% if sheets %}
     {% for sheet in sheets %}
         <div class="row mt-2 timesheet" data-id="{{ sheet.id }}">
@@ -19,4 +19,5 @@
             </div>
         </div>
     {% endfor %}
+    {% include "_includes/pager" %}
 {% endif %}

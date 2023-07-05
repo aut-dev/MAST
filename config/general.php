@@ -52,4 +52,5 @@ return GeneralConfig::create()
     ->verificationCodeDuration(604800)
     ->setPasswordSuccessPath('login?password-set=1')
     ->verifyEmailSuccessPath('login?verified=1')
-    ->activateAccountSuccessPath('login?verified=1');
+    ->activateAccountSuccessPath('login?verified=1')
+    ->pageTrigger('?page');

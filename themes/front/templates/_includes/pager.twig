@@ -1,0 +1,35 @@
+{% if pageInfo.totalPages > 1 %}
+    {% set pages_each_way = 5 %}
+    {% set pages_to_show = 10 %}
+    {% set start_page = pageInfo.currentPage - pages_each_way %}
+    {% if start_page < 1 %}
+        {% set start_page = 1 %}
+    {% endif %}
+    {% set end_page = start_page + pages_to_show %}
+    {% if end_page > pageInfo.totalPages %}
+        {% set start_page = start_page - (end_page - pageInfo.totalPages) %}
+        {% set end_page = pageInfo.totalPages %}
+    {% endif %}
+    {% if start_page < 1 %}
+        {% set start_page = 1 %}
+    {% endif %}
+    <nav aria-label="Page navigation" class="mt-3 mt-md-4 mt-xl-5 mt-xxl-6">
+        <ul class="pagination text-center align-items-center justify-content-center">
+            {% if pageInfo.currentPage > 1 %}
+                <li class="page-item">
+                    <a class="page-link" data-page="1" href="#"><i class="fa-solid fa-arrow-left"></i></a>
+                </li>
+            {% endif %}
+            {% for page in range(start_page, end_page) %}
+                <li class="page-item {% if pageInfo.currentPage == page %}active{% endif %}">
+                    <a class="page-link" data-page="{{ page }}" href="#">{{ page }}</a>
+                </li>
+            {% endfor %}
+            {% if pageInfo.currentPage < pageInfo.totalPages %}
+                <li class="page-item">
+                    <a class="page-link" data-page="{{ pageInfo.totalPages }}" href="#"><i class="fa-solid fa-arrow-right"></i></a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

@@ -22,6 +22,7 @@ class Task
         this.initAddLink();
         this.initEditLinks(this.$timesheetList);
         this.initDeleteLinks(this.$timesheetList);
+        this.initPager(this.$timesheetList);
         console.log('Task initialised');
     }
 
@@ -107,17 +108,27 @@ class Task
         });
     }
 
-    reloadTimesheets()
+    initPager($elem)
+    {
+        $elem.find('.page-link').click((e) => {
+            e.preventDefault();
+            this.reloadTimesheets($(e.target).data('page'));
+        });
+    }
+
+    reloadTimesheets(page = 1)
     {
         $.ajax({
             url: '/ajax/timesheets',
             data: {
-                taskId: this.$timesheetList.data('id')
+                taskId: this.$timesheetList.data('id'),
+                page: page
             }
         }).done((data) => {
             this.$timesheetList.html(data);
             this.initDeleteLinks(this.$timesheetList);
             this.initEditLinks(this.$timesheetList);
+            this.initPager(this.$timesheetList);
         })
     }
 }
