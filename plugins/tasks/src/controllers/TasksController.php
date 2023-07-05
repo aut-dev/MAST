@@ -8,17 +8,20 @@ use yii\web\ForbiddenHttpException;
 
 class TasksController extends Controller
 {
-    public function actionStatus()
+    public function actionPoll()
     {
-        $id = $this->request->getRequiredParam('id');
         $user = \Craft::$app->user->identity;
-        $task = Entry::find()->section('task')->authorId($user->id)->id($id)->one();
-        if (!$task) {
-            throw new ForbiddenHttpException('Task not found');
+        $tasks = Entry::find()->section('task')->authorId($user->id)->all();
+        $out = [];
+        foreach ($tasks as $task) {
+            $out[$task->id] = [
+               'status' => $task->getTaskStatus(),
+               'inner' => \Craft::$app->view->renderTemplate('_includes/tasks/inner', [
+                    'task' => $task
+               ])
+            ];
         }
-        return $this->asJson([
-            'status' => $task->getTaskStatus()
-        ]);
+        return $this->asJson($out);
     }
 
     public function actionReorder()

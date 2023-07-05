@@ -13,7 +13,6 @@ class App
         this.initToasts($('.toast'));
         this.initForms($('form'));
         this.initFontAwesome();
-        this.initTimer();
         this.initMatrixContent();
         this.initDetectTimezone();
         $('body').css('opacity', 1);
@@ -60,13 +59,6 @@ class App
                 new chunk.MatrixContent;
             });
         }
-    }
-
-    initTimer()
-    {
-        import(/* webpackChunkName: "timer" */ './components/timer').then(chunk => {
-            this.timer = new chunk.Timer;
-        });
     }
 
     getBootstrap()

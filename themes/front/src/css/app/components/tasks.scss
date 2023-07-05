@@ -1,8 +1,25 @@
 .task {
     cursor: pointer;
     background: white;
+    border-width: 2px;
+    border-style: solid;
     &.timer-started {
         border-style: dashed !important;
+    }
+    &[data-status="inactive"] {
+        border-color: $task-inactive;
+    }
+    &[data-status="active"] {
+        border-color: $task-active;
+    }
+    &[data-status="expired"] {
+        border-color: $task-expired;
+    }
+    &[data-status="complete"] {
+        border-color: $task-complete;
+    }
+    &[data-status="derailed"] {
+        border-color: $task-derailed;
     }
 }
 

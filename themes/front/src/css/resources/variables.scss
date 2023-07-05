@@ -31,6 +31,7 @@ $dark:      $gray-900;
 $task-inactive: $gray-200;
 $task-active:   $blue;
 $task-expired:  $danger;
+$task-derailed:  $danger;
 $task-complete: $green;
 
 $body-bg: $white;
@@ -55,12 +56,7 @@ $theme-colors: (
     "green": $green,
     "teal": $teal,
     "cyan": $cyan,
-    "white": $white,
-    "task-inactive": $task-inactive,
-    "task-active": $task-active,
-    "task-expired": $task-expired,
-    "task-complete": $task-complete,
-    "task-derailed": $task-expired,
+    "white": $white
 );
 
 /**** Grid ****/
