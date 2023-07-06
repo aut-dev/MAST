@@ -16,8 +16,8 @@
         {% include "_includes/tasks/inner" %}
     </div>
     <div class="actions d-flex justify-content-between align-items-center">
-        <a href="#" class="js-delete-task" data-id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#delete-task-modal"><i class="fa-solid fa-trash click-through"></i></a>
+        <a href="#" class="js-delete-task click-through" data-id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#delete-task-modal"><i class="fa-solid fa-trash click-through"></i></a>
         <i class="fa-solid fa-up-down-left-right handle"></i>
-        <a href="{{ task.url }}"><i class="fa-solid fa-eye click-through"></i></a>
+        <a href="{{ task.url }}" class="click-through"><i class="fa-solid fa-eye click-through"></i></a>
     </div>
 </div>
