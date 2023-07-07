@@ -2,7 +2,7 @@
     "name": "plugins/tasks",
     "description": "Tasks plugin",
     "type": "craft-plugin",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "keywords": [
         "craft",
         "cms",

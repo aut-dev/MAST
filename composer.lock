@@ -118,16 +118,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.275.2",
+            "version": "3.275.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "4506d631caf6097fd73009d57707e61b95efe92c"
+                "reference": "bacab9b131dc790ed0084b63f5f4889a81eee311"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4506d631caf6097fd73009d57707e61b95efe92c",
-                "reference": "4506d631caf6097fd73009d57707e61b95efe92c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/bacab9b131dc790ed0084b63f5f4889a81eee311",
+                "reference": "bacab9b131dc790ed0084b63f5f4889a81eee311",
                 "shasum": ""
             },
             "require": {
@@ -207,9 +207,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.275.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.275.4"
             },
-            "time": "2023-07-03T18:27:31+00:00"
+            "time": "2023-07-06T18:22:51+00:00"
         },
         {
             "name": "axy/backtrace",
@@ -6580,11 +6580,11 @@
         },
         {
             "name": "plugins/tasks",
-            "version": "1.0",
+            "version": "1.0.0",
             "dist": {
                 "type": "path",
                 "url": "plugins/tasks",
-                "reference": "22bf70996df5c064ffc00ade2a690e153eed2345"
+                "reference": "398e9ce482cdd72ae899afb40a8f9a42206185f1"
             },
             "require": {
                 "craftcms/cms": "^4.0"
@@ -12768,16 +12768,16 @@
         },
         {
             "name": "webonyx/graphql-php",
-            "version": "v14.11.9",
+            "version": "v14.11.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webonyx/graphql-php.git",
-                "reference": "ff91c9f3cf241db702e30b2c42bcc0920e70ac70"
+                "reference": "d9c2fdebc6aa01d831bc2969da00e8588cffef19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webonyx/graphql-php/zipball/ff91c9f3cf241db702e30b2c42bcc0920e70ac70",
-                "reference": "ff91c9f3cf241db702e30b2c42bcc0920e70ac70",
+                "url": "https://api.github.com/repos/webonyx/graphql-php/zipball/d9c2fdebc6aa01d831bc2969da00e8588cffef19",
+                "reference": "d9c2fdebc6aa01d831bc2969da00e8588cffef19",
                 "shasum": ""
             },
             "require": {
@@ -12797,8 +12797,7 @@
                 "phpunit/phpunit": "^7.2 || ^8.5",
                 "psr/http-message": "^1.0",
                 "react/promise": "2.*",
-                "simpod/php-coveralls-mirror": "^3.0",
-                "squizlabs/php_codesniffer": "3.5.4"
+                "simpod/php-coveralls-mirror": "^3.0"
             },
             "suggest": {
                 "psr/http-message": "To use standard GraphQL server",
@@ -12822,7 +12821,7 @@
             ],
             "support": {
                 "issues": "https://github.com/webonyx/graphql-php/issues",
-                "source": "https://github.com/webonyx/graphql-php/tree/v14.11.9"
+                "source": "https://github.com/webonyx/graphql-php/tree/v14.11.10"
             },
             "funding": [
                 {
@@ -12830,7 +12829,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2023-01-06T12:12:50+00:00"
+            "time": "2023-07-05T14:23:37+00:00"
         },
         {
             "name": "yiisoft/yii2",

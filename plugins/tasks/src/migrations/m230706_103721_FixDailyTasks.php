@@ -19,18 +19,18 @@ class m230706_103721_FixDailyTasks extends Migration
      */
     public function safeUp(): bool
     {
-        $now = DateTimeHelper::toDateTime('now');
-        foreach (Entry::find()->section('task')->all() as $task) {
-            $day = $task->author->getDate($task->startDate);
-            while ($day < $now) {
-                $task = Tasks::$plugin->tasks->getOrCreateDailyTask($task, $day);
-                if ($day->format('d-m-Y') != $now->format('d-m-Y')) {
-                    $task->setFieldValue('processed', true);
-                }
-                \Craft::$app->elements->saveElement($task, false);
-                $day->add(new DateInterval('P1D'));
-            }
-        }
+        // $now = DateTimeHelper::toDateTime('now');
+        // foreach (Entry::find()->section('task')->all() as $task) {
+        //     $day = $task->author->getDate($task->startDate);
+        //     while ($day < $now) {
+        //         $task = Tasks::$plugin->tasks->getOrCreateDailyTask($task, $day);
+        //         if ($day->format('d-m-Y') != $now->format('d-m-Y')) {
+        //             $task->setFieldValue('processed', true);
+        //         }
+        //         \Craft::$app->elements->saveElement($task, false);
+        //         $day->add(new DateInterval('P1D'));
+        //     }
+        // }
         return true;
     }
 
