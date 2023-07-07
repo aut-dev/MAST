@@ -84,6 +84,9 @@ class TasksService extends Component
      */
     public function afterSavingTask(Entry $task, bool $isNew)
     {
+        if (!$task->enabled) {
+            return;
+        }
         $daily = $this->getOrCreateDailyTask($task);
         if (!$isNew) {
             $daily->setFieldValues([
@@ -128,7 +131,8 @@ class TasksService extends Component
     protected function hasTaskDerailed(Entry $dailyTask): bool
     {
         $now = $dailyTask->author->now;
-        if ($now->format('Y-m-d') == $dailyTask->author->getDate($dailyTask->startDate)->format('Y-m-d')) {
+        $date = $dailyTask->author->getDate($dailyTask->startDate);
+        if ($now->format('Y-m-d') == $date->format('Y-m-d')) {
             return false;
         }
         //Do not derail tasks if subscription isn't active
@@ -139,6 +143,7 @@ class TasksService extends Component
                 $chargeSucceeded = Stripe::$plugin->stripe->chargeForDerail($dailyTask);
             }
             $email = \Craft::$app->mailer->composeFromKey('charged_for_derail', [
+                'date' => $date->format('d/m/Y'),
                 'task' => $dailyTask,
                 'amount' => $amount,
                 'chargeSucceeded' => $chargeSucceeded

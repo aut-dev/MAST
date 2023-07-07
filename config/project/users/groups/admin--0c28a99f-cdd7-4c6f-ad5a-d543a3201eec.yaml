@@ -4,8 +4,6 @@ name: Admin
 permissions:
   - accesscp
   - accesscpwhensystemisoff
-  - accessplugin-formidable
-  - accessplugin-monitor404s
   - accessplugin-puzzlers-emails
   - accessplugin-puzzlers-translations
   - accessplugin-puzzlersmenus
@@ -14,32 +12,34 @@ permissions:
   - accesssitewhensystemisoff
   - administrateusers
   - 'assignusergroup:0c28a99f-cdd7-4c6f-ad5a-d543a3201eec' # Admin
+  - 'assignusergroup:39ee89b6-a1c3-43e0-90c8-f24db4a11f9a' # Member
   - assignuserpermissions
-  - 'createentries:35489b9b-396d-4bf5-b052-a28c816a8095'
+  - 'createentries:2581372e-c8d5-41e4-a488-8782122e0d9c' # Daily task
   - 'createentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'createentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'createentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'createfolders:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - 'deleteassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - deleteemaillogs
-  - 'deleteentries:35489b9b-396d-4bf5-b052-a28c816a8095'
+  - 'deleteentries:2581372e-c8d5-41e4-a488-8782122e0d9c' # Daily task
   - 'deleteentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'deleteentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'deleteentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'deletepeerassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
-  - 'deletepeerentries:35489b9b-396d-4bf5-b052-a28c816a8095'
+  - 'deletepeerentries:2581372e-c8d5-41e4-a488-8782122e0d9c' # Daily task
   - 'deletepeerentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'deletepeerentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'deletepeerentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
-  - 'deletepeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095'
+  - 'deletepeerentrydrafts:15bf8716-9770-426b-859b-3251b11fd49e' # Edit task
+  - 'deletepeerentrydrafts:2581372e-c8d5-41e4-a488-8782122e0d9c' # Daily task
   - 'deletepeerentrydrafts:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'deletepeerentrydrafts:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
   - 'deletepeerentrydrafts:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'deletepeerentrydrafts:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
   - 'deletepeerentrydrafts:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'deletepeerentrydrafts:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
+  - 'deletepeerentrydrafts:a260febd-af3b-4bda-ba4c-67c7a8edb8d4' # Pay subscription
   - 'deletepeerentrydrafts:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
-  - 'deletepeerentrydrafts:b4f3d0dd-ea59-4971-910f-751b839ab358'
   - 'deletepeerentrydrafts:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
   - 'deletepeerentrydrafts:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
   - 'deletepeerentrydrafts:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
@@ -48,16 +48,8 @@ permissions:
   - 'editimages:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - 'editpeerimages:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - editusers
-  - 'ignoredeletionrestriction:35489b9b-396d-4bf5-b052-a28c816a8095'
-  - 'ignoredeletionrestriction:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
-  - 'ignoredeletionrestriction:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
-  - 'ignoredeletionrestriction:720dc906-57fd-4848-92a1-447acf4703f3' # Task
-  - 'ignoredeletionrestriction:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
-  - 'ignoredeletionrestriction:users'
   - imageresizer-resizeimage
   - impersonateusers
-  - manageformidableforms
-  - manageformidablesubmissions
   - manageredirects
   - managesitemap
   - moderateusers
@@ -67,33 +59,35 @@ permissions:
   - 'replacefiles:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - 'replacepeerfiles:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
   - 'saveassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
-  - 'saveentries:35489b9b-396d-4bf5-b052-a28c816a8095'
+  - 'saveentries:15bf8716-9770-426b-859b-3251b11fd49e' # Edit task
+  - 'saveentries:2581372e-c8d5-41e4-a488-8782122e0d9c' # Daily task
   - 'saveentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'saveentries:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
   - 'saveentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'saveentries:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
   - 'saveentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'saveentries:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
+  - 'saveentries:a260febd-af3b-4bda-ba4c-67c7a8edb8d4' # Pay subscription
   - 'saveentries:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
-  - 'saveentries:b4f3d0dd-ea59-4971-910f-751b839ab358'
   - 'saveentries:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
   - 'saveentries:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
   - 'saveentries:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
   - 'saveentries:e237d745-b0a6-4a3f-9003-984efa160459' # Page error
   - 'savepeerassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
-  - 'savepeerentries:35489b9b-396d-4bf5-b052-a28c816a8095'
+  - 'savepeerentries:2581372e-c8d5-41e4-a488-8782122e0d9c' # Daily task
   - 'savepeerentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'savepeerentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'savepeerentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
-  - 'savepeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095'
+  - 'savepeerentrydrafts:15bf8716-9770-426b-859b-3251b11fd49e' # Edit task
+  - 'savepeerentrydrafts:2581372e-c8d5-41e4-a488-8782122e0d9c' # Daily task
   - 'savepeerentrydrafts:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'savepeerentrydrafts:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
   - 'savepeerentrydrafts:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'savepeerentrydrafts:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
   - 'savepeerentrydrafts:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'savepeerentrydrafts:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
+  - 'savepeerentrydrafts:a260febd-af3b-4bda-ba4c-67c7a8edb8d4' # Pay subscription
   - 'savepeerentrydrafts:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
-  - 'savepeerentrydrafts:b4f3d0dd-ea59-4971-910f-751b839ab358'
   - 'savepeerentrydrafts:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
   - 'savepeerentrydrafts:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
   - 'savepeerentrydrafts:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
@@ -109,33 +103,35 @@ permissions:
   - 'utility:system-report'
   - 'utility:updates'
   - 'viewassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
-  - 'viewentries:35489b9b-396d-4bf5-b052-a28c816a8095'
+  - 'viewentries:15bf8716-9770-426b-859b-3251b11fd49e' # Edit task
+  - 'viewentries:2581372e-c8d5-41e4-a488-8782122e0d9c' # Daily task
   - 'viewentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'viewentries:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
   - 'viewentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'viewentries:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
   - 'viewentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'viewentries:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
+  - 'viewentries:a260febd-af3b-4bda-ba4c-67c7a8edb8d4' # Pay subscription
   - 'viewentries:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
-  - 'viewentries:b4f3d0dd-ea59-4971-910f-751b839ab358'
   - 'viewentries:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
   - 'viewentries:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
   - 'viewentries:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance
   - 'viewentries:e237d745-b0a6-4a3f-9003-984efa160459' # Page error
   - 'viewpeerassets:3be80663-0614-4a4d-9626-631d2bfd20bb' # Public
-  - 'viewpeerentries:35489b9b-396d-4bf5-b052-a28c816a8095'
+  - 'viewpeerentries:2581372e-c8d5-41e4-a488-8782122e0d9c' # Daily task
   - 'viewpeerentries:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'viewpeerentries:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'viewpeerentries:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
-  - 'viewpeerentrydrafts:35489b9b-396d-4bf5-b052-a28c816a8095'
+  - 'viewpeerentrydrafts:15bf8716-9770-426b-859b-3251b11fd49e' # Edit task
+  - 'viewpeerentrydrafts:2581372e-c8d5-41e4-a488-8782122e0d9c' # Daily task
   - 'viewpeerentrydrafts:4af59c54-88a6-4ada-b492-3246b6f6ea7c' # Standard Page
   - 'viewpeerentrydrafts:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
   - 'viewpeerentrydrafts:720dc906-57fd-4848-92a1-447acf4703f3' # Task
   - 'viewpeerentrydrafts:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
   - 'viewpeerentrydrafts:877c3423-006e-4942-bfdb-c44bac344c97' # Timesheet
   - 'viewpeerentrydrafts:9786f806-b266-4b7c-8bc4-a21eab3ddef4' # Imagery
+  - 'viewpeerentrydrafts:a260febd-af3b-4bda-ba4c-67c7a8edb8d4' # Pay subscription
   - 'viewpeerentrydrafts:a2bc72ab-0dab-4c33-bd04-254b7bb9d337' # Home
-  - 'viewpeerentrydrafts:b4f3d0dd-ea59-4971-910f-751b839ab358'
   - 'viewpeerentrydrafts:bf477c2a-b2b3-4dde-a0e0-0978de99ab77' # New task
   - 'viewpeerentrydrafts:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
   - 'viewpeerentrydrafts:d22f9b6b-afc7-49f4-af07-d03a17f0a2af' # Page Maintenance

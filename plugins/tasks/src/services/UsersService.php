@@ -10,7 +10,7 @@ use DateTimeZone;
 class UsersService extends Component
 {
     /**
-     * Change timezone of all tasks and scheduled tasks if a user changes their timezone
+     * Change timezone of all tasks if a user changes their timezone
      *
      * @param User $user
      */
