@@ -5,7 +5,7 @@
 echo "
 ================================ PHP Code ===========================
 "
-vendor/bin/phpcs plugins --tab-width=4 -n --standard=PSR2
+vendor/bin/phpcs plugins --tab-width=4 -n --standard=PSR2 --ignore=plugins/**/migrations
 vendor/bin/phpmd plugins ansi phpmd.ruleset.xml
 echo "
 ================================ Twig Code ==========================
