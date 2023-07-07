@@ -6580,11 +6580,11 @@
         },
         {
             "name": "plugins/tasks",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "dist": {
                 "type": "path",
                 "url": "plugins/tasks",
-                "reference": "398e9ce482cdd72ae899afb40a8f9a42206185f1"
+                "reference": "86e69af64c21229e725dde6ee1dfebe6a6783b95"
             },
             "require": {
                 "craftcms/cms": "^4.0"
