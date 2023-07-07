@@ -1,17 +1,18 @@
 {% set started = currentUser.timerStarted(task.id) %}
-{% set status = task.taskStatus %}
+{% set daily_task = task.dailyTask %}
+{% set status = daily_task.taskStatus %}
 
 {% set progress = 0 %}
 {% set persec = 0 %}
-{% if task.isActive %}
-    {% set spent = task.getTimeSpent(null, true) %}
-    {% set progress = spent / task.duration * 100 %}
-    {% set persec = 1 / task.duration * 100 %}
+{% if daily_task.isActive %}
+    {% set spent = daily_task.getTimeSpent(true) %}
+    {% set progress = spent / daily_task.length * 100 %}
+    {% set persec = 1 / daily_task.length * 100 %}
 {% endif %}
 
-<div class="square task p-3 bg-task rounded {% if started %}timer-started{% endif %}" data-status="{{ status }}" data-id="{{ task.id }}" data-active="{{ task.isActive }}" data-progress="{{ progress }}" data-persec="{{ persec }}">
-    <h4 class="mb-0">{{ task.title }}</h4>
-    <p>{{ task.taskType|ucfirst }} than {{ (task.length / 60)|round }} min</p>
+<div class="square task p-3 bg-task rounded {% if started %}timer-started{% endif %}" data-status="{{ status }}" data-id="{{ task.id }}" data-active="{{ daily_task.isActive }}" data-progress="{{ progress }}" data-persec="{{ persec }}">
+    <h4 class="mb-0">{{ daily_task.title }}</h4>
+    <p>{{ daily_task.taskType|ucfirst }} than {{ (daily_task.length / 60)|round }} min</p>
     <div class="inner">
         {% include "_includes/tasks/inner" %}
     </div>
@@ -20,4 +21,7 @@
         <i class="fa-solid fa-up-down-left-right handle"></i>
         <a href="{{ task.url }}" class="click-through"><i class="fa-solid fa-eye click-through"></i></a>
     </div>
+    {% if getenv('CRAFT_ENVIRONMENT') == 'local' %}
+        <p>Today is {{ currentUser.now|date('d/m/Y H:i', currentUser.timezone) }}</p>
+    {% endif %}
 </div>

@@ -1,13 +1,11 @@
-{% if task.isActive %}
-    {% set progress = 0 %}
-    {% if task.isActive %}
-        {% set spent = task.getTimeSpent(null, true) %}
-        {% set progress = spent / task.duration * 100 %}
-    {% endif %}
+{% set daily_task = task.dailyTask %}
+{% if daily_task.isActive %}
+    {% set spent = daily_task.getTimeSpent(true) %}
+    {% set progress = spent / daily_task.length * 100 %}
     <div class="progress border border-primary">
         <div class="progress-bar" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
-    {% if task.isExpired %}
+    {% if daily_task.isExpired %}
         <p>{{ 'Next deadline : {time}'|t('site', {time: task.nextDeadline|date('d/m/Y H:i', currentUser.timezone)}) }}</p>
     {% else %}
         <p>{{ 'Next deadline : today at {time}'|t('site', {time: task.todayDeadline|date('H:i', currentUser.timezone)}) }}</p>

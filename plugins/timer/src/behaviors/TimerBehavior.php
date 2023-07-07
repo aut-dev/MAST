@@ -23,31 +23,14 @@ class TimerBehavior extends Behavior
     }
 
     /**
-     * Get the time spent on a task
+     * Get the time spent on a task, until a deadline. Will return 0 if timer was started after the deadline
      *
      * @param  Entry $task
      * @return int
      */
-    public function getTimerSpent(Entry $task): int
+    public function getTimerSpent(Entry $task, DateTime $deadline): int
     {
         $date = $this->timerStarted($task->id);
-        if (!$date) {
-            return 0;
-        }
-        return $this->owner->now->getTimeStamp() - $date->getTimeStamp();
-    }
-
-    /**
-     * Get the time spent on a task. Will return 0 if timer was started after today's deadline
-     * Will only return time spent until today's deadline.
-     *
-     * @param  Entry $task
-     * @return int
-     */
-    public function getTimerSpentUntilDeadline(Entry $task): int
-    {
-        $date = $this->timerStarted($task->id);
-        $deadline = $task->todayDeadline;
         if (!$date or $date > $deadline) {
             return 0;
         }

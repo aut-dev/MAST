@@ -33,8 +33,8 @@ class TimerController extends Controller
         $progress = [];
         foreach ($timer as $block) {
             $task = $block->task[0];
-            $time = $task->getTimeSpent(null, true);
-            $duration = $task->getDuration();
+            $time = $task->getDailyTask()->getTimeSpent(true);
+            $duration = $task->getDailyTask()->length;
             $progress[$task->id] = [
                 'time' => $time,
                 'percent' => $duration ? $time / $duration * 100 : 0

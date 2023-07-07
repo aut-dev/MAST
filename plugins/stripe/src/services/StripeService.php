@@ -155,7 +155,7 @@ class StripeService extends Component
     }
 
     /**
-     * Charge for a task derail
+     * Charge for a daily task derail
      *
      * @param  Entry  $task
      * @return bool

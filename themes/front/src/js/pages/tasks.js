@@ -26,7 +26,7 @@ class Tasks
         this.initSortable();
         this.initTasks();
         this.updateProgressPoll();
-        setInterval(() => this.pollTasks(), 30000);
+        setInterval(() => this.pollTasks(), 10000);
         console.log('Tasks initialised');
     }
 

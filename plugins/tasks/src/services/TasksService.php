@@ -13,6 +13,7 @@ use craft\elements\User;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\MoneyHelper;
 use yii\base\InvalidArgumentException;
+use Exception;
 
 class TasksService extends Component
 {
@@ -24,12 +25,9 @@ class TasksService extends Component
      */
     public function checkDerails(): int
     {
-        $tasks = Entry::find()->section('task')->all();
+        $tasks = Entry::find()->section('dailyTask')->processed(false)->all();
         $total = 0;
         foreach ($tasks as $task) {
-            if ($task->author->subscriptionStatus != 'active') {
-                continue;
-            }
             if ($this->hasTaskDerailed($task)) {
                 $total++;
             }
@@ -38,83 +36,155 @@ class TasksService extends Component
     }
 
     /**
-     * Has a task derailed, will return false if there's already a derail saved for that task.
-     * If this was called at midnight, it would check derails for the day before
+     * Create daily tasks for all tasks
+     */
+    public function createDailyTasks()
+    {
+        $tasks = Entry::find()->section('task')->all();
+        foreach ($tasks as $task) {
+            $this->getOrCreateDailyTask($task);
+        }
+    }
+
+    /**
+     * Actions before a task is saved, need to update all daily task statuses
      *
-     * @param  Entry   $task
+     * @param  Entry  $task
+     */
+    public function beforeSavingTask(Entry $task)
+    {
+        $old = Entry::find()->section('task')->id($task->id)->anyStatus()->one();
+        if ($old->enabled !== $task->enabled) {
+            $dailys = Entry::find()->section('dailyTask')->anyStatus()->relatedTo($task)->all();
+            foreach ($dailys as $daily) {
+                $daily->enabled = $task->enabled;
+                \Craft::$app->elements->saveElement($daily, false);
+            }
+        }
+    }
+
+    /**
+     * Actions before a task is deleted, need to delete all daily tasks
+     *
+     * @param  Entry  $task
+     * @param  bool   $hardDelete
+     */
+    public function beforeDeletingTask(Entry $task, bool $hardDelete)
+    {
+        $dailys = Entry::find()->section('dailyTask')->anyStatus()->relatedTo($task)->all();
+        foreach ($dailys as $daily) {
+            \Craft::$app->elements->deleteElement($daily, $hardDelete);
+        }
+    }
+
+    /**
+     * Actions after a task is saved, need to update today's daily task
+     *
+     * @param  Entry  $task
+     */
+    public function afterSavingTask(Entry $task, bool $isNew)
+    {
+        $daily = $this->getOrCreateDailyTask($task);
+        if (!$isNew) {
+            $daily->setFieldValues([
+                'taskType' => $task->taskType,
+                'deadline' => $task->deadline,
+                'length' => $task->getDuration(),
+                'committed' => $task->committed
+            ]);
+            \Craft::$app->elements->saveElement($daily);
+        }
+    }
+
+    /**
+     * Get or create a daily task for a task and a day, day will default to today if null
+     *
+     * @param  Entry  $task
+     * @param  ?DateTime $day
+     * @return Entry
+     */
+    public function getOrCreateDailyTask(Entry $task, ?DateTime $day = null): Entry
+    {
+        if ($day === null) {
+            $day = $task->author->today;
+        }
+        $end = (clone $day)->setTime(23, 59, 59);
+        $query = Entry::find()->section('dailyTask')->relatedTo($task);
+        DateHelper::addDateParamsBetween($query, $day, $end);
+        $daily = $query->one();
+        if ($daily) {
+            return $daily;
+        }
+        return $this->createDailyTask($task, $day);
+    }
+
+    /**
+     * Has a task derailed, will only check if the daily task was for a different day than today.
+     * Will charge the author if the task was derailed, and send an email if that charge failed.
+     *
+     * @param  Entry   $dailyTask
      * @return boolean
      */
-    protected function hasTaskDerailed(Entry $task): bool
+    protected function hasTaskDerailed(Entry $dailyTask): bool
     {
-        $day = $task->author->now;
-        $oneMinAgo = (clone $day)->sub(new DateInterval('PT1M'));
-        if ($day->format('d') != $oneMinAgo->format('d')) {
-            $day = $oneMinAgo;
-            $day->setTime(23, 59, 59);
-        }
-        if (!$task->hasDerailed($day)) {
+        $now = $dailyTask->author->now;
+        if ($now->format('Y-m-d') == $dailyTask->author->getDate($dailyTask->startDate)->format('Y-m-d')) {
             return false;
         }
-        $derail = Entry::find()->section('derail')->relatedTo($task);
-        $start = (clone $day)->setTime(0, 0, 0);
-        $end = (clone $day)->setTime(23, 59, 59);
-        DateHelper::addDateParamsBetween($derail, $start, $end);
-        if ($derail->one()) {
-            return false;
+        //Do not derail tasks if subscription isn't active
+        if ($dailyTask->author->subscriptionStatus == 'active' and $dailyTask->hasDerailed()) {
+            $chargeSucceeded = false;
+            $amount = MoneyHelper::toNumber($dailyTask->committed);
+            if ($amount > 0) {
+                $chargeSucceeded = Stripe::$plugin->stripe->chargeForDerail($dailyTask);
+            }
+            $email = \Craft::$app->mailer->composeFromKey('charged_for_derail', [
+                'task' => $dailyTask,
+                'amount' => $amount,
+                'chargeSucceeded' => $chargeSucceeded
+            ]);
+            $email->setTo($dailyTask->author->email)->send();
+            $dailyTask->setFieldValues([
+                'chargeSucceeded' => $chargeSucceeded,
+                'hasDerailed' => true
+            ]);
         }
-        $this->taskHasDerailed($task, $day);
-        return true;
-    }
-
-    /**
-     * Actions when a task has derailed, will create a derail entry and charge the user
-     *
-     * @param  Entry    $task
-     * @param  DateTime $day
-     */
-    protected function taskHasDerailed(Entry $task, DateTime $day)
-    {
-        $chargeSucceeded = false;
-        $amount = MoneyHelper::toNumber($task->committed);
-        if ($amount > 0) {
-            $chargeSucceeded = Stripe::$plugin->stripe->chargeForDerail($task);
-        }
-        $this->createDerail($task, $chargeSucceeded, $day);
-        $email = \Craft::$app->mailer->composeFromKey('charged_for_derail', [
-            'task' => $task,
-            'amount' => $amount
+        $dailyTask->setFieldValues([
+            'processed' => true
         ]);
-        $email->setTo($task->author->email)->send();
+        \Craft::$app->elements->saveElement($dailyTask, false);
+        return $dailyTask->hasDerailed;
     }
 
     /**
-     * Create a derail entry
+     * Create a daily task from a task
      *
      * @param  Entry    $task
-     * @param  bool     $chargeSucceeded
      * @param  DateTime $day
-     * @return ?Entry
+     * @return Entry
      */
-    protected function createDerail(Entry $task, bool $chargeSucceeded, DateTime $day): ?Entry
+    protected function createDailyTask(Entry $task, DateTime $day): Entry
     {
-        $section = \Craft::$app->sections->getSectionByHandle('derail');
+        $section = \Craft::$app->sections->getSectionByHandle('dailyTask');
         $types = $section->entryTypes;
         $type = reset($types);
-        $derail = new Entry([
+        $daily = new Entry([
             'sectionId' => $section->id,
             'typeId' => $type->id,
             'authorId' => $task->authorId,
         ]);
-        $derail->setFieldValues([
+        $daily->setFieldValues([
             'task' => [$task->id],
             'startDate' => $day,
-            'chargeSucceeded' => $chargeSucceeded,
-            'charge' => $task->committed
+            'taskType' => $task->taskType,
+            'deadline' => $task->deadline,
+            'length' => $task->getDuration($day),
+            'committed' => $task->committed
         ]);
-        $derail->scenario = Element::SCENARIO_LIVE;
-        if (\Craft::$app->elements->saveElement($derail)) {
-            return $derail;
+        $daily->scenario = Element::SCENARIO_LIVE;
+        if (!\Craft::$app->elements->saveElement($daily)) {
+            throw new Exception("Couldn't save daily task : " . print_r($daily->errors, true));
         }
-        return null;
+        return $daily;
     }
 }

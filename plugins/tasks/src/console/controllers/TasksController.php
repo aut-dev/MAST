@@ -14,4 +14,11 @@ class TasksController extends Controller
         $this->stdout("Found $total derailed tasks and charged users\n");
         return ExitCode::OK;
     }
+
+    public function actionCreateDailyTasks()
+    {
+        Tasks::$plugin->tasks->createDailyTasks();
+        $this->stdout("Created all daily tasks\n");
+        return ExitCode::OK;
+    }
 }

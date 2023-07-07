@@ -1,0 +1,14 @@
+columnSuffix: qtxyqczk
+contentColumnType: boolean
+fieldGroup: 0ba8d9d5-2692-4324-acd8-0187c46d6e82 # Common
+handle: hasDerailed
+instructions: null
+name: 'Has derailed'
+searchable: false
+settings:
+  default: false
+  offLabel: null
+  onLabel: null
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Lightswitch

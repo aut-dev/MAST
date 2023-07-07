@@ -1,7 +1,7 @@
 defaultPlacement: end
 enableVersioning: true
-handle: derail
-name: Derail
+handle: dailyTask
+name: 'Daily task'
 previewTargets:
   -
     __assoc__:

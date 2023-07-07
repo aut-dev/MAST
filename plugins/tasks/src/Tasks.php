@@ -2,6 +2,7 @@
 
 namespace Plugins\Tasks;
 
+use Plugins\Tasks\behaviors\DailyTaskBehavior;
 use Plugins\Tasks\behaviors\TaskBehavior;
 use Plugins\Tasks\services\TasksService;
 use Plugins\Tasks\services\UsersService;
@@ -15,10 +16,9 @@ use yii\base\Event;
 
 class Tasks extends Plugin
 {
-    /**
-     * @var Example
-     */
     public static $plugin;
+
+    public string $schemaVersion = '1.0.1';
 
     /**
      * @inheritdoc
@@ -40,6 +40,24 @@ class Tasks extends Plugin
 
     protected function registerTasksEvents()
     {
+        Event::on(Elements::class, Elements::EVENT_AFTER_SAVE_ELEMENT, function (Event $event) {
+            $entry = $event->element;
+            if ($entry instanceof Entry and !ElementHelper::isDraftOrRevision($entry) and $entry->section->handle == 'task') {
+                Tasks::$plugin->tasks->afterSavingTask($entry, $event->isNew);
+            }
+        });
+        Event::on(Elements::class, Elements::EVENT_BEFORE_SAVE_ELEMENT, function (Event $event) {
+            $entry = $event->element;
+            if ($entry instanceof Entry and !ElementHelper::isDraftOrRevision($entry) and $entry->section->handle == 'task') {
+                Tasks::$plugin->tasks->beforeSavingTask($entry, $event->isNew);
+            }
+        });
+        Event::on(Elements::class, Elements::EVENT_BEFORE_DELETE_ELEMENT, function (Event $event) {
+            $entry = $event->element;
+            if ($entry instanceof Entry and !ElementHelper::isDraftOrRevision($entry) and $entry->section->handle == 'task') {
+                Tasks::$plugin->tasks->beforeDeletingTask($entry, $event->hardDelete);
+            }
+        });
     }
 
     protected function registerUserEvents()
@@ -52,9 +70,6 @@ class Tasks extends Plugin
         });
     }
 
-    /**
-     * Register plugins components
-     */
     protected function registerComponents()
     {
         $this->setComponents([
@@ -69,6 +84,9 @@ class Tasks extends Plugin
             if ($event->sender->sectionId) {
                 if ($event->sender->section->handle == 'task') {
                     $event->sender->attachBehavior('plugin-tasks', TaskBehavior::class);
+                }
+                if ($event->sender->section->handle == 'dailyTask') {
+                    $event->sender->attachBehavior('plugin-tasks', DailyTaskBehavior::class);
                 }
             }
         });
