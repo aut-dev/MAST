@@ -1,12 +1,22 @@
 /* global $ App */
 
+import '../../css/app/components/add-task.scss';
+
 class AddTask
 {
     $form;
+    $modal;
+    modal;
 
     constructor () 
     {
         this.$form = $('#add-task-form');
+        this.$modal = $('#delete-task-modal');
+        if (this.$modal.length) {
+            App.getBootstrap().then((bootstrap) => {
+                this.modal = new bootstrap.Modal(document.getElementById('delete-task-modal'));
+            });
+        }
         this.initSubmit();
         this.initWeeks();
         this.initLength();

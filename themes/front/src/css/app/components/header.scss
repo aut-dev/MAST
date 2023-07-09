@@ -26,7 +26,7 @@
         height: 72px;
     }
     .header-fixed {
-        background-color: $gray-300;
+        background-color: $gray-100;
         z-index: 999;
     }
     .mobilenav-toggler {
@@ -41,7 +41,7 @@
         padding: 0;
         width: 28px;
         span {
-            background-color: $primary;
+            background-color: $body-color;
             display: block;
             height: 2px;
             transform-origin: center;

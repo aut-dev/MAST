@@ -47,14 +47,7 @@
                     <div class="row align-items-center">
                         <div class="col">
                             <a href="/" class="d-flex">
-                                <div class="logo">
-                                    {% if imagery.image.0 is defined %}
-                                        {{ images.responsiveImg(imagery.image.first, [
-                                            {width: 55}
-                                        ], {}, 55) }}
-                                    {% endif %}
-                                </div>
-                                <div class="site-name">{{ siteName }}</div>
+                                <div class="site-name text-body fw-bold">{{ siteName|upper }}</div>
                             </a>
                         </div>
                         <div class="col d-flex justify-content-end">

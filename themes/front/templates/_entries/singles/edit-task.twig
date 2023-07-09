@@ -9,10 +9,17 @@
 {% endif %}
 
 {% block content %}
-    <div class="container">
-        <h1 class="text-center">{{ entry.title|t('site', {title: task.title}) }}</h1>
+    <div class="container container-small">
+        <div class="mb-3">
+            <a href="{{ task.url }}" class="text-purple2"><i class="fa-solid fa-arrow-left"></i> {{ 'Back'|t }}</a>
+        </div>
+        <h1 class="text-center">{{ 'Edit task'|t('site') }}</h1>
         <div class="d-flex justify-content-center">
             {% include "_includes/tasks/form" %}
         </div>
+        {% if task.id %}
+            <a href="#" class="js-delete-task btn btn-danger mt-5" data-id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#delete-task-modal">{{ 'Delete task'|t }}</a>
+            {% include "_includes/tasks/delete-modal" %}
+        {% endif %}
     </div>
 {% endblock %}

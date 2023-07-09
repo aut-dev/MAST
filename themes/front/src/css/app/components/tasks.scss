@@ -1,8 +1,9 @@
 .task {
     cursor: pointer;
     background: white;
-    border-width: 2px;
+    border-width: 3px;
     border-style: solid;
+    border-radius: 12px !important;
     &.timer-started {
         border-style: dashed !important;
     }
@@ -20,6 +21,19 @@
     }
     &[data-status="derailed"] {
         border-color: $task-derailed;
+    }
+    .complete-tick {
+        position: relative;
+        .fa-check::after {
+            content: "";
+            border: 1px solid $body-color;
+            width: 25px;
+            height: 25px;
+            border-radius: 100%;
+            position: absolute;
+            left: -5px;
+            top: -1px;
+        }
     }
 }
 

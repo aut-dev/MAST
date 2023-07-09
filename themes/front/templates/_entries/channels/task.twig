@@ -9,6 +9,9 @@
 
 {% block content %}
     <div class="container">
+        <div class="mb-3">
+            <a href="/tasks" class="text-purple2"><i class="fa-solid fa-arrow-left"></i> {{ 'Back'|t }}</a>
+        </div>
         <h1>{{ entry.title }}</h1>
         <div class="row">
             <div class="col-6">{{ 'Starting date'|t }}</div>

@@ -3,9 +3,17 @@
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\TasksPage') %}
 
+{% block content_title %}
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>{{ entry.title }}</h1>
+            <a href="/tasks/new"><i class="fa-solid fa-plus fs-3 text-body"></i></a>
+        </div>
+    </div>
+{% endblock %}
+
 {% block after_content_matrix %}
     <div class="container">
-        <a href="/tasks/new" class="btn btn-primary mb-4">{{ 'New task'|t }}</a>
         {% set tasks = craft.entries.section('task').authorId(currentUser.id).orderBy('order').all() %}
         {% if tasks %}
             <div class="row" id="sortable">
@@ -15,7 +23,8 @@
                     </div>
                 {% endfor %}
             </div>
+        {% else %}
+            <p>{{ 'You have no tasks yet'|t }}</p>
         {% endif %}
     </div>
-    {% include "_includes/tasks/delete-modal" %}
 {% endblock %}
