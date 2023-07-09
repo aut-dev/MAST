@@ -47,6 +47,9 @@ class UserBehavior extends Behavior
             return false;
         }
         $card = $method->card;
+        if (!$card) {
+            return false;
+        }
         $now = $this->owner->now;
         return ($card->exp_year == $now->format('Y') and $card->exp_month == ($now->format('n') - 1));
     }
