@@ -1,4 +1,4 @@
-/* global $ App Globals */
+/* global $ Globals */
 
 import 'jquery-ui/themes/base/core.css';
 import 'jquery-ui/themes/base/theme.css';
@@ -8,8 +8,6 @@ import '../../css/app/components/tasks.scss';
 
 class Tasks
 {
-    $modal;
-    modal;
     interval;
     polling = false;
     $tasks;
@@ -17,12 +15,6 @@ class Tasks
     constructor () 
     {
         this.$tasks = $('.task');
-        this.$modal = $('#delete-task-modal');
-        App.getBootstrap().then((bootstrap) => {
-            this.modal = new bootstrap.Modal(document.getElementById('delete-task-modal'));
-            this.initModal();
-        });
-        this.initDeleteLinks();
         this.initSortable();
         this.initTasks();
         this.updateProgressPoll();
@@ -32,16 +24,14 @@ class Tasks
 
     initTasks()
     {
-        this.$tasks.click((e) => {
-            if ($(e.target).hasClass('click-through')) {
-                return;
-            }
+        this.$tasks.find('.js-start-timer').click((e) => {
             e.preventDefault();
-            let taskId = $(e.currentTarget).data('id');
+            let $task = $(e.target).closest('.task');
+            let taskId = $task.data('id');
             if (!taskId) {
                 return;
             }
-            if ($(e.currentTarget).hasClass('timer-started')) {
+            if ($task.hasClass('timer-started')) {
                 this.stopTimer(taskId);
             } else {
                 this.startTimer(taskId);
@@ -54,20 +44,6 @@ class Tasks
         $('#sortable').sortable({
             handle: ".handle",
             stop: this.updatePositions
-        });
-    }
-
-    initDeleteLinks()
-    {
-        $('.js-delete-task').click(e => {
-            this.$modal.find('.js-delete').data('id', $(e.currentTarget).data('id'));
-        });
-    }
-
-    initModal()
-    {
-        this.$modal.find('.js-delete').click((e) => {
-            this.deleteTask($(e.currentTarget).data('id'));
         });
     }
 
@@ -88,6 +64,7 @@ class Tasks
 
     pollProgress()
     {
+        console.log('poll');
         $.each($('.task.timer-started'), (i, task) => {
             let $task = $(task);
             let progress = parseFloat($task.data('progress'));
@@ -112,7 +89,9 @@ class Tasks
                 taskId: taskId
             }
         }).done(() => {
-            $('.task[data-id=' + taskId + ']').removeClass('timer-started');
+            let $task = this.getTask(taskId);
+            $task.removeClass('timer-started');
+            $task.find('.js-start-timer').html($task.find('.js-start-timer').data('textstart'));
             this.updateProgressPoll();
         });
     }
@@ -125,7 +104,9 @@ class Tasks
                 taskId: taskId
             }
         }).done(() => {
-            $('.task[data-id=' + taskId + ']').addClass('timer-started');
+            let $task = this.getTask(taskId);
+            $task.addClass('timer-started');
+            $task.find('.js-start-timer').html($task.find('.js-start-timer').data('textstop'));
             this.updateProgressPoll();
         });
     }
@@ -167,28 +148,6 @@ class Tasks
                 "X-CSRF-Token": Globals.csrfToken
             }
         });
-    }
-
-    deleteTask(id)
-    {
-        if (id) {
-            $.ajax({
-                url: '/',
-                method: 'post',
-                data: {
-                    action: 'entries/save-entry',
-                    entryId: id,
-                    enabled: 0
-                },
-                dataType: 'json',
-                headers: {
-                    "X-CSRF-Token": Globals.csrfToken
-                }
-            }).done(() => {
-                this.getTask(id).parent().remove();
-                this.modal.hide();
-            });
-        }
     }
 
     getTask(id)

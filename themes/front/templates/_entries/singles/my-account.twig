@@ -5,7 +5,7 @@
 {% set method = currentUser.getPaymentMethod() %}
 
 {% block after_content_matrix %}
-    <div class="container text-center">
+    <div class="container container-small text-center">
         <h2 class="mb-3">{{ 'My Subscription'|t }}</h2>
         {% if currentUser.stripeSessionId %}
             <form method="post">
@@ -14,8 +14,8 @@
                 <button class="btn btn-primary" type="submit">{{ 'Manage my subscription'|t }}</button>
             </form>
         {% endif %}
-        <h2 class="my-3">{{ 'Payment method'|t }}</h2>
         {% if method and method.card is defined %}
+            <h2 class="my-3">{{ 'Payment method'|t }}</h2>
             <p>{{ '{type} ending in {ends}'|t('site', {
                 type: method.card.brand|ucfirst,
                 ends: method.card.last4

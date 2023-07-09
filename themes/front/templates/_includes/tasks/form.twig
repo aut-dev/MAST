@@ -1,11 +1,11 @@
 {% set task = task ?? null %}
 
 {% macro week(block, type, index) %}
-    <div class="d-flex week">
+    <div class="row week">
         <input type="hidden" class="type" name="fields[weeks][{{ index }}][type]" value="{{ type.id }}">
         <input type="hidden" class="enabled" name="fields[weeks][{{ index }}][enabled]" value="1">
         {% for day in ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] %}
-            <div class="d-flex flex-column me-1">
+            <div class="col-3 col-md p-1">
                 <label>{{ day|capitalize|t }}</label>
                 {{ input('number', 'fields[weeks][' ~ index ~ '][fields][' ~ day ~ ']', block ? block[day] : 1, {
                     class: 'form-control day',

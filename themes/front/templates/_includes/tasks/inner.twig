@@ -2,7 +2,7 @@
 {% if daily_task and daily_task.isActive %}
     {% set spent = daily_task.getTimeSpent(true) %}
     {% set progress = spent / daily_task.length * 100 %}
-    <div class="progress border border-primary">
+    <div class="progress">
         <div class="progress-bar" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
     {% if daily_task.isExpired %}

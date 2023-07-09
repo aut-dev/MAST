@@ -22,15 +22,7 @@ img {
     z-index: 1056;
 }
 
-#login-form,
-#signup-form,
-#profile-form,
-#card-form {
-    width: 400px;
-    max-width: 100%;
-}
-
-#add-task-form {
+.container.container-small {
     width: 500px;
     max-width: 100%;
 }

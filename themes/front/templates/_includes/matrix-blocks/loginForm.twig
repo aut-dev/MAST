@@ -1,5 +1,6 @@
 {% set password_set = craft.app.request.getQueryParam("password-set") %}
 {% set email_verified = craft.app.request.getQueryParam("verified") %}
+{% set registered = craft.app.request.getQueryParam("registered") %}
 
 {% if password_set %}
     <div class="container">
@@ -11,7 +12,14 @@
 {% if email_verified %}
     <div class="container">
         <div class="alert alert-success">
-            {{ 'Your email is now verified, please login'|t }}
+            {{ 'Your account is now verified, please login'|t }}
+        </div>
+    </div>
+{% endif %}
+{% if registered %}
+    <div class="container">
+        <div class="alert alert-warning">
+            {{ 'Your account has been created, please check your inbox to activate it'|t }}
         </div>
     </div>
 {% endif %}

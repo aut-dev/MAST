@@ -3,9 +3,7 @@
     background: white;
     border-width: 2px;
     border-style: solid;
-    &.timer-started {
-        border-style: dashed !important;
-    }
+    border-radius: 12px !important;
     &[data-status="inactive"] {
         border-color: $task-inactive;
     }

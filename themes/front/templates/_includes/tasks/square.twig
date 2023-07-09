@@ -1,27 +1,32 @@
 {% set started = currentUser.timerStarted(task.id) %}
 {% set daily_task = task.dailyTask %}
 {% set status = task.taskStatus %}
+{% set length = task.length %}
 
 {% set progress = 0 %}
 {% set persec = 0 %}
-{% if daily_task and daily_task.isActive %}
-    {% set spent = daily_task.getTimeSpent(true) %}
-    {% set progress = spent / daily_task.length * 100 %}
-    {% set persec = 1 / daily_task.length * 100 %}
+{% if daily_task %}
+    {% set length = daily_task.length %}
+    {% if daily_task.isActive %}
+        {% set spent = daily_task.getTimeSpent(true) %}
+        {% set progress = spent / length * 100 %}
+        {% set persec = 1 / length * 100 %}
+    {% endif %}
 {% endif %}
 
-<div class="square task p-3 bg-task rounded {% if started %}timer-started{% endif %}" data-status="{{ status }}" data-id="{{ task.id }}" data-progress="{{ progress }}" data-persec="{{ persec }}">
-    <h4 class="mb-0">{{ task.title }}</h4>
-    <p>{{ task.taskType|ucfirst }} than {{ (task.length / 60)|round }} min</p>
-    <div class="inner">
-        {% include "_includes/tasks/inner" %}
+<a href="{{ task.url }}" class="text-body">
+    <div class="square task p-3 bg-task rounded {% if started %}timer-started{% endif %}" data-status="{{ status }}" data-id="{{ task.id }}" data-progress="{{ progress }}" data-persec="{{ persec }}">
+        <h4>{{ task.title }}</h4>
+        <p class="text-light">{{ task.taskType|ucfirst }} than {{ (length / 60)|round }} min</p>
+        <div class="inner">
+            {% include "_includes/tasks/inner" %}
+        </div>
+        <div class="actions">
+            <span class="js-start-timer text-purple2" data-textstart="{{ 'Start'|t }}" data-textstop="{{ 'Stop'|t }}">{% if started %}{{ 'Stop'|t }}{% else %}
+                {{ 'Start'|t }}{% endif %}</span>
+        </div>
+        {% if getenv('CRAFT_ENVIRONMENT') == 'local' %}
+            {# <p>Today is {{ currentUser.now|date('d/m/Y H:i', currentUser.timezone) }}</p> #}
+        {% endif %}
     </div>
-    <div class="actions d-flex justify-content-between align-items-center">
-        <a href="#" class="js-delete-task click-through" data-id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#delete-task-modal"><i class="fa-solid fa-trash click-through"></i></a>
-        <i class="fa-solid fa-up-down-left-right handle"></i>
-        <a href="{{ task.url }}" class="click-through"><i class="fa-solid fa-eye click-through"></i></a>
-    </div>
-    {% if getenv('CRAFT_ENVIRONMENT') == 'local' %}
-        <p>Today is {{ currentUser.now|date('d/m/Y H:i', currentUser.timezone) }}</p>
-    {% endif %}
-</div>
+</a>
