@@ -21,7 +21,7 @@ class UserBehavior extends Behavior
         if (!$method) {
             return false;
         }
-        $card = $method->card;
+        $card = $method->card ?? null;
         if (!$card) {
             return false;
         }
@@ -46,7 +46,7 @@ class UserBehavior extends Behavior
         if (!$method) {
             return false;
         }
-        $card = $method->card;
+        $card = $method->card ?? null;
         if (!$card) {
             return false;
         }
