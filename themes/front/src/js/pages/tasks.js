@@ -151,7 +151,7 @@ class Tasks
     updatePositions()
     {
         let data = [];
-        $.each(this.$tasks, (i, item) => {
+        $.each($('.task'), (i, item) => {
             data.push({
                 id: $(item).data('id'),
                 order: i
