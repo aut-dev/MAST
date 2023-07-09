@@ -22,6 +22,9 @@ class UserBehavior extends Behavior
             return false;
         }
         $card = $method->card;
+        if (!$card) {
+            return false;
+        }
         $now = $this->owner->now;
         if ($card->exp_year < $now->format('Y')) {
             return false;
