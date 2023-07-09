@@ -1,5 +1,5 @@
 {% set daily_task = task.dailyTask %}
-{% if daily_task.isActive %}
+{% if daily_task and daily_task.isActive %}
     {% set spent = daily_task.getTimeSpent(true) %}
     {% set progress = spent / daily_task.length * 100 %}
     <div class="progress border border-primary">

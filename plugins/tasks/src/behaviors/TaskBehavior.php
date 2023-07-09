@@ -14,16 +14,32 @@ class TaskBehavior extends Behavior
     protected $daily;
 
     /**
+     * Get the task status, can be either 'active', 'inactive', 'complete', 'derailed' or 'expired'
+     *
+     * @return string
+     */
+    public function getTaskStatus(): string
+    {
+        if ($daily = $this->getDailyTask()) {
+            return $daily->getTaskStatus();
+        }
+        return 'inactive';
+    }
+
+    /**
      * Get the associated daily task
      *
      * @return Entry
      */
-    public function getDailyTask(): Entry
+    public function getDailyTask(): ?Entry
     {
         if ($this->daily === null) {
-            $this->daily = Tasks::$plugin->tasks->getOrCreateDailyTask($this->owner);
+            $this->daily = false;
+            if ($daily = Tasks::$plugin->tasks->getOrCreateDailyTask($this->owner)) {
+                $this->daily = $daily;
+            }
         }
-        return $this->daily;
+        return $this->daily ?: null;
     }
 
     /**

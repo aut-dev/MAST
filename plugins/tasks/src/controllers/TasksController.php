@@ -15,7 +15,7 @@ class TasksController extends Controller
         $out = [];
         foreach ($tasks as $task) {
             $out[$task->id] = [
-               'status' => $task->getDailyTask()->getTaskStatus(),
+               'status' => $task->getTaskStatus(),
                'inner' => \Craft::$app->view->renderTemplate('_includes/tasks/inner', [
                     'task' => $task
                ])

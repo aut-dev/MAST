@@ -84,19 +84,56 @@ class TasksService extends Component
      */
     public function afterSavingTask(Entry $task, bool $isNew)
     {
-        if (!$task->enabled) {
-            return;
-        }
-        $daily = $this->getOrCreateDailyTask($task);
         if (!$isNew) {
-            $daily->setFieldValues([
-                'taskType' => $task->taskType,
-                'deadline' => $task->deadline,
-                'length' => $task->getDuration(),
-                'committed' => $task->committed
-            ]);
-            \Craft::$app->elements->saveElement($daily);
+            $this->deleteOutdatedDailyTasks($task);
+            $daily = $this->getDailyTask($task);
+            if ($daily) {
+                $daily->setFieldValues([
+                    'taskType' => $task->taskType,
+                    'deadline' => $task->deadline,
+                    'length' => $task->getDuration(),
+                    'committed' => $task->committed
+                ]);
+                $daily->enabled = $task->enabled;
+                \Craft::$app->elements->saveElement($daily, false);
+            }
         }
+    }
+
+    /**
+     * Delete daily tasks that are outdated (before the task start date).
+     * We'll keep the processed ones for derail checks purposes
+     *
+     * @param  Entry  $task
+     */
+    public function deleteOutdatedDailyTasks(Entry $task)
+    {
+        $query = Entry::find()->section('dailyTask')->relatedTo($task)->anyStatus()->processed(false);
+        DateHelper::addDateParamsSmallerThan($query, $task->startDate, 'startDate', true);
+        foreach ($query->all() as $daily) {
+            \Craft::$app->elements->deleteElement($daily, true);
+        }
+    }
+
+    /**
+     * Get the daily task for a task and a day, day will default to today if null
+     *
+     * @param  Entry  $task
+     * @param  ?DateTime $day
+     * @return ?Entry
+     */
+    public function getDailyTask(Entry $task, ?DateTime $day = null): ?Entry
+    {
+        if ($day === null) {
+            $day = $task->author->today;
+        }
+        $end = (clone $day)->setTime(23, 59, 59);
+        $query = Entry::find()->section('dailyTask')->relatedTo($task);
+        if (!$task->enabled) {
+            $query->anyStatus();
+        }
+        DateHelper::addDateParamsBetween($query, $day, $end);
+        return $query->one();
     }
 
     /**
@@ -104,19 +141,18 @@ class TasksService extends Component
      *
      * @param  Entry  $task
      * @param  ?DateTime $day
-     * @return Entry
+     * @return ?Entry
      */
-    public function getOrCreateDailyTask(Entry $task, ?DateTime $day = null): Entry
+    public function getOrCreateDailyTask(Entry $task, ?DateTime $day = null): ?Entry
     {
         if ($day === null) {
             $day = $task->author->today;
         }
-        $end = (clone $day)->setTime(23, 59, 59);
-        $query = Entry::find()->section('dailyTask')->relatedTo($task);
-        DateHelper::addDateParamsBetween($query, $day, $end);
-        $daily = $query->one();
-        if ($daily) {
+        if ($daily = $this->getDailyTask($task, $day)) {
             return $daily;
+        }
+        if ($task->startDate > $day or !$task->enabled) {
+            return null;
         }
         return $this->createDailyTask($task, $day);
     }
@@ -162,7 +198,7 @@ class TasksService extends Component
     }
 
     /**
-     * Create a daily task from a task
+     * Create a daily task for a task and a day
      *
      * @param  Entry    $task
      * @param  DateTime $day
