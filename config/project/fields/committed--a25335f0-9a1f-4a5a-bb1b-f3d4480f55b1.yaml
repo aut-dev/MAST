@@ -9,7 +9,7 @@ settings:
   currency: USD
   defaultValue: null
   max: null
-  min: 0
+  min: 50
   showCurrency: true
   size: null
 translationKeyFormat: null

@@ -133,8 +133,8 @@
         {{ input('number', 'fields[committed][value]', task ? task.committed.amount / 100 : 1, {
             id: 'committed',
             class: 'form-control',
-            min: 1,
-            step: 1
+            min: 0.5,
+            step: 0.1
         }) }}
     </div>
 
