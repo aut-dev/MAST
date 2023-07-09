@@ -21,6 +21,7 @@ use craft\elements\Entry;
 use craft\elements\User;
 use craft\helpers\MoneyHelper;
 use craft\helpers\UrlHelper;
+use yii\caching\TagDependency;
 
 class StripeService extends Component
 {
@@ -83,6 +84,7 @@ class StripeService extends Component
             'subscriptionStatus' => $subscription->status,
             'subscriptionExpires' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
         ]);
+        $this->clearPaymentMethodCache($user);
         \Craft::$app->elements->saveElement($user, false);
     }
 
@@ -101,6 +103,7 @@ class StripeService extends Component
             'subscriptionExpires' => null,
             'paymentMethod' => null
         ]);
+        $this->clearPaymentMethodCache($user);
         \Craft::$app->elements->saveElement($user, false);
     }
 
@@ -139,7 +142,10 @@ class StripeService extends Component
         $data = \Craft::$app->cache->get(self::PAYMENT_METHOD_CACHE_KEY . $user->id);
         if ($data === false) {
             $data = $this->getClient()->customers->retrievePaymentMethod($user->stripeCustomer, $user->paymentMethod);
-            \Craft::$app->cache->set(self::PAYMENT_METHOD_CACHE_KEY . $user->id, $data, 86400);
+            $dep = new TagDependency([
+                'tags' => [self::PAYMENT_METHOD_CACHE_KEY]
+            ]);
+            \Craft::$app->cache->set(self::PAYMENT_METHOD_CACHE_KEY . $user->id, $data, 86400, $dep);
         }
         return $data;
     }
