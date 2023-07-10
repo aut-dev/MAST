@@ -1,10 +1,11 @@
 {% set started = currentUser.timerStarted(task) %}
 {% set daily_task = task.dailyTask %}
+{% set is_active = daily_task and daily_task.isActive %}
 {% set status = task.taskStatus %}
 {% set length = task.length %}
-
 {% set progress = 0 %}
 {% set persec = 0 %}
+
 {% if daily_task %}
     {% set length = daily_task.length %}
     {% if daily_task.isActive %}
@@ -14,15 +15,24 @@
 {% endif %}
 
 <a href="{{ task.url }}" class="text-body task-wrapper">
-    <div class="square task p-3 bg-task rounded {% if started %}timer-started polling{% endif %}" data-status="{{ status }}" data-id="{{ task.id }}" data-progress="{{ progress }}" data-persec="{{ persec }}">
+    <div class="square task p-3 bg-task rounded {% if started %}timer-started{% endif %}" data-status="{{ status }}" data-id="{{ task.id }}" data-progress="{{ progress }}" data-persec="{{ persec }}">
         <div class="d-flex justify-content-between align-items-center">
             <h4>{{ task.title }}</h4>
             <span class="complete-tick" {% if status != 'complete' %}style="display: none"{% endif %}><i class="fa-solid fa-check"></i></span>
         </div>
         <p class="text-light">{{ task.taskType|ucfirst }} than {{ (length / 60)|round }} min</p>
-        <div class="inner">
-            {% include "_includes/tasks/inner" %}
+        <div class="progress if-active" {% if not is_active %}style="display:none"{% endif %}>
+            <div class="progress-bar" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
+        <p class="if-active" {% if not is_active %}style="display:none"{% endif %}>
+            Next deadline : <span class="next-deadline">
+            {% if daily_task and daily_task.isExpired %}
+                {{ task.nextDeadline|date('d/m/Y H:i', currentUser.timezone) }}
+            {% else %}
+                {{ 'today at ' ~ task.todayDeadline|date('H:i', currentUser.timezone) }}
+            {% endif %}
+            </span>
+        </p>
         <div class="actions">
             <span class="js-start-timer text-purple2" data-textstart="{{ 'Start'|t }}" data-textstop="{{ 'Stop'|t }}">{% if started %}{{ 'Stop'|t }}{% else %}
                 {{ 'Start'|t }}{% endif %}</span>

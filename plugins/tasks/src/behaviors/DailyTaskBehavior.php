@@ -64,13 +64,11 @@ class DailyTaskBehavior extends Behavior
      */
     public function hasDerailed(): bool
     {
-        $today = $this->owner->author->today;
         if (!$this->isActive()) {
             return false;
         }
         if ($this->owner->taskType->value == 'more') {
-            $startDate = $this->owner->author->getDate($this->owner->startDate);
-            if (DateHelper::isSameDay($startDate, $today) and !$this->isExpired()) {
+            if (!$this->isExpired()) {
                 return false;
             }
             return $this->getTimeSpent() < $this->owner->length;
@@ -89,7 +87,7 @@ class DailyTaskBehavior extends Behavior
     }
 
     /**
-     * Is this task expired today
+     * Is this task expired
      *
      * @return bool
      */

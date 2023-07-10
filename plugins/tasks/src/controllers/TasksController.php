@@ -14,11 +14,16 @@ class TasksController extends Controller
         $tasks = Entry::find()->section('task')->authorId($user->id)->all();
         $out = [];
         foreach ($tasks as $task) {
+            $daily = $task->getDailyTask();
+            $deadline = 'today at ' . $task->todayDeadline->format('H:i');
+            if ($daily and $daily->isExpired()) {
+                $deadline = $task->nextDeadline->format('d/m/Y H:i');
+            }
             $out[$task->id] = [
-               'status' => $task->getTaskStatus(),
-               'inner' => \Craft::$app->view->renderTemplate('_includes/tasks/inner', [
-                    'task' => $task
-               ])
+                'deadline' => $deadline,
+                'active' => $daily and $daily->isActive(),
+                'status' => $task->getTaskStatus(),
+                'progress' => $daily ? $daily->getProgress(true) : false
             ];
         }
         return $this->asJson($out);
