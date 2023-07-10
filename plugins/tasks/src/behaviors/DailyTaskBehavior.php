@@ -140,6 +140,19 @@ class DailyTaskBehavior extends Behavior
     }
 
     /**
+     * Get the progress in %
+     *
+     * @return float
+     */
+    public function getProgress(bool $includeAfterDeadline = false): float
+    {
+        if (!$this->owner->length) {
+            return 0;
+        }
+        return $this->getTimeSpent($includeAfterDeadline) / $this->owner->length * 100;
+    }
+
+    /**
      * Get the previous daily task
      *
      * @return ?Entry

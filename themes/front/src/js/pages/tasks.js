@@ -17,8 +17,11 @@ class Tasks
         this.$tasks = $('.task');
         this.initSortable();
         this.initTasks();
+        $.each(this.$tasks.filter('.timer-started'), function (i, task) {
+            $(task).data('timer-started', new Date().getTime() / 1000);
+        });
         this.updateProgressPoll();
-        setInterval(() => this.pollTasks(), 10000);
+        setInterval(() => this.refreshTasks(), 10000);
         console.log('Tasks initialised');
     }
 
@@ -49,7 +52,7 @@ class Tasks
 
     updateProgressPoll()
     {
-        let started = $.map($('.task.timer-started'), (task) => {
+        let started = $.map($('.task.polling'), (task) => {
             return $(task).data('id');
         });
         if (started.length) {
@@ -64,19 +67,18 @@ class Tasks
 
     pollProgress()
     {
-        console.log('poll');
-        $.each($('.task.timer-started'), (i, task) => {
+        $.each($('.task.polling'), (i, task) => {
             let $task = $(task);
             let progress = parseFloat($task.data('progress'));
-            if (progress > 100) {
-                return;
-            }
+            let started = parseInt($task.data('timer-started'));
+            let elapsed = (new Date().getTime() / 1000) - started;
             let persec = parseFloat($task.data('persec'));
-            progress = progress + persec;
-            $task.data('progress', progress);
+            progress = progress + (persec * elapsed);
             $task.find('.progress-bar').css('width', progress + '%');
             if (progress > 100) {
-                this.pollTasks();
+                $task.removeClass('polling');
+                this.updateProgressPoll();
+                this.refreshTasks();
             }
         });
     }
@@ -88,10 +90,13 @@ class Tasks
             data: {
                 taskId: taskId
             }
-        }).done(() => {
+        }).done((data) => {
             let $task = this.getTask(taskId);
-            $task.removeClass('timer-started');
+            $task.removeClass(['polling', 'timer-started']);
             $task.find('.js-start-timer').html($task.find('.js-start-timer').data('textstart'));
+            $task.data('timer-started', 0);
+            $task.data('progress', data.progress);
+            $task.find('.progress-bar').css('width', data.progress + '%');
             this.updateProgressPoll();
         });
     }
@@ -106,12 +111,17 @@ class Tasks
         }).done(() => {
             let $task = this.getTask(taskId);
             $task.addClass('timer-started');
+            let progress = parseFloat($task.data('progress'));
+            if (progress < 100) {
+                $task.data('timer-started', new Date().getTime() / 1000);
+                $task.addClass('polling');
+            }
             $task.find('.js-start-timer').html($task.find('.js-start-timer').data('textstop'));
             this.updateProgressPoll();
         });
     }
 
-    pollTasks()
+    refreshTasks()
     {
         if (this.polling) {
             return false;

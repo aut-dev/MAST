@@ -12,14 +12,14 @@ class TimerBehavior extends Behavior
     public $owner;
 
     /**
-     * Get the date the timer was started for a task id
+     * Get the date the timer was started for a task
      *
-     * @param  int    $taskId
+     * @param  Entry $task
      * @return ?DateTime
      */
-    public function timerStarted(int $taskId): ?DateTime
+    public function timerStarted(Entry $task): ?DateTime
     {
-        return Timer::$plugin->timer->timerStarted($taskId, $this->owner);
+        return Timer::$plugin->timer->timerStarted($task, $this->owner);
     }
 
     /**
@@ -30,7 +30,7 @@ class TimerBehavior extends Behavior
      */
     public function getTimerSpent(Entry $task, DateTime $deadline): int
     {
-        $date = $this->timerStarted($task->id);
+        $date = $this->timerStarted($task);
         if (!$date or $date > $deadline) {
             return 0;
         }

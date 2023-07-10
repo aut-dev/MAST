@@ -16,12 +16,18 @@ class TimerService extends Component
     /**
      * Start the time for a task
      *
-     * @param  int    $taskId
+     * @param  int|Entry $task
      * @param  User   $user
      */
-    public function start(int $taskId, User $user)
+    public function start($task, User $user)
     {
-        if ($this->timerStarted($taskId, $user)) {
+        if (is_int($task)) {
+            $task = Entry::find()->section('task')->id($task)->authorId($user->id)->one();
+        }
+        if (!$task instanceof Entry) {
+            throw new Exception("Could not find task");
+        }
+        if ($this->timerStarted($task, $user)) {
             throw new Exception("Timer is already started");
         }
         $timer = $user->timer instanceof Collection ? $user->timer : $user->timer->with('timer:task')->all();
@@ -40,7 +46,7 @@ class TimerService extends Component
         $blocks['new1'] = [
             'type' => 'timer',
             'fields' => [
-                'task' => [$taskId],
+                'task' => [$task->id],
                 'started' => $user->now
             ]
         ];
@@ -55,13 +61,18 @@ class TimerService extends Component
     /**
      * Stop the timer for a task
      *
-     * @param  int    $taskId
+     * @param  int|Entry    $taskId
      * @param  User   $user
      */
-    public function stop(int $taskId, User $user)
+    public function stop($task, User $user)
     {
-        $user = \Craft::$app->user->identity;
-        $block = $this->timerBlock($taskId, $user);
+        if (is_int($task)) {
+            $task = Entry::find()->section('task')->id($task)->authorId($user->id)->one();
+        }
+        if (!$task instanceof Entry) {
+            throw new Exception("Could not find task");
+        }
+        $block = $this->timerBlock($task, $user);
         if (!$block) {
             throw new Exception("Timer is not started");
         }
@@ -94,13 +105,13 @@ class TimerService extends Component
     /**
      * Get the date the timer was started for a task
      *
-     * @param  int    $taskId
+     * @param  Entry  $task
      * @param  User   $user
      * @return ?DateTime
      */
-    public function timerStarted(int $taskId, User $user): ?DateTime
+    public function timerStarted(Entry $task, User $user): ?DateTime
     {
-        $block = $this->timerBlock($taskId, $user);
+        $block = $this->timerBlock($task, $user);
         if ($block) {
             return $block->started;
         }
@@ -110,15 +121,15 @@ class TimerService extends Component
     /**
      * Get the timer block related to a task
      *
-     * @param  int    $taskId
+     * @param  Entry  $task
      * @param  User   $user
      * @return ?MatrixBlock
      */
-    public function timerBlock(int $taskId, User $user): ?MatrixBlock
+    protected function timerBlock(Entry $task, User $user): ?MatrixBlock
     {
         $timer = $user->timer instanceof Collection ? $user->timer : $user->timer->with('timer:task')->all();
         foreach ($timer as $block) {
-            if (sizeof($block->task) and $block->task[0]->id == $taskId) {
+            if (sizeof($block->task) and $block->task[0]->id == $task->id) {
                 return $block;
             }
         }
