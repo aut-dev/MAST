@@ -4,12 +4,12 @@ namespace Plugins\Stripe\services;
 
 use DateInterval;
 use DateTime;
+use Exception;
 use Plugins\Tasks\Tasks;
 use Stripe\BillingPortal\Session as PortalSession;
 use Stripe\Checkout\Session;
 use Stripe\Customer;
 use Stripe\Exception\ApiErrorException;
-use Stripe\Exception\CardException;
 use Stripe\PaymentIntent;
 use Stripe\PaymentMethod;
 use Stripe\SetupIntent;
@@ -50,9 +50,7 @@ class StripeService extends Component
                 'quantity' => 1,
             ]],
             'customer_email' => $user->email,
-            // 'payment_intent_data' => [
-            //     'setup_future_usage' => 'off_session'
-            // ],
+            "payment_method_types" => ["card"],
             'mode' => 'subscription',
             'success_url' => UrlHelper::siteUrl('stripe-subscription-success?session_id={CHECKOUT_SESSION_ID}'),
             'cancel_url' => UrlHelper::siteUrl('pay-subscription'),
@@ -183,7 +181,7 @@ class StripeService extends Component
                 'description' => 'Derail for task ' . $task->title
             ]);
             return true;
-        } catch (CardException $e) {
+        } catch (Exception $e) {
             \Craft::$app->errorHandler->logException($e);
             $email = \Craft::$app->mailer->composeFromKey('admin_derail_charge_failed', [
                 'task' => $task,
