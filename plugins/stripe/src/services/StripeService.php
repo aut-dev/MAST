@@ -50,7 +50,7 @@ class StripeService extends Component
                 'quantity' => 1,
             ]],
             'customer_email' => $user->email,
-            "payment_method_types" => ["card"],
+            "payment_method_types" => ["card", "link"],
             'mode' => 'subscription',
             'success_url' => UrlHelper::siteUrl('stripe-subscription-success?session_id={CHECKOUT_SESSION_ID}'),
             'cancel_url' => UrlHelper::siteUrl('pay-subscription'),
@@ -176,6 +176,7 @@ class StripeService extends Component
                 'currency' => 'usd',
                 'customer' => $task->author->stripeCustomer,
                 'payment_method' => $task->author->paymentMethod,
+                'payment_method_types' => ['card', 'link'],
                 'off_session' => true,
                 'confirm' => true,
                 'description' => 'Derail for task ' . $task->title
