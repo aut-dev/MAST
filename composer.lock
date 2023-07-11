@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bac20c6300e9656eda84e38154d15a17",
+    "content-hash": "91ffffdd4fcd4587217ebdcb5c4c2a66",
     "packages": [
         {
             "name": "adigital/cookie-consent-banner",
@@ -5343,6 +5343,67 @@
                 }
             ],
             "time": "2022-08-17T15:57:58+00:00"
+        },
+        {
+            "name": "nystudio107/craft-twigpack",
+            "version": "4.0.0-beta.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nystudio107/craft-twigpack.git",
+                "reference": "ef13b43aaa7d40ae2d656681dc02ec5cd61365d9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nystudio107/craft-twigpack/zipball/ef13b43aaa7d40ae2d656681dc02ec5cd61365d9",
+                "reference": "ef13b43aaa7d40ae2d656681dc02ec5cd61365d9",
+                "shasum": ""
+            },
+            "require": {
+                "craftcms/cms": "^4.0.0-beta.1"
+            },
+            "type": "craft-plugin",
+            "extra": {
+                "class": "nystudio107\\twigpack\\Twigpack",
+                "handle": "twigpack",
+                "name": "Twigpack"
+            },
+            "autoload": {
+                "psr-4": {
+                    "nystudio107\\twigpack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "nystudio107",
+                    "homepage": "https://nystudio107.com/"
+                }
+            ],
+            "description": "Twigpack is a bridge between Twig and webpack, with manifest.json & webpack-dev-server HMR support",
+            "keywords": [
+                "craft-plugin",
+                "craftcms",
+                "hmr-support",
+                "manifest-json",
+                "twig",
+                "webpack",
+                "webpack-dev-server"
+            ],
+            "support": {
+                "docs": "https://nystudio107.com/docs/twigpack/",
+                "issues": "https://nystudio107.com/plugins/twigpack/support",
+                "source": "https://github.com/nystudio107/craft-twigpack"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/khalwat",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-04-26T15:19:38+00:00"
         },
         {
             "name": "omnilight/yii2-scheduling",
@@ -13986,9 +14047,18 @@
             "time": "2022-09-04T10:37:52+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "nystudio107/craft-twigpack",
+            "version": "4.0.0.0-beta4",
+            "alias": "4.0.0",
+            "alias_normalized": "4.0.0.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "nystudio107/craft-twigpack": 10
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

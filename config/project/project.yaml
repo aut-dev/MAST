@@ -1,4 +1,4 @@
-dateModified: 1688892774
+dateModified: 1689062125
 elementSources:
   craft\elements\Entry:
     -
@@ -490,6 +490,10 @@ plugins:
       setCp: '1'
       showCpShortcuts: true
       templateCache: null
+  twigpack:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
   typedlinkfield:
     edition: standard
     enabled: true

@@ -27,7 +27,7 @@
 {% endblock %}
 
 {% block before_end_body_tag %}
-    {# {{ craft.twigpack.includeSafariNomoduleFix() }} #}
+    {{ craft.twigpack.includeSafariNomoduleFix() }}
     <div id="noscript-wrapper">
         <div class="content">
             {{ 'You must enable javascript to view this website'|t }}
