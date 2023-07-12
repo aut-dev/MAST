@@ -1,0 +1,97 @@
+fieldLayouts:
+  462d6848-4d8b-4c0c-bccd-d841cdc97d9a:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: 41813641-191d-4abb-94f5-2b184c9efdd1
+            userCondition: null
+            warning: null
+            width: 75
+          -
+            elementCondition: null
+            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613 # Requires valid subscription
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: fcd90e7e-1d8a-43ac-bf8f-6f81117069f7
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: c02d8ea3-fd26-4084-890d-83260c7fc0dd # Banner Images
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: c8c1f2a5-0101-43c3-a75f-eec2517bb3d5
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 0e4befd0-d2cb-424d-8bd4-bc05a2fb44cc
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: b2f68238-2d9a-4083-aeba-8a6793d08b9c
+        userCondition: null
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 8ad55fd2-2c4e-436b-a572-d9d4bef64524 # Basic Seo
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 74358769-154b-4fe1-9433-130cc6c52322
+            userCondition: null
+            warning: null
+            width: 100
+        name: SEO
+        uid: e13ce9a7-0e89-4e79-9984-ec10319eb338
+        userCondition: null
+handle: insights
+hasTitleField: true
+name: Insights
+section: 5eb652c6-c88b-4627-8ff1-847e25a82cb9 # Insights
+sortOrder: 1
+titleFormat: '{section.name|raw}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

@@ -2,10 +2,11 @@
 
 namespace Plugins\Timesheets\behaviors;
 
-use Plugins\Timesheets\Timesheets;
-use yii\base\Behavior;
 use DateInterval;
 use DateTime;
+use Plugins\Tasks\helpers\TimeHelper;
+use Plugins\Timesheets\Timesheets;
+use yii\base\Behavior;
 
 class TimesheetBehavior extends Behavior
 {
@@ -14,17 +15,6 @@ class TimesheetBehavior extends Behavior
     public function friendlySpentTime()
     {
         $diff = $this->owner->endDate->diff($this->owner->startDate);
-        $friendly = '';
-        if ($diff->d) {
-            $friendly .= $diff->d . 'd';
-        }
-        if ($diff->h) {
-            $friendly .= $diff->h . 'h';
-        }
-        if ($diff->i) {
-            $friendly .= $diff->i . 'm';
-        }
-        $friendly .= $diff->s . 's';
-        return $friendly;
+        return TimeHelper::friendlyDiffTime($diff);
     }
 }

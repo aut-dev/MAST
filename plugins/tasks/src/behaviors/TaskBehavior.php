@@ -5,6 +5,7 @@ namespace Plugins\Tasks\behaviors;
 use DateInterval;
 use DateTime;
 use Plugins\Tasks\Tasks;
+use Plugins\Tasks\helpers\TimeHelper;
 use craft\elements\Entry;
 use yii\base\Behavior;
 
@@ -12,6 +13,7 @@ class TaskBehavior extends Behavior
 {
     public $owner;
     protected $daily;
+    protected $dailys;
 
     /**
      * Get the task status, can be either 'active', 'inactive', 'complete', 'derailed' or 'expired'
@@ -24,6 +26,54 @@ class TaskBehavior extends Behavior
             return $daily->getTaskStatus();
         }
         return 'inactive';
+    }
+
+    /**
+     * Get the total amount of derailed
+     *
+     * @return int
+     */
+    public function getTotalDerailed(): int
+    {
+        $total = 0;
+        foreach ($this->getDailyTasks() as $daily) {
+            if ($daily->hasDerailed) {
+                $total += 1;
+            }
+        }
+        return $total;
+    }
+
+    /**
+     * Get the total worked hours
+     *
+     * @param  $friendly
+     * @return string|int
+     */
+    public function getTotalWorked($friendly = false)
+    {
+        $sheets = Entry::find()->section('timesheet')->relatedTo($this->owner);
+        $total = 0;
+        foreach ($sheets as $sheet) {
+            $total += ($sheet->endDate->getTimeStamp() - $sheet->startDate->getTimeStamp());
+        }
+        if (!$friendly) {
+            return $total;
+        }
+        return TimeHelper::friendlySpentTime($total);
+    }
+
+    /**
+     * Get the associated daily tasks
+     *
+     * @return array
+     */
+    public function getDailyTasks(): array
+    {
+        if ($this->dailys === null) {
+            $this->dailys = Entry::find()->section('dailyTask')->relatedTo($this->owner)->all();
+        }
+        return $this->dailys;
     }
 
     /**

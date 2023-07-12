@@ -4,8 +4,10 @@ namespace Plugins\Tasks;
 
 use Plugins\Tasks\behaviors\DailyTaskBehavior;
 use Plugins\Tasks\behaviors\TaskBehavior;
+use Plugins\Tasks\behaviors\UserBehavior;
 use Plugins\Tasks\services\TasksService;
 use Plugins\Tasks\services\UsersService;
+use Plugins\Tasks\twig\TasksExtension;
 use craft\base\Plugin;
 use craft\elements\Entry;
 use craft\elements\User;
@@ -32,10 +34,19 @@ class Tasks extends Plugin
         $this->registerBehaviors();
         $this->registerTasksEvents();
         $this->registerUserEvents();
+        $this->registerTwig();
     }
+
     public static function getAdminEmails(): array
     {
         return explode(',', getenv('ADMIN_EMAILS'));
+    }
+
+    protected function registerTwig()
+    {
+        if (\Craft::$app->request->getIsSiteRequest()) {
+            \Craft::$app->view->registerTwigExtension(new TasksExtension());
+        }
     }
 
     protected function registerTasksEvents()
@@ -89,6 +100,9 @@ class Tasks extends Plugin
                     $event->sender->attachBehavior('plugin-tasks', DailyTaskBehavior::class);
                 }
             }
+        });
+        Event::on(User::class, User::EVENT_DEFINE_BEHAVIORS, function (Event $event) {
+            $event->sender->attachBehavior('plugin-tasks', UserBehavior::class);
         });
     }
 }

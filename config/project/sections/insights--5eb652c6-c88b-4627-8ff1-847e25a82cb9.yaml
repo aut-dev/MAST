@@ -1,13 +1,13 @@
 defaultPlacement: end
 enableVersioning: true
-handle: standardPage
-name: 'Standard Page'
+handle: insights
+name: Insights
 previewTargets:
   -
     __assoc__:
       -
         - label
-        - primary
+        - 'Primary entry page'
       -
         - urlFormat
         - '{url}'
@@ -19,6 +19,6 @@ siteSettings:
   6a9e4f78-0e55-4b7b-9e55-4fc31c721794: # Mast
     enabledByDefault: true
     hasUrls: true
-    template: _entries/channels/standardPage
-    uriFormat: '{slug}'
-type: channel
+    template: _entries/singles/insights
+    uriFormat: insights
+type: single

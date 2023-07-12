@@ -1,0 +1,34 @@
+{% extends "_layouts/matrix-content" %}
+{% requireLogin %}
+
+{% block after_content_matrix %}
+    <div class="container">
+        {% set tasks = craft.entries.section('task').authorId(currentUser.id).orderBy('order asc').all() %}
+        {% if tasks %}
+            <div class="row fw-bold">
+                <div class="col-6">{{ 'Task'|t }}</div>
+                <div class="col-3">{{ 'Worked'|t }}</div>
+                <div class="col-3">{{ 'Derailed'|t }}</div>
+            </div>
+            {% set total_worked = 0 %}
+            {% set total_derailed = 0 %}
+            {% for task in tasks %}
+                {% set total_worked = total_worked + task.getTotalWorked %}
+                {% set total_derailed = total_derailed + task.getTotalDerailed() %}
+                <div class="row">
+                    <div class="col-6">{{ task.title }}</div>
+                    <div class="col-3">{{ task.getTotalWorked(true) }}</div>
+                    <div class="col-3">{{ task.getTotalDerailed() }}</div>
+                </div>
+            {% endfor %}
+            <div class="row fw-bold">
+                <div class="col-6"></div>
+                <div class="col-3">{{ total_worked|friendlyTimeSpent }}</div>
+                <div class="col-3">{{ total_derailed }}</div>
+            </div>
+            <p class="my-3">{{ 'Total paid: ${amount}'|t('site', {amount: currentUser.getTotalPaid()}) }}</p>
+        {% else %}
+            <p>{{ 'No insights yet, come back later'|t }}</p>
+        {% endif %}
+    </div>
+{% endblock %}

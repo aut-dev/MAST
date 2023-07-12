@@ -1,4 +1,4 @@
-dateModified: 1689062125
+dateModified: 1689153677
 elementSources:
   craft\elements\Entry:
     -
@@ -30,6 +30,9 @@ elementSources:
         - expiryDate
         - author
         - link
+      type: native
+    -
+      key: 'single:5eb652c6-c88b-4627-8ff1-847e25a82cb9' # Insights
       type: native
     -
       key: 'single:4ede571c-eeba-4a8f-b11f-07e744c2c12a' # My account
@@ -119,6 +122,9 @@ elementSources:
     -
       heading: ''
       type: heading
+    -
+      heading: ''
+      type: heading
 email:
   fromEmail: noreply@puzzlers.run
   fromName: Mast
@@ -159,6 +165,7 @@ meta:
     4ede571c-eeba-4a8f-b11f-07e744c2c12a: 'My account' # My account
     5c62d201-a99d-45f2-bc77-eecf4383c50a: Timezone # Timezone
     5d9bfa29-8f27-45dd-b445-818b98020132: Saturday # Saturday
+    5eb652c6-c88b-4627-8ff1-847e25a82cb9: Insights # Insights
     6a9e4f78-0e55-4b7b-9e55-4fc31c721794: Mast # Mast
     6d8a0ee5-61b5-4e2e-a5aa-4942e529a165: 'Contact us' # Contact us
     6d707569-67a4-4a4e-868e-31a9a6eef835: 'Set password form' # Set password form
@@ -238,6 +245,7 @@ meta:
     e237d745-b0a6-4a3f-9003-984efa160459: 'Page error' # Page error
     eca48186-ef8a-40ab-bb78-26a70ea56bb0: Text # Text
     f7edb11b-5202-431b-b3c7-0c227fe1ebed: week # week
+    f65685af-7097-4049-9d06-65a2c9435fe2: Insights # Insights
     f95157d7-1eac-4192-855e-c8bdb66fba9b: Monday # Monday
     f4994683-7a71-491d-b14b-0a986b8ec613: 'Requires valid subscription' # Requires valid subscription
     fa53f651-84c9-437f-9bed-edaead3bf8ed: Home # Home
