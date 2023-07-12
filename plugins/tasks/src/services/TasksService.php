@@ -4,8 +4,10 @@ namespace Plugins\Tasks\services;
 
 use DateInterval;
 use DateTime;
+use Exception;
 use Plugins\Stripe\Stripe;
 use Plugins\Tasks\helpers\DateHelper;
+use Plugins\Timer\Timer;
 use craft\base\Component;
 use craft\base\Element;
 use craft\elements\Entry;
@@ -13,7 +15,6 @@ use craft\elements\User;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\MoneyHelper;
 use yii\base\InvalidArgumentException;
-use Exception;
 
 class TasksService extends Component
 {
@@ -59,6 +60,12 @@ class TasksService extends Component
             foreach ($dailys as $daily) {
                 $daily->enabled = $task->enabled;
                 \Craft::$app->elements->saveElement($daily, false);
+            }
+            if (!$task->enabled) {
+                //Stop the timer before "deleting" a task
+                if (Timer::$plugin->timer->timerStarted($task, $task->author)) {
+                    Timer::$plugin->timer->stop($task, $task->author, false);
+                }
             }
         }
     }

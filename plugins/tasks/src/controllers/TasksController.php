@@ -3,6 +3,7 @@
 namespace Plugins\Tasks\controllers;
 
 use craft\elements\Entry;
+use craft\helpers\DateTimeHelper;
 use craft\web\Controller;
 use yii\web\ForbiddenHttpException;
 
@@ -41,5 +42,27 @@ class TasksController extends Controller
             }
         }
         return $this->asJson([]);
+    }
+
+    /**
+     * Check if editing a task could make them derail instantly
+     */
+    public function actionCheckEditTask()
+    {
+        $this->requirePostRequest();
+        $task = Entry::find()->id($this->request->getRequiredParam('entryId'))->one();
+        $task->setFieldValuesFromRequest('fields');
+        $daily = $task->getDailyTask();
+        if ($daily) {
+            $daily->setFieldValues([
+                'taskType' => $task->taskType,
+                'deadline' => $task->deadline,
+                'length' => $task->getDuration(),
+                'committed' => $task->committed
+            ]);
+        }
+        return $this->asJson([
+            'status' => $daily ? $daily->getTaskStatus() : 'inactive'
+        ]);
     }
 }

@@ -20,6 +20,7 @@
         {% if task.id %}
             <a href="#" class="js-delete-task btn btn-danger mt-5" data-id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#delete-task-modal">{{ 'Delete task'|t }}</a>
             {% include "_includes/tasks/delete-modal" %}
+            {% include "_includes/tasks/warning-modal" %}
         {% endif %}
     </div>
 {% endblock %}

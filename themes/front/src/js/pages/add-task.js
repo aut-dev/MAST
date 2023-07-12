@@ -7,20 +7,32 @@ class AddTask
     $form;
     $modal;
     modal;
+    warningModal;
+    $warningModal;
 
     constructor () 
     {
         this.$form = $('#add-task-form');
         this.$modal = $('#delete-task-modal');
+        this.$warningModal = $('#warning-task-modal');
         if (this.$modal.length) {
             App.getBootstrap().then((bootstrap) => {
                 this.modal = new bootstrap.Modal(document.getElementById('delete-task-modal'));
+                this.warningModal = new bootstrap.Modal(document.getElementById('warning-task-modal'));
+                this.initWarningModal();
             });
         }
         this.initSubmit();
         this.initWeeks();
         this.initLength();
         console.log('Add task initialised');
+    }
+
+    initWarningModal()
+    {
+        this.$warningModal.find('.js-continue').click(() => {
+            this.submit();
+        });
     }
 
     initLength()
@@ -72,16 +84,36 @@ class AddTask
     {
         this.$form.submit((e) => {
             e.preventDefault();
-            $.ajax({
-                url: '/',
-                method: 'post',
-                dataType: 'json',
-                data: this.$form.serialize()
-            }).fail(response => {
-                App.handleError(response, this.$form);
-            }).done(data => {
-                window.location.href = data.redirect;
-            });
+            if (this.$form.find('[name=entryId]').val()) {
+                $.ajax({
+                    url: '/?action=plugin-tasks/tasks/check-edit-task',
+                    method: 'post',
+                    dataType: 'json',
+                    data: this.$form.serialize()
+                }).done((data) => {
+                    if (data.status == 'derailed') {
+                        this.warningModal.show();
+                    } else {
+                        this.submit();
+                    }
+                });
+            } else {
+                this.submit();
+            }
+        });
+    }
+
+    submit()
+    {
+        $.ajax({
+            url: '/',
+            method: 'post',
+            dataType: 'json',
+            data: this.$form.serialize()
+        }).fail(response => {
+            App.handleError(response, this.$form);
+        }).done(data => {
+            window.location.href = data.redirect;
         });
     }
 }

@@ -15,7 +15,8 @@ class TimerController extends Controller
     {
         $taskId = $this->request->getRequiredParam('taskId');
         $user = \Craft::$app->user->identity;
-        Timer::$plugin->timer->start((int)$taskId, $user);
+        $task = Entry::find()->section('task')->id($taskId)->authorId($user->id)->one();
+        Timer::$plugin->timer->start($task);
         return $this->asJson([]);
     }
 
@@ -24,7 +25,7 @@ class TimerController extends Controller
         $taskId = $this->request->getRequiredParam('taskId');
         $user = \Craft::$app->user->identity;
         $task = Entry::find()->section('task')->id($taskId)->authorId($user->id)->one();
-        Timer::$plugin->timer->stop($task, $user);
+        Timer::$plugin->timer->stop($task);
         return $this->asJson([
             'progress' => $task->getDailyTask() ? $task->getDailyTask()->getProgress(true) : false
         ]);

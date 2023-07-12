@@ -19,7 +19,7 @@ class TimerBehavior extends Behavior
      */
     public function timerStarted(Entry $task): ?DateTime
     {
-        return Timer::$plugin->timer->timerStarted($task, $this->owner);
+        return Timer::$plugin->timer->timerStarted($task);
     }
 
     /**
