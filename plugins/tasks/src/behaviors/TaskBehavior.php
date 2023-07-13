@@ -45,6 +45,22 @@ class TaskBehavior extends Behavior
     }
 
     /**
+     * Get the total amount of derailed
+     *
+     * @return int
+     */
+    public function getTotalSpent(): int
+    {
+        $total = 0;
+        foreach ($this->getDailyTasks() as $daily) {
+            if ($daily->hasDerailed and $daily->chargeSucceeded) {
+                $total += $daily->committed->getAmount() / 100;
+            }
+        }
+        return $total;
+    }
+
+    /**
      * Get the total worked hours
      *
      * @param  $friendly
@@ -71,7 +87,11 @@ class TaskBehavior extends Behavior
     public function getDailyTasks(): array
     {
         if ($this->dailys === null) {
-            $this->dailys = Entry::find()->section('dailyTask')->relatedTo($this->owner)->all();
+            $query = Entry::find()->section('dailyTask')->relatedTo($this->owner);
+            if (!$this->owner->enabled) {
+                $query->anyStatus();
+            }
+            $this->dailys = $query->all();
         }
         return $this->dailys;
     }
