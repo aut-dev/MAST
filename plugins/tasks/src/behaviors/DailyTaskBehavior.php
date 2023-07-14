@@ -67,13 +67,20 @@ class DailyTaskBehavior extends Behavior
         if (!$this->isActive()) {
             return false;
         }
+        $timeSpent = $this->getTimeSpent();
         if ($this->owner->taskType->value == 'more') {
+            $deadline = $this->getDeadlineInstance();
+            $secondsLeft = $deadline->getTimeStamp() - $this->owner->author->now->getTimeStamp();
+            if ($secondsLeft < ($this->owner->length - $timeSpent)) {
+                //Not enough time before deadline to finish it, so it's derailed
+                return true;
+            }
             if (!$this->isExpired()) {
                 return false;
             }
-            return $this->getTimeSpent() < $this->owner->length;
+            return $timeSpent < $this->owner->length;
         }
-        return $this->getTimeSpent() > $this->owner->length;
+        return $timeSpent > $this->owner->length;
     }
 
     /**
@@ -93,8 +100,7 @@ class DailyTaskBehavior extends Behavior
      */
     public function isExpired(): bool
     {
-        $deadline = $this->owner->author->getDate($this->owner->startDate)->setTime($this->owner->deadline->format('H'), $this->owner->deadline->format('i'), 59);
-        return $deadline < DateTimeHelper::toDateTime('now');
+        return $this->getDeadlineInstance() < DateTimeHelper::toDateTime('now');
     }
 
     /**

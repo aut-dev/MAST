@@ -60,6 +60,6 @@ class TimeHelper
             return 0;
         }
         $diff = $now->diff($date);
-        return $diff->d * 1440 + $diff->h * 60 + $diff->i + 1;
+        return $diff->d * 1440 + $diff->h * 60 + $diff->i;
     }
 }
