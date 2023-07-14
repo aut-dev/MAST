@@ -92,20 +92,15 @@ class Task
     refresh(data)
     {
         this.$elem.attr('data-status', data.status);
-        this.$elem.find('.complete-tick').hide();
-        if (data.status == 'complete') {
-            this.$elem.find('.complete-tick').show();
-        }
-        this.$elem.find('.if-active').hide();
+        this.$elem.attr('data-active', data.active ? 1 : 0);
         if (data.active) {
-            this.$elem.find('.if-active').show();
             if (!this.timerStarted) {
                 //Only refresh the progress if we're not polling progress already, or we'd have issues 
                 //with the progress bar going back and forth slightly
                 this.$elem.find('.progress-bar').css('width', data.progress + '%');
                 this.$elem.data('progress', data.progress);
             }
-            this.$elem.find('.next-deadline').html(data.deadline);
+            this.$elem.find('.countdown').html(data.countdown);
         }
     }
 }

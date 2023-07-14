@@ -2,6 +2,7 @@
 
 namespace Plugins\Tasks\controllers;
 
+use Plugins\Tasks\helpers\TimeHelper;
 use craft\elements\Entry;
 use craft\helpers\DateTimeHelper;
 use craft\web\Controller;
@@ -9,6 +10,9 @@ use yii\web\ForbiddenHttpException;
 
 class TasksController extends Controller
 {
+    /**
+     * Poll progress of all a user's tasks
+     */
     public function actionPoll()
     {
         $user = \Craft::$app->user->identity;
@@ -16,12 +20,8 @@ class TasksController extends Controller
         $out = [];
         foreach ($tasks as $task) {
             $daily = $task->getDailyTask();
-            $deadline = 'today at ' . $task->todayDeadline->format('H:i');
-            if ($daily and $daily->isExpired()) {
-                $deadline = $task->nextDeadline->format('d/m/Y H:i');
-            }
             $out[$task->id] = [
-                'deadline' => $deadline,
+                'countdown' => TimeHelper::minutesToNow($task->todayDeadline),
                 'active' => $daily and $daily->isActive(),
                 'status' => $task->getTaskStatus(),
                 'progress' => $daily ? $daily->getProgress(true) : false
@@ -30,6 +30,9 @@ class TasksController extends Controller
         return $this->asJson($out);
     }
 
+    /**
+     * Reorder tasks
+     */
     public function actionReorder()
     {
         $this->requirePostRequest();

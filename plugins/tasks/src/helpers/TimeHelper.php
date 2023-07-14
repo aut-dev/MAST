@@ -46,4 +46,20 @@ class TimeHelper
         $dtT = new DateTime("@$seconds");
         return static::friendlyDiffTime($dtF->diff($dtT));
     }
+
+    /**
+     * Count the amount of minutes from a date to now
+     *
+     * @param  DateTime $date
+     * @return int
+     */
+    public static function minutesToNow(DateTime $date): int
+    {
+        $now = new DateTime();
+        if ($date < $now) {
+            return 0;
+        }
+        $diff = $now->diff($date);
+        return $diff->d * 1440 + $diff->h * 60 + $diff->i + 1;
+    }
 }

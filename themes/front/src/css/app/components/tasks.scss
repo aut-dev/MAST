@@ -4,20 +4,36 @@
     border-width: 3px;
     border-style: solid;
     border-radius: 12px !important;
+    .if-active,
+    .if-status-complete,
+    .if-status-active {
+        display: none;
+    }
     &.timer-started {
         border-style: dashed !important;
+    }
+    &[data-active="1"] {
+        .if-active {
+            display: block;
+        }
     }
     &[data-status="inactive"] {
         border-color: $task-inactive;
     }
     &[data-status="active"] {
         border-color: $task-active;
+        .if-status-active {
+            display: block;
+        }
     }
     &[data-status="expired"] {
         border-color: $task-expired;
     }
     &[data-status="complete"] {
         border-color: $task-complete;
+        .if-status-complete {
+            display: block;
+        }
     }
     &[data-status="derailed"] {
         border-color: $task-derailed;
