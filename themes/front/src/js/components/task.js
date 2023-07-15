@@ -25,7 +25,7 @@ class Task
     {
         this.$elem.find('.js-start-timer').click((e) => {
             e.preventDefault();
-            if (this.$elem.hasClass('timer-started')) {
+            if (this.$elem.data('timer-started')) {
                 this.stopTimer();
             } else {
                 this.startTimer();
@@ -47,7 +47,7 @@ class Task
         }).done((data) => {
             this.changingTimer = false;
             this.timerStarted = 0;
-            this.$elem.removeClass('timer-started');
+            this.$elem.data('timer-started', 0).attr('data-timer-started', 0);
             this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstart'));
             this.$elem.find('.progress-bar').css('width', data.progress + '%');
             this.$elem.data('progress', data.progress);
@@ -67,7 +67,7 @@ class Task
             }
         }).done(() => {
             this.changingTimer = false;
-            this.$elem.addClass('timer-started');
+            this.$elem.data('timer-started', 1).attr('data-timer-started', 1);
             if (parseFloat(this.$elem.data('progress')) < 100) {
                 this.timerStarted = new Date().getTime() / 1000;
             }
@@ -93,6 +93,7 @@ class Task
     {
         this.$elem.attr('data-status', data.status);
         this.$elem.attr('data-active', data.active ? 1 : 0);
+        this.$elem.data('timer-started', data.timerStarted ? 1 : 0).attr('data-timer-started', data.timerStarted ? 1 : 0);
         if (data.active) {
             if (!this.timerStarted) {
                 //Only refresh the progress if we're not polling progress already, or we'd have issues 
@@ -101,6 +102,10 @@ class Task
                 this.$elem.data('progress', data.progress);
             }
             this.$elem.find('.countdown').html(data.countdown);
+        }
+        this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstart'));
+        if (data.timerStarted) {
+            this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstop'));
         }
     }
 }

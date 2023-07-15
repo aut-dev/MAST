@@ -118,16 +118,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.275.4",
+            "version": "3.275.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "bacab9b131dc790ed0084b63f5f4889a81eee311"
+                "reference": "54dcef3349c81b46c0f5f6e54b5f9bfb5db19903"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/bacab9b131dc790ed0084b63f5f4889a81eee311",
-                "reference": "bacab9b131dc790ed0084b63f5f4889a81eee311",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/54dcef3349c81b46c0f5f6e54b5f9bfb5db19903",
+                "reference": "54dcef3349c81b46c0f5f6e54b5f9bfb5db19903",
                 "shasum": ""
             },
             "require": {
@@ -207,9 +207,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.275.4"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.275.7"
             },
-            "time": "2023-07-06T18:22:51+00:00"
+            "time": "2023-07-13T18:21:04+00:00"
         },
         {
             "name": "axy/backtrace",
@@ -2365,16 +2365,16 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v6.8.0",
+            "version": "v6.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "48b0210c51718d682e53210c24d25c5a10a2299b"
+                "reference": "5dbc8959427416b8ee09a100d7a8588c00fb2e26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/48b0210c51718d682e53210c24d25c5a10a2299b",
-                "reference": "48b0210c51718d682e53210c24d25c5a10a2299b",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/5dbc8959427416b8ee09a100d7a8588c00fb2e26",
+                "reference": "5dbc8959427416b8ee09a100d7a8588c00fb2e26",
                 "shasum": ""
             },
             "require": {
@@ -2422,9 +2422,9 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v6.8.0"
+                "source": "https://github.com/firebase/php-jwt/tree/v6.8.1"
             },
-            "time": "2023-06-20T16:45:35+00:00"
+            "time": "2023-07-14T18:33:00+00:00"
         },
         {
             "name": "google/auth",
@@ -2486,16 +2486,16 @@
         },
         {
             "name": "google/cloud-core",
-            "version": "v1.52.0",
+            "version": "v1.52.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-cloud-php-core.git",
-                "reference": "bd87e418923e0d836c7e754d82e66bc0b79964ab"
+                "reference": "8214910f79b5508d4cd1cd48f39d7970443071d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-core/zipball/bd87e418923e0d836c7e754d82e66bc0b79964ab",
-                "reference": "bd87e418923e0d836c7e754d82e66bc0b79964ab",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php-core/zipball/8214910f79b5508d4cd1cd48f39d7970443071d5",
+                "reference": "8214910f79b5508d4cd1cd48f39d7970443071d5",
                 "shasum": ""
             },
             "require": {
@@ -2511,7 +2511,7 @@
             "require-dev": {
                 "erusev/parsedown": "^1.6",
                 "google/cloud-common-protos": "^0.4",
-                "google/gax": "^1.9",
+                "google/gax": "^1.19.1",
                 "opis/closure": "^3",
                 "phpdocumentor/reflection": "^5.0",
                 "phpspec/prophecy-phpunit": "^2.0",
@@ -2545,22 +2545,22 @@
             ],
             "description": "Google Cloud PHP shared dependency, providing functionality useful to all components.",
             "support": {
-                "source": "https://github.com/googleapis/google-cloud-php-core/tree/v1.52.0"
+                "source": "https://github.com/googleapis/google-cloud-php-core/tree/v1.52.1"
             },
-            "time": "2023-06-21T21:05:25+00:00"
+            "time": "2023-07-07T20:46:38+00:00"
         },
         {
             "name": "google/cloud-storage",
-            "version": "v1.32.0",
+            "version": "v1.33.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-cloud-php-storage.git",
-                "reference": "2dd5cee0da51e94bcf39c0af9cefd0ec6b931685"
+                "reference": "05ae33620feebe1107756b59fe0329cace3b5e13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-storage/zipball/2dd5cee0da51e94bcf39c0af9cefd0ec6b931685",
-                "reference": "2dd5cee0da51e94bcf39c0af9cefd0ec6b931685",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php-storage/zipball/05ae33620feebe1107756b59fe0329cace3b5e13",
+                "reference": "05ae33620feebe1107756b59fe0329cace3b5e13",
                 "shasum": ""
             },
             "require": {
@@ -2602,9 +2602,9 @@
             ],
             "description": "Cloud Storage Client for PHP",
             "support": {
-                "source": "https://github.com/googleapis/google-cloud-php-storage/tree/v1.32.0"
+                "source": "https://github.com/googleapis/google-cloud-php-storage/tree/v1.33.0"
             },
-            "time": "2023-06-21T21:05:25+00:00"
+            "time": "2023-07-07T20:46:38+00:00"
         },
         {
             "name": "google/crc32",
@@ -4626,16 +4626,16 @@
         },
         {
             "name": "mollie/mollie-api-php",
-            "version": "v2.57.0",
+            "version": "v2.58.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mollie/mollie-api-php.git",
-                "reference": "be201657b00a197e5238bbec81fad2a0fc0b83e4"
+                "reference": "5120e5b3e4622a290b64acf87266ea47d10d7301"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mollie/mollie-api-php/zipball/be201657b00a197e5238bbec81fad2a0fc0b83e4",
-                "reference": "be201657b00a197e5238bbec81fad2a0fc0b83e4",
+                "url": "https://api.github.com/repos/mollie/mollie-api-php/zipball/5120e5b3e4622a290b64acf87266ea47d10d7301",
+                "reference": "5120e5b3e4622a290b64acf87266ea47d10d7301",
                 "shasum": ""
             },
             "require": {
@@ -4712,9 +4712,9 @@
             ],
             "support": {
                 "issues": "https://github.com/mollie/mollie-api-php/issues",
-                "source": "https://github.com/mollie/mollie-api-php/tree/v2.57.0"
+                "source": "https://github.com/mollie/mollie-api-php/tree/v2.58.0"
             },
-            "time": "2023-06-23T09:09:15+00:00"
+            "time": "2023-07-11T12:01:27+00:00"
         },
         {
             "name": "moneyphp/money",
@@ -5933,16 +5933,16 @@
         },
         {
             "name": "php-http/discovery",
-            "version": "1.19.0",
+            "version": "1.19.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/discovery.git",
-                "reference": "1856a119a0b0ba8da8b5c33c080aa7af8fac25b4"
+                "reference": "57f3de01d32085fea20865f9b16fb0e69347c39e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/discovery/zipball/1856a119a0b0ba8da8b5c33c080aa7af8fac25b4",
-                "reference": "1856a119a0b0ba8da8b5c33c080aa7af8fac25b4",
+                "url": "https://api.github.com/repos/php-http/discovery/zipball/57f3de01d32085fea20865f9b16fb0e69347c39e",
+                "reference": "57f3de01d32085fea20865f9b16fb0e69347c39e",
                 "shasum": ""
             },
             "require": {
@@ -6005,9 +6005,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-http/discovery/issues",
-                "source": "https://github.com/php-http/discovery/tree/1.19.0"
+                "source": "https://github.com/php-http/discovery/tree/1.19.1"
             },
-            "time": "2023-06-19T08:45:36+00:00"
+            "time": "2023-07-11T07:02:26+00:00"
         },
         {
             "name": "php-http/httplug",
@@ -8905,16 +8905,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v10.16.0",
+            "version": "v10.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "ea863a92102a8e8dbdeddf79b4535c355ec62d91"
+                "reference": "73383b44de153f4d602b90dad3ef075259bcecef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/ea863a92102a8e8dbdeddf79b4535c355ec62d91",
-                "reference": "ea863a92102a8e8dbdeddf79b4535c355ec62d91",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/73383b44de153f4d602b90dad3ef075259bcecef",
+                "reference": "73383b44de153f4d602b90dad3ef075259bcecef",
                 "shasum": ""
             },
             "require": {
@@ -8960,9 +8960,9 @@
             ],
             "support": {
                 "issues": "https://github.com/stripe/stripe-php/issues",
-                "source": "https://github.com/stripe/stripe-php/tree/v10.16.0"
+                "source": "https://github.com/stripe/stripe-php/tree/v10.17.0"
             },
-            "time": "2023-06-29T23:40:49+00:00"
+            "time": "2023-07-13T22:12:18+00:00"
         },
         {
             "name": "symfony/console",
@@ -11653,16 +11653,16 @@
         },
         {
             "name": "verbb/expanded-singles",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/verbb/expanded-singles.git",
-                "reference": "a9a15f946b1e096a2f20c57c326d69a9176a4f1e"
+                "reference": "3ece3d2179c6a3541558d10bac34fc510600875a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/verbb/expanded-singles/zipball/a9a15f946b1e096a2f20c57c326d69a9176a4f1e",
-                "reference": "a9a15f946b1e096a2f20c57c326d69a9176a4f1e",
+                "url": "https://api.github.com/repos/verbb/expanded-singles/zipball/3ece3d2179c6a3541558d10bac34fc510600875a",
+                "reference": "3ece3d2179c6a3541558d10bac34fc510600875a",
                 "shasum": ""
             },
             "require": {
@@ -11694,7 +11694,7 @@
                     "homepage": "https://verbb.io"
                 }
             ],
-            "description": "A simple plugin for Craft CMS that alters the Entries Index sidebar to list all Singles, rather than grouping them under a 'Singles' link.",
+            "description": "Extract Single entries to be top-level entries.",
             "keywords": [
                 "Craft",
                 "cms",
@@ -11715,20 +11715,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-03-09T21:57:07+00:00"
+            "time": "2023-07-11T07:29:18+00:00"
         },
         {
             "name": "verbb/field-manager",
-            "version": "3.0.6",
+            "version": "3.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/verbb/field-manager.git",
-                "reference": "b110afa7d3ae4be25a4a6bfd29f263bdde7a70e4"
+                "reference": "1c701c1edab0e9de833c7eff5c420304eefa87b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/verbb/field-manager/zipball/b110afa7d3ae4be25a4a6bfd29f263bdde7a70e4",
-                "reference": "b110afa7d3ae4be25a4a6bfd29f263bdde7a70e4",
+                "url": "https://api.github.com/repos/verbb/field-manager/zipball/1c701c1edab0e9de833c7eff5c420304eefa87b8",
+                "reference": "1c701c1edab0e9de833c7eff5c420304eefa87b8",
                 "shasum": ""
             },
             "require": {
@@ -11779,7 +11779,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-05-27T05:20:44+00:00"
+            "time": "2023-07-11T07:26:16+00:00"
         },
         {
             "name": "verbb/image-resizer",
@@ -11920,16 +11920,16 @@
         },
         {
             "name": "verbb/social-login",
-            "version": "1.0.4",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/verbb/social-login.git",
-                "reference": "60b3d0644d21bc8634e60573a8d458fae60ef952"
+                "reference": "f3a71d1e967bbb461764986d85da5ab3207d453c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/verbb/social-login/zipball/60b3d0644d21bc8634e60573a8d458fae60ef952",
-                "reference": "60b3d0644d21bc8634e60573a8d458fae60ef952",
+                "url": "https://api.github.com/repos/verbb/social-login/zipball/f3a71d1e967bbb461764986d85da5ab3207d453c",
+                "reference": "f3a71d1e967bbb461764986d85da5ab3207d453c",
                 "shasum": ""
             },
             "require": {
@@ -11974,7 +11974,7 @@
                 "rss": "https://github.com/verbb/social-login/commits/v2.atom",
                 "source": "https://github.com/verbb/social-login"
             },
-            "time": "2023-05-27T02:01:06+00:00"
+            "time": "2023-07-11T22:29:28+00:00"
         },
         {
             "name": "verbb/super-table",

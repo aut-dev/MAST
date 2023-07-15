@@ -3,6 +3,7 @@
 namespace Plugins\Tasks\controllers;
 
 use Plugins\Tasks\helpers\TimeHelper;
+use Plugins\Timer\Timer;
 use craft\elements\Entry;
 use craft\helpers\DateTimeHelper;
 use craft\web\Controller;
@@ -20,11 +21,13 @@ class TasksController extends Controller
         $out = [];
         foreach ($tasks as $task) {
             $daily = $task->getDailyTask();
+            $started = Timer::$plugin->timer->timerStarted($task);
             $out[$task->id] = [
                 'countdown' => TimeHelper::minutesToNow($task->todayDeadline),
                 'active' => $daily and $daily->isActive(),
                 'status' => $task->getTaskStatus(),
-                'progress' => $daily ? $daily->getProgress(true) : false
+                'progress' => $daily ? $daily->getProgress(true) : false,
+                'timerStarted' => $started ? true : false
             ];
         }
         return $this->asJson($out);

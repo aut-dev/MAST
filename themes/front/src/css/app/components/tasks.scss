@@ -9,7 +9,7 @@
     .if-status-active {
         display: none;
     }
-    &.timer-started {
+    &[data-timer-started="1"] {
         border-style: dashed !important;
     }
     &[data-active="1"] {

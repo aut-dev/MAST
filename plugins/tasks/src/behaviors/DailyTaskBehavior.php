@@ -71,7 +71,7 @@ class DailyTaskBehavior extends Behavior
         if ($this->owner->taskType->value == 'more') {
             $deadline = $this->getDeadlineInstance();
             $secondsLeft = $deadline->getTimeStamp() - $this->owner->author->now->getTimeStamp();
-            if ($secondsLeft < ($this->owner->length - $timeSpent)) {
+            if ($secondsLeft > 0 and $secondsLeft < ($this->owner->length - $timeSpent)) {
                 //Not enough time before deadline to finish it, so it's derailed
                 return true;
             }
