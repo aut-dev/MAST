@@ -54,14 +54,18 @@ class TimesheetsService extends Component
     public function getTimeRecorded(Entry $task, DateTime $start, DateTime $end): int
     {
         $sheets = Entry::find()->section('timesheet')->relatedTo($task);
-        DateHelper::addDateParamsBetween($sheets, $start, $end);
+        DateHelper::add2DatesParamsBetween($sheets, $start, $end);
         $time = 0;
         foreach ($sheets->all() as $sheet) {
             $endDate = $sheet->endDate;
+            $startDate = $sheet->startDate;
             if ($endDate > $end) {
                 $endDate = $end;
             }
-            $time += ($endDate->getTimeStamp() - $sheet->startDate->getTimeStamp());
+            if ($startDate < $start) {
+                $startDate = $start;
+            }
+            $time += ($endDate->getTimeStamp() - $startDate->getTimeStamp());
         }
         return $time;
     }
