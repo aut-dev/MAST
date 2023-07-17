@@ -45,7 +45,7 @@ class TaskBehavior extends Behavior
     }
 
     /**
-     * Get the total amount of derailed
+     * Get the total amount of money charged for derail
      *
      * @return int
      */

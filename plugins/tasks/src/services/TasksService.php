@@ -71,7 +71,7 @@ class TasksService extends Component
     }
 
     /**
-     * Actions before a task is deleted, need to delete all daily tasks
+     * Actions before a task is deleted, need to delete all daily tasks and timesheets
      *
      * @param  Entry  $task
      * @param  bool   $hardDelete
@@ -81,6 +81,10 @@ class TasksService extends Component
         $dailys = Entry::find()->section('dailyTask')->anyStatus()->relatedTo($task)->all();
         foreach ($dailys as $daily) {
             \Craft::$app->elements->deleteElement($daily, $hardDelete);
+        }
+        $sheets = Entry::find()->section('timesheet')->anyStatus()->relatedTo($task)->all();
+        foreach ($sheets as $sheet) {
+            \Craft::$app->elements->deleteElement($sheet, $hardDelete);
         }
     }
 
