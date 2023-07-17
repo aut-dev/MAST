@@ -1,4 +1,4 @@
-dateModified: 1689587216
+dateModified: 1689599847
 elementSources:
   craft\elements\Entry:
     -
@@ -288,6 +288,26 @@ plugins:
     edition: standard
     enabled: true
     schemaVersion: 1.0.0
+  gtag:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
+    settings:
+      cookieFlags:
+        __assoc__:
+          -
+            - 6a9e4f78-0e55-4b7b-9e55-4fc31c721794 # Mast
+            - SameSite=Lax;Secure
+      measurementId:
+        __assoc__:
+          -
+            - 6a9e4f78-0e55-4b7b-9e55-4fc31c721794 # Mast
+            - GTM-57MTJSG
+      onlyProduction:
+        __assoc__:
+          -
+            - 6a9e4f78-0e55-4b7b-9e55-4fc31c721794 # Mast
+            - ''
   image-resizer:
     edition: standard
     enabled: true

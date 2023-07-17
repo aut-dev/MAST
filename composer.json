@@ -24,6 +24,7 @@
         "puzzlers/emails": "^2.0",
         "puzzlers/imager": "^3.0",
         "puzzlers/translations": "^2.0",
+        "ryssbowh/craft-gtag": "^2.1",
         "ryssbowh/craft-prefetch": "^2.0",
         "sebastianlenz/linkfield": "^2.0",
         "spicyweb/craft-embedded-assets": "^3.0",
