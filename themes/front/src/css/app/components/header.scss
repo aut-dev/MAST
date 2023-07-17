@@ -62,7 +62,7 @@
     }
 }
 
-@media all and (max-width: 1024px) {
+@include media-breakpoint-down(lg) {
     #header{
         .header-height {
             height: 66px;

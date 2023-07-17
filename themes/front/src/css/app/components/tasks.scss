@@ -53,7 +53,7 @@
     }
 }
 
-@media all and (min-width: 1024px) {
+@include media-breakpoint-up(md) {
     .task-wrapper {
         &:nth-child(4n+1) {
             padding-left: 0;
