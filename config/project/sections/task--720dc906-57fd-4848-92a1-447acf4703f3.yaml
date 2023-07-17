@@ -1,5 +1,5 @@
 defaultPlacement: end
-enableVersioning: false
+enableVersioning: true
 handle: task
 name: Task
 previewTargets:
