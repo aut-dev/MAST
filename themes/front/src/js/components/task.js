@@ -39,6 +39,7 @@ class Task
             return;
         }
         this.changingTimer = true;
+        this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstart'));
         $.ajax({
             url: '/?action=plugin-timer/timer/stop',
             data: {
@@ -48,7 +49,6 @@ class Task
             this.changingTimer = false;
             this.timerStarted = 0;
             this.$elem.data('timer-started', 0).attr('data-timer-started', 0);
-            this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstart'));
             this.$elem.find('.progress-bar').css('width', data.progress + '%');
             this.$elem.data('progress', data.progress);
         });
@@ -60,6 +60,7 @@ class Task
             return;
         }
         this.changingTimer = true;
+        this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstop'));
         $.ajax({
             url: '/?action=plugin-timer/timer/start',
             data: {
@@ -71,7 +72,6 @@ class Task
             if (parseFloat(this.$elem.data('progress')) < 100) {
                 this.timerStarted = new Date().getTime() / 1000;
             }
-            this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstop'));
         });
     }
 

@@ -17,7 +17,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close'|t }}</button>
-                    <button type="submit" class="js-delete btn btn-primary">{{ 'Delete'|t }}</button>
+                    <button type="submit" class="js-delete btn btn-primary">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                        {{ 'Delete'|t }}
+                    </button>
                 </div>
             </form>
         </div>

@@ -10,7 +10,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close'|t }}</button>
-                <button type="submit" class="js-continue btn btn-primary">{{ 'Continue'|t }}</button>
+                <button type="submit" class="js-continue btn btn-primary">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                    {{ 'Continue'|t }}
+                </button>
             </div>
         </div>
     </div>

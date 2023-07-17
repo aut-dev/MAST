@@ -37,42 +37,47 @@ class Task
 
     initEditModal()
     {
-        this.$editModal.find('.js-save').click(() => {
-            this.$editModal.find('form').submit();
-        });
-        this.$editModal.find('form').submit(e => {
-            e.preventDefault()
+        let $form = this.$editModal.find('form');
+        $form.submit(e => {
+            e.preventDefault();
             $.ajax({
                 url: '/',
                 method: 'post',
-                data: this.$editModal.find('form').serialize(),
+                data: $form.serialize(),
                 dataType: 'json'
             }).done(() => {
                 this.reloadTimesheets();
                 App.addToast('Time entry saved');
                 this.editModal.hide();
-                App.removeErrors(this.$editModal);
+                App.removeErrors($form);
             }).fail(response => {
-                App.handleError(response, this.$editModal.find('form'));
+                App.handleError(response, $form);
+            }).always(() => {
+                $form.find('.spinner-border').hide();
+                $form.find('[type=submit]').attr('disabled', false);
             });
         });
     }
 
     initDeleteModal()
     {
-        this.$deleteModal.find('form').submit(e => {
-            e.preventDefault()
+        let $form = this.$deleteModal.find('form');
+        $form.submit(e => {
+            e.preventDefault();
             $.ajax({
                 url: '/',
                 method: 'post',
-                data: this.$deleteModal.find('form').serialize(),
+                data: $form.serialize(),
                 dataType: 'json'
             }).done(() => {
                 $('.timesheet[data-id=' + this.$deleteModal.find('[name=elementId]').val() + ']').remove();
                 this.deleteModal.hide();
                 App.addToast('Time entry deleted');
             }).fail(response => {
-                App.handleError(response, this.$deleteModal.find('form'));
+                App.handleError(response, $form);
+            }).always(() => {
+                $form.find('.spinner-border').hide();
+                $form.find('[type=submit]').attr('disabled', false);
             });
         });
     }

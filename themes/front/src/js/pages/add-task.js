@@ -31,7 +31,16 @@ class AddTask
     initWarningModal()
     {
         this.$warningModal.find('.js-continue').click(() => {
-            this.submit();
+            this.$warningModal.find('.spinner-border').show();
+            this.$warningModal.find('[type=submit]').attr('disabled', true);
+            this.submit().always(() => {
+                this.$warningModal.find('.spinner-border').hide();
+                this.$warningModal.find('[type=submit]').attr('disabled', false);
+            });
+        });
+        this.$warningModal[0].addEventListener('hide.bs.modal', () => {
+            this.$form.find('.spinner-border').hide();
+            this.$form.find('[type=submit]').attr('disabled', false);
         });
     }
 
@@ -105,7 +114,7 @@ class AddTask
 
     submit()
     {
-        $.ajax({
+        return $.ajax({
             url: '/',
             method: 'post',
             dataType: 'json',
@@ -114,6 +123,9 @@ class AddTask
             App.handleError(response, this.$form);
         }).done(data => {
             window.location.href = data.redirect;
+        }).always(() => {
+            this.$form.find('.spinner-border').hide();
+            this.$form.find('[type=submit]').attr('disabled', false);
         });
     }
 }

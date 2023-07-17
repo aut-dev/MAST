@@ -1,7 +1,7 @@
 <div class="modal fade" tabindex="-1" id="delete-timesheet-modal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form method="post">
+            <form>
                 {{ actionInput('elements/delete') }}
                 {{ hiddenInput('elementId') }}
                 {{ csrfInput() }}
@@ -14,7 +14,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close'|t }}</button>
-                    <button type="submit" class="btn btn-primary">{{ 'Delete'|t }}</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                        {{ 'Delete'|t }}
+                    </button>
                 </div>
             </form>
         </div>
