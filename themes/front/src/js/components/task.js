@@ -15,7 +15,7 @@ class Task
         this.$elem = $elem;
         this.id = $elem.data('id');
         this.progressPerSec = parseFloat(this.$elem.data('persec'));
-        if ($elem.hasClass('timer-started')) {
+        if ($elem.data('timer-started')) {
             this.timerStarted = new Date().getTime() / 1000;
         }
         this.initTimerBtn();
