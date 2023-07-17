@@ -30,7 +30,7 @@
             {{ 'Minutes until deadline:'|t }} <span class="countdown">{{ task.todayDeadline|minutesToNow }}</span>
         </p>
         <div class="actions d-flex justify-content-between align-items-center mt-2">
-            <span class="js-start-timer text-purple2" data-textstart="{{ 'Start'|t }}" data-textstop="{{ 'Stop'|t }}">{% if started %}{{ 'Stop'|t }}{% else %}
+            <span class="js-start-timer text-purple2 fs-5" data-textstart="{{ 'Start'|t }}" data-textstop="{{ 'Stop'|t }}">{% if started %}{{ 'Stop'|t }}{% else %}
                 {{ 'Start'|t }}{% endif %}</span>
             <span class="if-active fs-4">${{ task.committed.getAmount / 100 }}</span>
         </div>

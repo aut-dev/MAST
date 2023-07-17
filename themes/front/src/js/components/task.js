@@ -40,6 +40,7 @@ class Task
         }
         this.changingTimer = true;
         this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstart'));
+        this.$elem.data('timer-started', 0).attr('data-timer-started', 0);
         $.ajax({
             url: '/?action=plugin-timer/timer/stop',
             data: {
@@ -48,7 +49,6 @@ class Task
         }).done((data) => {
             this.changingTimer = false;
             this.timerStarted = 0;
-            this.$elem.data('timer-started', 0).attr('data-timer-started', 0);
             this.$elem.find('.progress-bar').css('width', data.progress + '%');
             this.$elem.data('progress', data.progress);
         });
@@ -61,6 +61,7 @@ class Task
         }
         this.changingTimer = true;
         this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstop'));
+        this.$elem.data('timer-started', 1).attr('data-timer-started', 1);
         $.ajax({
             url: '/?action=plugin-timer/timer/start',
             data: {
@@ -68,7 +69,6 @@ class Task
             }
         }).done(() => {
             this.changingTimer = false;
-            this.$elem.data('timer-started', 1).attr('data-timer-started', 1);
             if (parseFloat(this.$elem.data('progress')) < 100) {
                 this.timerStarted = new Date().getTime() / 1000;
             }
