@@ -25,7 +25,16 @@ class AddTask
         this.initSubmit();
         this.initWeeks();
         this.initLength();
+        this.initImage();
         console.log('Add task initialised');
+    }
+
+    initImage()
+    {
+        $('.js-delete-image').click((e) => {
+            e.preventDefault();
+            $(e.target).parent().replaceWith('<input type="hidden" name="fields[icon]" value="">');
+        });
     }
 
     initWarningModal()

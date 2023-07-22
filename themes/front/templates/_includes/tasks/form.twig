@@ -140,11 +140,14 @@
 
     <div class="form-group mb-3 field-icon">
         <label class="form-label">
-            {{ 'Upload icon (.jpg, .png)'|t }}
+            {{ 'Upload an icon (.jpg, .png)'|t }}
         </label>
         <div class="d-flex align-items-center">
             {% if task and task.icon|length %}
-                <img src="{{ task.icon.0.url }}" class="task-image me-3">
+                <div class="d-flex me-3 align-items-center">
+                    <img src="{{ task.icon.0.url }}" class="task-image me-1">
+                    <a href="#" class="js-delete-image">{{ 'Delete'|t }}</a>
+                </div>
             {% endif %}
             <input class="form-control" type="file" accept="image/png, image/jpeg" name="fields[icon][]"/>
         </div>
