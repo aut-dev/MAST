@@ -14,7 +14,7 @@
 
 {% block after_content_matrix %}
     <div class="container">
-        {% set tasks = craft.entries.section('task').authorId(currentUser.id).orderBy('order').all() %}
+        {% set tasks = craft.entries.section('task').with('icon').authorId(currentUser.id).orderBy('order').all() %}
         {% if tasks %}
             <div class="row" id="sortable">
                 {% for task in tasks %}

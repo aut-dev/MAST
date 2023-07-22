@@ -117,8 +117,10 @@ class AddTask
         return $.ajax({
             url: '/',
             method: 'post',
+            processData: false,
+            contentType: false,
             dataType: 'json',
-            data: this.$form.serialize()
+            data: new FormData(this.$form[0])
         }).fail(response => {
             App.handleError(response, this.$form);
         }).done(data => {

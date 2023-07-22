@@ -1,4 +1,4 @@
-dateModified: 1689600528
+dateModified: 1690001163
 elementSources:
   craft\elements\Entry:
     -
@@ -226,6 +226,7 @@ meta:
     b39f1bdf-5ce7-4286-9e4f-3162f9c70830: Full # Full
     b4520f72-9c23-445d-84c9-ed6bb056271f: 'Edit task' # Edit task
     b6662c40-1d50-47d9-bc6d-45c902bbca73: 'Reset password form' # Reset password form
+    bbb5eea1-ac4b-405a-b161-08454cc1e2a7: Icon # Icon
     beb8aabf-7970-4442-9f8b-f70568d8757a: 'Start date' # Start date
     bf477c2a-b2b3-4dde-a0e0-0978de99ab77: 'New task' # New task
     c02d8ea3-fd26-4084-890d-83260c7fc0dd: 'Banner Images' # Banner Images

@@ -51,6 +51,11 @@
             top: -1px;
         }
     }
+    .task-icon {
+        max-width: 30px;
+        max-height: 30px;
+        margin-right: 5px;
+    }
 }
 
 @include media-breakpoint-up(md) {
