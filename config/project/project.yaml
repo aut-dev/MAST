@@ -1,4 +1,4 @@
-dateModified: 1690001163
+dateModified: 1690009892
 elementSources:
   craft\elements\Entry:
     -
@@ -126,7 +126,7 @@ elementSources:
       heading: ''
       type: heading
 email:
-  fromEmail: noreply@puzzlers.run
+  fromEmail: $EMAIL_FROM
   fromName: Mast
   replyToEmail: null
   template: ''
