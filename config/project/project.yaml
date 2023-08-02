@@ -1,4 +1,4 @@
-dateModified: 1690009892
+dateModified: 1690972976
 elementSources:
   craft\elements\Entry:
     -
@@ -174,6 +174,7 @@ meta:
     6fca2f1a-63a4-491d-9571-490f34079df9: 'My account' # My account
     8ad10f9f-e461-4fb0-85a8-76ffc63cfb81: Charge # Charge
     8ad55fd2-2c4e-436b-a572-d9d4bef64524: 'Basic Seo' # Basic Seo
+    8c7680f9-dce8-43c7-b972-8c7b47508cb3: Paused # Paused
     8e16df26-189c-4cab-bfe1-658ff8db2d14: Default # Default
     8f1638fd-59fe-4a3d-924c-f35248de5837: 'Subscription expires' # Subscription expires
     8fd53ce4-059f-4154-8ef4-f1d0c5a0d8ce: Small # Small

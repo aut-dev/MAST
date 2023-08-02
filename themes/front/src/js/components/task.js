@@ -18,7 +18,21 @@ class Task
         if ($elem.data('timer-started')) {
             this.timerStarted = new Date().getTime() / 1000;
         }
+        $elem.click(e => {
+            if (!$(e.target).hasClass('stop-click')) {
+                window.location.href = this.$elem.data('url');
+            }
+        });
         this.initTimerBtn();
+        this.initPause();
+    }
+
+    initPause()
+    {
+        let $pause = this.$elem.find('.js-pause');
+        $pause.change(() => {
+            this.pause($pause.is(':checked'));
+        });
     }
 
     initTimerBtn()
@@ -30,6 +44,20 @@ class Task
             } else {
                 this.startTimer();
             }
+        });
+    }
+
+    pause(paused)
+    {
+        $.ajax({
+            url: '/?action=plugin-tasks/tasks/pause',
+            dataType: 'json',
+            data: {
+                id: this.id,
+                paused: paused ? 1 : 0
+            }
+        }).done((data) => {
+            this.refresh(data);
         });
     }
 
@@ -85,8 +113,25 @@ class Task
         this.$elem.find('.progress-bar').css('width', progress + '%');
         if (progress > 100) {
             this.timerStarted = 0;
-            this.tasks.refreshTasks();
+            this.refreshTask();
         }
+    }
+
+    refreshTask()
+    {
+        if (this.tasks.refreshing) {
+            return false;
+        }
+        this.tasks.refreshing = true;
+        $.ajax({
+            url: '/?action=plugin-tasks/tasks/poll',
+            data: {
+                id: this.id
+            }
+        }).done((data) => {
+            this.tasks.refreshing = false;
+            this.refresh(data.id);
+        });
     }
 
     refresh(data)

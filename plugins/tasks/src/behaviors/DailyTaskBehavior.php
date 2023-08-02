@@ -90,7 +90,7 @@ class DailyTaskBehavior extends Behavior
      */
     public function isActive(): bool
     {
-        return $this->owner->length > 0;
+        return !$this->task->paused and $this->owner->length > 0;
     }
 
     /**

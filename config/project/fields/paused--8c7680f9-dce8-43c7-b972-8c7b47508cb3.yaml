@@ -1,0 +1,14 @@
+columnSuffix: bbwklhep
+contentColumnType: boolean
+fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
+handle: paused
+instructions: null
+name: Paused
+searchable: false
+settings:
+  default: false
+  offLabel: null
+  onLabel: null
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Lightswitch
