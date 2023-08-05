@@ -97,7 +97,8 @@ class StripeService extends Component
             'stripeCustomer' => $subscription->customer,
             'paymentMethod' => $subscription->default_payment_method ?? '',
             'subscriptionStatus' => $subscription->status,
-            'subscriptionExpires' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
+            'cancelAtPeriodEnd' => $subscription->cancel_at_period_end,
+            'subscriptionCancels' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
         ]);
         $this->clearPaymentMethodCache($user);
         \Craft::$app->elements->saveElement($user, false);
@@ -122,7 +123,8 @@ class StripeService extends Component
             'subscriptionStatus' => null,
             'subscriptionExpires' => null,
             'paymentMethod' => null,
-            'stripeSessionId' => null
+            'stripeSessionId' => null,
+            'cancelAtPeriodEnd' => false
         ]);
         $this->clearPaymentMethodCache($user);
         \Craft::$app->elements->saveElement($user, false);

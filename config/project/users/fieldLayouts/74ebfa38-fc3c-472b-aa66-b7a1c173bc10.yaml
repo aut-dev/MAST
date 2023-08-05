@@ -98,6 +98,18 @@ tabs:
         userCondition: null
         warning: null
         width: 50
+      -
+        elementCondition: null
+        fieldUid: 19e44a57-1ccd-4059-9775-2414120a25d6 # Cancel at period end
+        instructions: null
+        label: null
+        required: false
+        tip: null
+        type: craft\fieldlayoutelements\CustomField
+        uid: 5c01d29a-e4ce-4248-adc3-d608d6adbb71
+        userCondition: null
+        warning: null
+        width: 50
     name: Stripe
     uid: 45ce7292-c287-440e-8ada-e73520920ffd
     userCondition: null

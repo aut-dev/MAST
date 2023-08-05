@@ -1,4 +1,4 @@
-dateModified: 1691222813
+dateModified: 1691228762
 elementSources:
   craft\elements\Entry:
     -
@@ -194,6 +194,7 @@ meta:
     9a578738-c83e-41fc-bbe3-6034ae1835d2: Default # Default
     15bf8716-9770-426b-859b-3251b11fd49e: 'Edit task' # Edit task
     18ad884e-ff55-4513-8822-fb6222c76f60: Imagery # Imagery
+    19e44a57-1ccd-4059-9775-2414120a25d6: 'Cancel at period end' # Cancel at period end
     28fc98a3-e1d4-4d4c-a78c-d92903e760cc: Sun # Sun
     37e79b05-ad6f-49e5-a1eb-28f46e70f0fc: Default # Default
     38ab7a04-2df5-4c32-bcd3-2866a3e65e02: Timer # Timer
