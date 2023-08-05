@@ -5,6 +5,7 @@ namespace Plugins\Stripe\services;
 use DateInterval;
 use DateTime;
 use Exception;
+use Plugins\Stripe\exceptions\StripeException;
 use Plugins\Tasks\Tasks;
 use Stripe\BillingPortal\Session as PortalSession;
 use Stripe\Checkout\Session;
