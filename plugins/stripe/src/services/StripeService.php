@@ -80,37 +80,13 @@ class StripeService extends Component
     }
 
     /**
-     * Update the subscription
+     * Update/Create the subscription
      *
      * @param  Subscription $subscription
      */
     public function updateSubscription(Subscription $subscription)
     {
-        $user = User::find()->stripeCustomer($subscription->customer)->anyStatus()->one();
-        if (!$user) {
-            throw new StripeException("User with stripe id {$subscription->customer} doesn't exist");
-        }
-        $this->updateUserSubscription($user, $subscription);
-    }
-
-    /**
-     * Create the subscription
-     *
-     * @param  Subscription $subscription
-     */
-    public function createSubscription(Subscription $subscription)
-    {
-        $user = User::find()->stripeCustomer($subscription->customer)->anyStatus()->one();
-        if (!$user) {
-            $customer = $this->getClient()->customers->retrieve($subscription->customer);
-            if (!$customer->email) {
-                throw new StripeException("Customer doesn't have an email");
-            }
-            $user = User::find()->email($customer->email)->anyStatus()->one();
-        }
-        if (!$user) {
-            throw new StripeException("User with stripe id {$subscription->customer} or email {$customer->email} doesn't exist");
-        }
+        $user = $this->findCustomer($subscription);
         $this->updateUserSubscription($user, $subscription);
     }
 
@@ -121,10 +97,7 @@ class StripeService extends Component
      */
     public function deleteSubscription(Subscription $subscription)
     {
-        $user = User::find()->stripeCustomer($subscription->customer)->anyStatus()->one();
-        if (!$user) {
-            throw new StripeException("User with stripe id {$subscription->customer} doesn't exist");
-        }
+        $user = $this->findCustomer($subscription);
         $this->updateUserSubscription($user, null);
     }
 
@@ -228,5 +201,27 @@ class StripeService extends Component
         $user->setFieldValues($values);
         \Craft::$app->elements->saveElement($user, false);
         $this->clearPaymentMethodCache($user);
+    }
+
+    /**
+     * Find a user from a subscription, first by stripe id, then by email
+     *
+     * @param  Subscription $subscription
+     * @return User
+     */
+    protected function findCustomer(Subscription $subscription): User
+    {
+        $user = User::find()->stripeCustomer($subscription->customer)->anyStatus()->one();
+        if (!$user) {
+            $customer = $this->getClient()->customers->retrieve($subscription->customer);
+            if (!$customer->email) {
+                throw new StripeException("Customer doesn't have an email");
+            }
+            $user = User::find()->email($customer->email)->anyStatus()->one();
+        }
+        if (!$user) {
+            throw new StripeException("User with stripe id {$subscription->customer} or email {$customer->email} doesn't exist");
+        }
+        return $user;
     }
 }
