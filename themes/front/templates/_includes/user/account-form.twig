@@ -53,7 +53,7 @@
 
     <div class="form-group mb-3">
         <label for="timezone" class="required">{{ 'Timezone'|t }}</label>
-        <select name="fields[timezone]" class="form-control" required>
+        <select name="fields[timezone]" class="form-select" required>
             <option value="">{{ 'Select'|t }}</option>
             {% for item in craft.cp.getTimeZoneOptions() %}
                 <option value="{{ item.value }}" {% if user is defined and user.timezone == item.value %}selected{% endif %}>{{ item.value }} - {{ item.label }}</option>

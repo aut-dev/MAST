@@ -102,6 +102,7 @@ class StripeService extends Component
         if ($user) {
             $user->setFieldValue('paymentMethod', $customer->invoice_settings['default_payment_method']);
             \Craft::$app->elements->saveElement($user, false);
+            $this->clearPaymentMethodCache($user);
         }
     }
 
