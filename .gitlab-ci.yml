@@ -20,9 +20,20 @@ code_quality:
 deploy_to_dev:
   stage: deploy
   script:
+    - ssh webpuzzlers.co.uk@109.228.60.227 "set -e;cd autonomy-predev.webpuzzlers.co.uk;git pull;./deploy prod \"$CI_COMMIT_TITLE\""
+  environment:
+    name: dev site
+    url: https://autonomy-predev.webpuzzlers.co.uk
+  only:
+    - devel
+
+#Deploy to staging
+deploy_to_dev:
+  stage: deploy
+  script:
     - ssh webpuzzlers.co.uk@109.228.60.227 "set -e;cd autonomy.webpuzzlers.co.uk;git pull;./deploy prod \"$CI_COMMIT_TITLE\""
   environment:
     name: dev site
     url: https://autonomy-dev.webpuzzlers.co.uk
   only:
-    - devel
+    - staging
