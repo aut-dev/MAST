@@ -86,8 +86,23 @@ class StripeService extends Component
      */
     public function updateSubscription(Subscription $subscription)
     {
-        $user = $this->findCustomer($subscription);
-        $this->updateUserSubscription($user, $subscription);
+        if ($user = $this->findUser($subscription)) {
+            $this->updateUserSubscription($user, $subscription);
+        }
+    }
+
+    /**
+     * Update the customer
+     *
+     * @param  Customer $customer
+     */
+    public function updateCustomer(Customer $customer)
+    {
+        $user = User::find()->stripeCustomer($customer->id)->anyStatus()->one();
+        if ($user) {
+            $user->setFieldValue('paymentMethod', $customer->invoice_settings['default_payment_method']);
+            \Craft::$app->elements->saveElement($user, false);
+        }
     }
 
     /**
@@ -97,8 +112,9 @@ class StripeService extends Component
      */
     public function deleteSubscription(Subscription $subscription)
     {
-        $user = $this->findCustomer($subscription);
-        $this->updateUserSubscription($user, null);
+        if ($user = $this->findUser($subscription)) {
+            $this->updateUserSubscription($user, null);
+        }
     }
 
     /**
@@ -192,7 +208,7 @@ class StripeService extends Component
         if ($subscription) {
             $values = [
                 'stripeCustomer' => $subscription->customer,
-                'paymentMethod' => $subscription->default_payment_method ?? '',
+                // 'paymentMethod' => $subscription->default_payment_method ?? '',
                 'subscriptionStatus' => $subscription->status,
                 'cancelAtPeriodEnd' => $subscription->cancel_at_period_end,
                 'subscriptionExpires' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
@@ -207,20 +223,14 @@ class StripeService extends Component
      * Find a user from a subscription, first by stripe id, then by email
      *
      * @param  Subscription $subscription
-     * @return User
+     * @return ?User
      */
-    protected function findCustomer(Subscription $subscription): User
+    protected function findUser(Subscription $subscription): ?User
     {
         $user = User::find()->stripeCustomer($subscription->customer)->anyStatus()->one();
         if (!$user) {
             $customer = $this->getClient()->customers->retrieve($subscription->customer);
-            if (!$customer->email) {
-                throw new StripeException("Customer doesn't have an email");
-            }
             $user = User::find()->email($customer->email)->anyStatus()->one();
-        }
-        if (!$user) {
-            throw new StripeException("User with stripe id {$subscription->customer} or email {$customer->email} doesn't exist");
         }
         return $user;
     }
