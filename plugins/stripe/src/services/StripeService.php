@@ -98,7 +98,7 @@ class StripeService extends Component
             'paymentMethod' => $subscription->default_payment_method ?? '',
             'subscriptionStatus' => $subscription->status,
             'cancelAtPeriodEnd' => $subscription->cancel_at_period_end,
-            'subscriptionCancels' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
+            'subscriptionExpires' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
         ]);
         $this->clearPaymentMethodCache($user);
         \Craft::$app->elements->saveElement($user, false);
