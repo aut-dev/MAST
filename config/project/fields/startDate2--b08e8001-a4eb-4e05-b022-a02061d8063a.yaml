@@ -1,19 +1,17 @@
-columnSuffix: iyhhipjv
-contentColumnType:
-  - 'date:datetime'
-  - 'tz:string'
+columnSuffix: sbrcuxwl
+contentColumnType: datetime
 fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
-handle: endDate
+handle: startDate2
 instructions: null
-name: 'End date'
+name: 'Start date'
 searchable: false
 settings:
   max: null
   min: null
-  minuteIncrement: 5
+  minuteIncrement: 30
   showDate: true
-  showTime: true
-  showTimeZone: true
+  showTime: false
+  showTimeZone: false
 translationKeyFormat: null
 translationMethod: none
 type: craft\fields\Date

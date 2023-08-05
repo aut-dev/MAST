@@ -1,11 +1,9 @@
-columnSuffix: iyhhipjv
-contentColumnType:
-  - 'date:datetime'
-  - 'tz:string'
-fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
-handle: endDate
+columnSuffix: dwmlcegy
+contentColumnType: datetime
+fieldGroup: 2e3e24ad-d20e-48fc-ba6a-453f1ac66748 # User
+handle: unlimitedBreakStart
 instructions: null
-name: 'End date'
+name: 'Unlimited break start'
 searchable: false
 settings:
   max: null
@@ -13,7 +11,7 @@ settings:
   minuteIncrement: 5
   showDate: true
   showTime: true
-  showTimeZone: true
+  showTimeZone: false
 translationKeyFormat: null
 translationMethod: none
 type: craft\fields\Date

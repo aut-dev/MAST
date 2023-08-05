@@ -101,3 +101,21 @@ tabs:
     name: Stripe
     uid: 45ce7292-c287-440e-8ada-e73520920ffd
     userCondition: null
+  -
+    elementCondition: null
+    elements:
+      -
+        elementCondition: null
+        fieldUid: bb86fabf-06ca-4369-94a6-298c9595fce2 # Unlimited break start
+        instructions: null
+        label: null
+        required: false
+        tip: null
+        type: craft\fieldlayoutelements\CustomField
+        uid: a4fbdc4a-fe7f-4f72-8ffd-54e2c6bff923
+        userCondition: null
+        warning: null
+        width: 100
+    name: Break
+    uid: 74872fa4-4b83-4dc7-9b4d-9c32261341d6
+    userCondition: null

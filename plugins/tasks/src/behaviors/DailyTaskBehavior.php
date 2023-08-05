@@ -36,25 +36,25 @@ class DailyTaskBehavior extends Behavior
     }
 
     /**
-     * Get the task status, can be either 'active', 'inactive', 'complete', 'derailed' or 'expired'
+     * Get the task status, can be either 'active', 'inactive', 'complete', 'derailed', 'paused'
      *
      * @return string
      */
     public function getTaskStatus(): string
     {
-        if ($this->isActive()) {
-            if ($this->hasDerailed()) {
-                return 'derailed';
-            }
-            if ($this->isComplete()) {
-                return 'complete';
-            }
-            if ($this->isExpired()) {
-                return 'expired';
-            }
-            return 'active';
+        if (!$this->isActive()) {
+            return 'inactive';
         }
-        return 'inactive';
+        if ($this->isPaused()) {
+            return 'paused';
+        }
+        if ($this->isComplete()) {
+            return 'complete';
+        }
+        if ($this->hasDerailed()) {
+            return 'derailed';
+        }
+        return 'active';
     }
 
     /**
@@ -64,7 +64,7 @@ class DailyTaskBehavior extends Behavior
      */
     public function hasDerailed(): bool
     {
-        if (!$this->isActive()) {
+        if (!$this->isActive() or $this->isPaused()) {
             return false;
         }
         $timeSpent = $this->getTimeSpent();
@@ -84,13 +84,26 @@ class DailyTaskBehavior extends Behavior
     }
 
     /**
+     * Is this task paused
+     *
+     * @return boolean
+     */
+    public function isPaused(): bool
+    {
+        return $this->owner->paused;
+    }
+
+    /**
      * Is this daily task active
      *
      * @return bool
      */
     public function isActive(): bool
     {
-        return !$this->task->paused and $this->owner->length > 0;
+        if ($this->owner->author->isOnBreak($this->owner->startDate)) {
+            return false;
+        }
+        return $this->owner->length > 0;
     }
 
     /**
@@ -110,9 +123,6 @@ class DailyTaskBehavior extends Behavior
      */
     public function isComplete(): bool
     {
-        if (!$this->isActive()) {
-            return false;
-        }
         if ($this->owner->taskType->value == 'more') {
             return $this->getTimeSpent() >= $this->owner->length;
         }

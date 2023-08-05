@@ -1,0 +1,17 @@
+columnSuffix: pyskrynr
+contentColumnType: datetime
+fieldGroup: 0ba8d9d5-2692-4324-acd8-0187c46d6e82 # Common
+handle: endDate2
+instructions: null
+name: 'End date'
+searchable: false
+settings:
+  max: null
+  min: null
+  minuteIncrement: 30
+  showDate: true
+  showTime: false
+  showTimeZone: false
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Date

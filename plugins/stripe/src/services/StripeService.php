@@ -42,6 +42,12 @@ class StripeService extends Component
         return $this->_client;
     }
 
+    /**
+     * Create a checkout session in subscription mode
+     *
+     * @param  User   $user
+     * @return Session
+     */
     public function createCheckoutSession(User $user): Session
     {
         return $this->getClient()->checkout->sessions->create([
@@ -57,6 +63,12 @@ class StripeService extends Component
         ]);
     }
 
+    /**
+     * Create a portal session
+     *
+     * @param  User   $user
+     * @return PortalSession
+     */
     public function createPortalSession(User $user): PortalSession
     {
         $session = $this->getClient()->checkout->sessions->retrieve($user->stripeSessionId);
@@ -74,7 +86,7 @@ class StripeService extends Component
         }
         $user = User::find()->email($customer->email)->anyStatus()->one();
         if (!$user) {
-            throw StripeException("User with email {$customer->email} doesn't exist");
+            throw new StripeException("User with email {$customer->email} doesn't exist");
         }
         $user->setFieldValues([
             'stripeCustomer' => $subscription->customer,
@@ -90,7 +102,7 @@ class StripeService extends Component
     {
         $customer = $this->getClient()->customers->retrieve($subscription->customer);
         if (!$customer->email) {
-            throw StripeException("Customer doesn't have an email");
+            throw new StripeException("Customer doesn't have an email");
         }
         $user = User::find()->email($customer->email)->anyStatus()->one();
         if (!$user) {

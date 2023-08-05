@@ -1,0 +1,39 @@
+{% set breaks = craft.entries.section('break').authorId(currentUser.id).all() %}
+{% set today = now|date_modify('today') %}
+{% if not craft.app.request.getQueryParam("showPast") %}
+    {% set breaks = breaks|filter(v => v.endDate >= today) %}
+{% endif %}
+{% if breaks %}
+    <div class="row fw-bold mb-2">
+        <div class="col-4">
+            {{ 'Title'|t }}
+        </div>
+        <div class="col-3">
+            {{ 'Start date'|t }}
+        </div>
+        <div class="col-3">
+            {{ 'End date'|t }}
+        </div>
+        <div class="col-2">
+        </div>
+    </div>
+    {% for break in breaks %}
+        <div class="row break mb-2 {% if break.endDate < today %}text-light{% endif %}" data-id="{{ break.id }}">
+            <div class="col-4">
+                {{ break.title }}
+            </div>
+            <div class="col-3">
+                {{ break.startDate|date('d/m/Y', currentUser.timezone) }}
+            </div>
+            <div class="col-3">
+                {{ break.endDate|date('d/m/Y', currentUser.timezone) }}
+            </div>
+            <div class="col-2">
+                <a href="#" class="js-edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                <a href="#" class="js-delete ms-3"><i class="fa-solid fa-trash"></i></a>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>{{ 'You have no breaks defined yet'|t }}</p>
+{% endif %}

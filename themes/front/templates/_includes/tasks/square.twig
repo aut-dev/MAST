@@ -16,37 +16,40 @@
     {% endif %}
 {% endif %}
 
-<div class="square task p-3 bg-task rounded" data-url="{{ task.url }}" data-timer-started="{{ started ? 1 : 0 }}" data-status="{{ status }}" data-id="{{ task.id }}" data-progress="{{ progress }}" data-persec="{{ persec }}" data-active="{{ is_active }}">
-    <div class="d-flex justify-content-between align-items-center">
-        <h4 class="d-flex align-items-center">
-            {% if task.icon|length %}
-                {{ images.singleImg(task.icon.first, {width: 30}, 'task-icon') }}
-            {% endif %}
-            {{ task.title }}
-        </h4>
-        <div class="d-flex">
-            <div class="form-check form-switch">
-                <input class="form-check-input js-pause stop-click" type="checkbox" id="pause-{{ task.id }}" {% if task.paused %}checked{% endif %}>
-                <label class="form-check-label small" for="pause-{{ task.id }}">{{ 'Paused'|t }}</label>
+<a class="text-body task-wrapper" href="{{ task.url }}">
+    <div class="square task p-3 bg-task rounded" data-timer-started="{{ started ? 1 : 0 }}" data-status="{{ status }}" data-id="{{ task.id }}" data-progress="{{ progress }}" data-persec="{{ persec }}" data-active="{{ is_active ? 1 : 0 }}" data-paused="{{ task.paused ? 1 : 0 }}">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            {% set has_icon = task.icon|length %}
+            <h4 class="m-0 {% if has_icon %}d-flex{% endif %} text-truncate align-items-center">
+                {% if has_icon %}
+                    {{ images.singleImg(task.icon.first, {width: 30}, 'task-icon') }}
+                {% endif %}
+                <div class="text-truncate">{{ task.title }}</div>
+            </h4>
+            <div class="d-flex align-items-center">
+                <div class="form-check form-switch js-pause if-active">
+                    <div class="form-check-input"></div>
+                    <label class="form-check-label small" for="pause-{{ task.id }}">{{ 'Paused'|t }}</label>
+                </div>
+                <span class="complete-tick if-status-complete ms-3"><i class="fa-solid fa-check"></i></span>
             </div>
-            <span class="complete-tick if-status-complete ms-3"><i class="fa-solid fa-check"></i></span>
         </div>
-    </div>
-    <p class="text-light mb-0">{{ task.taskType|ucfirst }} than {{ (length / 60)|round }} min</p>
-    <div class="if-active">
-        <div class="progress">
-            <div class="progress-bar" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+        <p class="text-light mb-0">{{ task.taskType|ucfirst }} than {{ (length / 60)|round }} min</p>
+        <div class="if-active-not-paused">
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
         </div>
+        <p class="if-status-active m-0">
+            {{ 'Minutes until deadline:'|t }} <span class="countdown">{{ task.todayDeadline|minutesToNow }}</span>
+        </p>
+        <div class="actions d-flex justify-content-between align-items-center mt-2">
+            <span class="js-start-timer text-purple2 fs-5" data-textstart="{{ 'Start'|t }}" data-textstop="{{ 'Stop'|t }}">{% if started %}{{ 'Stop'|t }}{% else %}
+                {{ 'Start'|t }}{% endif %}</span>
+            <span class="if-active fs-4">${{ task.committed.getAmount / 100 }}</span>
+        </div>
+        {% if getenv('CRAFT_ENVIRONMENT') == 'local' %}
+            {# <p>Today is {{ currentUser.now|date('d/m/Y H:i', currentUser.timezone) }}</p> #}
+        {% endif %}
     </div>
-    <p class="if-status-active m-0">
-        {{ 'Minutes until deadline:'|t }} <span class="countdown">{{ task.todayDeadline|minutesToNow }}</span>
-    </p>
-    <div class="actions d-flex justify-content-between align-items-center mt-2">
-        <span class="js-start-timer text-purple2 fs-5 stop-click" data-textstart="{{ 'Start'|t }}" data-textstop="{{ 'Stop'|t }}">{% if started %}{{ 'Stop'|t }}{% else %}
-            {{ 'Start'|t }}{% endif %}</span>
-        <span class="if-active fs-4">${{ task.committed.getAmount / 100 }}</span>
-    </div>
-    {% if getenv('CRAFT_ENVIRONMENT') == 'local' %}
-        {# <p>Today is {{ currentUser.now|date('d/m/Y H:i', currentUser.timezone) }}</p> #}
-    {% endif %}
-</div>
+</a>
