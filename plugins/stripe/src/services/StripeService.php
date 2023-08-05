@@ -78,6 +78,11 @@ class StripeService extends Component
         ]);
     }
 
+    /**
+     * Update the subscription
+     *
+     * @param  Subscription $subscription
+     */
     public function updateSubscription(Subscription $subscription)
     {
         $customer = $this->getClient()->customers->retrieve($subscription->customer);
@@ -98,6 +103,11 @@ class StripeService extends Component
         \Craft::$app->elements->saveElement($user, false);
     }
 
+    /**
+     * Delete the subscription
+     *
+     * @param  Subscription $subscription
+     */
     public function deleteSubscription(Subscription $subscription)
     {
         $customer = $this->getClient()->customers->retrieve($subscription->customer);
@@ -151,7 +161,11 @@ class StripeService extends Component
         }
         $data = \Craft::$app->cache->get(self::PAYMENT_METHOD_CACHE_KEY . $user->id);
         if ($data === false) {
-            $data = $this->getClient()->customers->retrievePaymentMethod($user->stripeCustomer, $user->paymentMethod);
+            try {
+                $data = $this->getClient()->customers->retrievePaymentMethod($user->stripeCustomer, $user->paymentMethod);
+            } catch (\Exception $e) {
+                return null;
+            }
             $dep = new TagDependency([
                 'tags' => [self::PAYMENT_METHOD_CACHE_KEY]
             ]);
