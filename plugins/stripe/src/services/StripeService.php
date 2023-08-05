@@ -208,11 +208,13 @@ class StripeService extends Component
         if ($subscription) {
             $values = [
                 'stripeCustomer' => $subscription->customer,
-                // 'paymentMethod' => $subscription->default_payment_method ?? '',
                 'subscriptionStatus' => $subscription->status,
                 'cancelAtPeriodEnd' => $subscription->cancel_at_period_end,
                 'subscriptionExpires' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
             ];
+            if ($subscription->default_payment_method ?? '') {
+                $values['paymentMethod'] = $subscription->default_payment_method;
+            }
         }
         $user->setFieldValues($values);
         \Craft::$app->elements->saveElement($user, false);
