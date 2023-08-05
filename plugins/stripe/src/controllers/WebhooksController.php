@@ -30,7 +30,7 @@ class WebhooksController extends Controller
 
         switch ($event->type) {
             case 'customer.subscription.created':
-                Stripe::$plugin->stripe->updateSubscription($event->data->object);
+                Stripe::$plugin->stripe->createSubscription($event->data->object);
                 break;
             case 'customer.subscription.deleted':
                 Stripe::$plugin->stripe->deleteSubscription($event->data->object);
