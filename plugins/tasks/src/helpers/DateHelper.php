@@ -5,6 +5,7 @@ namespace Plugins\Tasks\helpers;
 use craft\db\Query;
 use craft\helpers\Db;
 use DateTime;
+use DateInterval;
 
 class DateHelper
 {
@@ -71,5 +72,19 @@ class DateHelper
     {
         $dateField = 'content.field_' . $field . '_' . \Craft::$app->fields->getFieldByHandle($field)->columnSuffix;
         $query->andWhere(['=', $dateField, Db::prepareDateForDb($date)]);
+    }
+
+    /**
+     * Check if a date is the day before another date
+     *
+     * @param  DateTime $before
+     * @param  DateTime $after
+     * @return boolean
+     */
+    public static function isTheDayBefore(DateTime $before, DateTime $after): bool
+    {
+        $before = clone $before;
+        $before->add(new DateInterval('P1D'));
+        return ($before->format('d/m/D') == $after->format('d/m/D'));
     }
 }

@@ -211,7 +211,7 @@ class DailyTaskBehavior extends Behavior
             $deadline->setTime(23, 59, 59);
         }
         $total += $this->owner->author->getTimerSpent($this->getTask(), $deadline);
-        if ($previousTask = $this->getPreviousTask()) {
+        if ($previousTask = $this->getPreviousTask() and DateHelper::isTheDayBefore($previousTask->startDate, $this->owner->startDate)) {
             $start = $previousTask->getDeadlineInstance();
         }
         $total += Timesheets::$plugin->timesheets->getTimeRecorded($this->getTask(), $start, $deadline);
