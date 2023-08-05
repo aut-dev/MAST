@@ -37,7 +37,7 @@ class WebhooksController extends Controller
                 break;
             case 'customer.subscription.updated':
                 Stripe::$plugin->stripe->updateSubscription($event->data->object);
-                // no break
+                break;
             case 'customer.updated':
                 Stripe::$plugin->stripe->updateCustomer($event->data->object);
         }
