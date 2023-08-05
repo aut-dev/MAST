@@ -121,7 +121,8 @@ class StripeService extends Component
         $user->setFieldValues([
             'subscriptionStatus' => null,
             'subscriptionExpires' => null,
-            'paymentMethod' => null
+            'paymentMethod' => null,
+            'stripeSessionId' => null
         ]);
         $this->clearPaymentMethodCache($user);
         \Craft::$app->elements->saveElement($user, false);
