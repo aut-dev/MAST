@@ -142,7 +142,7 @@
         <label class="form-label">
             {{ 'Background color'|t }}
         </label>
-        <input type="color" name="fields[backgroundColor]" class="form-control form-control-color" value="{% if task %}{{ task.backgroundColor ?: '#ffffff' }}{% endif %}" title="{{ 'Choose your color'|t }}">
+        <input type="color" name="fields[backgroundColor]" class="form-control form-control-color" value="{% if task %}{{ task.backgroundColor ?: '#ffffff' }}{% else %}#ffffff{% endif %}" title="{{ 'Choose your color'|t }}">
     </div>
 
     {% if task %}
