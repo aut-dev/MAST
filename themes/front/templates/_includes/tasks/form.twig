@@ -153,6 +153,16 @@
         </div>
     </div>
 
+    {% if task %}
+        <div class="form-group mb-3 field-paused">
+            <div class="form-check form-switch">
+                <input type="hidden" name="fields[paused]" value="0">
+                <input class="form-check-input" type="checkbox" id="paused" name="fields[paused]" value="1" {% if task.paused %}checked{% endif %}>
+                <label class="form-check-label" for="paused">{{ 'Pause this task'|t }}</label>
+            </div>
+        </div>
+    {% endif %}
+
     <div class="form-group mb-3">
         <button type="submit" class="btn btn-primary">
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>

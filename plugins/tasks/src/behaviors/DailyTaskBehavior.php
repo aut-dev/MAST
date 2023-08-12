@@ -42,11 +42,11 @@ class DailyTaskBehavior extends Behavior
      */
     public function getTaskStatus(): string
     {
-        if (!$this->isActive()) {
-            return 'inactive';
-        }
         if ($this->isPaused()) {
             return 'paused';
+        }
+        if (!$this->isActive()) {
+            return 'inactive';
         }
         if ($this->isComplete()) {
             return 'complete';
@@ -64,7 +64,7 @@ class DailyTaskBehavior extends Behavior
      */
     public function hasDerailed(): bool
     {
-        if (!$this->isActive() or $this->isPaused()) {
+        if (!$this->isActive()) {
             return false;
         }
         $timeSpent = $this->getTimeSpent();
@@ -90,7 +90,7 @@ class DailyTaskBehavior extends Behavior
      */
     public function isPaused(): bool
     {
-        return $this->owner->paused;
+        return ($this->owner->paused or $this->owner->author->isOnBreak($this->owner->startDate));
     }
 
     /**
@@ -100,14 +100,14 @@ class DailyTaskBehavior extends Behavior
      */
     public function isActive(): bool
     {
-        if ($this->owner->author->isOnBreak($this->owner->startDate)) {
+        if ($this->isPaused()) {
             return false;
         }
         return $this->owner->length > 0;
     }
 
     /**
-     * Is this task expired
+     * Is this daily task expired
      *
      * @return bool
      */

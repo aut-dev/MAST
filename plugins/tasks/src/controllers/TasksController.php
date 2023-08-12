@@ -75,7 +75,8 @@ class TasksController extends Controller
                 'taskType' => $task->taskType,
                 'deadline' => $task->deadline,
                 'length' => $task->getDuration(),
-                'committed' => $task->committed
+                'committed' => $task->committed,
+                'paused' => $task->paused
             ]);
         }
         return $this->asJson([

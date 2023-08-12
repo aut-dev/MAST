@@ -24,6 +24,8 @@
             <div class="col-6">{{ entry.length / 60 }}min</div>
             <div class="col-6">{{ 'Committed'|t }}</div>
             <div class="col-6">{{ entry.committed|money }}</div>
+            <div class="col-6">{{ 'Paused'|t }}</div>
+            <div class="col-6">{{ entry.paused ? 'Yes'|t : 'No'|t }}</div>
             <div class="col-12 mt-3">
                 <a class="btn btn-primary" href="/edit-task?id={{ entry.id }}">{{ 'Edit'|t }}</a>
             </div>

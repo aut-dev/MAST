@@ -71,7 +71,12 @@ class Task
 
     set paused(paused)
     {
-        this.$elem.data('paused', paused ? 1 : 0).attr('data-paused', paused ? 1 : 0);
+        this.$elem.data('paused', paused ? 1 : 0);
+        if (paused) {
+            this.$elem.find('.fa-pause').removeClass('text-body');
+        } else {
+            this.$elem.find('.fa-pause').addClass('text-body');
+        }
     }
 
     setProgress(progress, updateData = false)

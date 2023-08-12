@@ -85,6 +85,6 @@ class DateHelper
     {
         $before = clone $before;
         $before->add(new DateInterval('P1D'));
-        return ($before->format('d/m/D') == $after->format('d/m/D'));
+        return ($before->format('d/m/Y') == $after->format('d/m/Y'));
     }
 }

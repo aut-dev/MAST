@@ -27,15 +27,14 @@
                 <div class="text-truncate">{{ task.title }}</div>
             </h4>
             <div class="d-flex align-items-center">
-                <div class="form-check form-switch js-pause if-active">
-                    <div class="form-check-input"></div>
-                    <label class="form-check-label small" for="pause-{{ task.id }}">{{ 'Paused'|t }}</label>
-                </div>
+                <small class="if-status-paused me-2">
+                    {{ 'Paused'|t }}
+                </small>
                 <span class="complete-tick if-status-complete ms-3"><i class="fa-solid fa-check"></i></span>
             </div>
         </div>
         <p class="text-light mb-0">{{ task.taskType|ucfirst }} than {{ (length / 60)|round }} min</p>
-        <div class="if-active-not-paused">
+        <div class="if-not-inactive-or-paused">
             <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
             </div>

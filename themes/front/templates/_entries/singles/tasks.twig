@@ -8,13 +8,13 @@
     {% if currentUser.isOnScheduledBreak(now) %}
         <div class="container">
             <div class="alert alert-warning" role="alert">
-                {{ "All your tasks are inactive as you're on a scheduled break today"|t }}
+                {{ "All your tasks are paused as you're on a scheduled break today"|t }}
             </div>
         </div>
     {% else %}
         <div class="container unlimited-break-message" {% if not currentUser.isOnUnlimitedBreak() %}style="display:none"{% endif %}>
             <div class="alert alert-warning" role="alert">
-                {{ "All your tasks are inactive as you're on a unlimited break"|t }}
+                {{ "All your tasks are paused as you're on a unlimited break"|t }}
             </div>
         </div>
     {% endif %}
