@@ -1,5 +1,7 @@
 /* globals App $ */
 
+import '../../css/app/components/task.scss';
+
 class Task
 {
     $editModal;

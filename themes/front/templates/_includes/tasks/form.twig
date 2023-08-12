@@ -140,17 +140,9 @@
 
     <div class="form-group mb-3 field-icon">
         <label class="form-label">
-            {{ 'Upload an icon (.jpg, .png)'|t }}
+            {{ 'Background color'|t }}
         </label>
-        <div class="d-flex align-items-center">
-            {% if task and task.icon|length %}
-                <div class="d-flex me-3 align-items-center">
-                    <img src="{{ task.icon.0.url }}" class="task-image me-1">
-                    <a href="#" class="js-delete-image">{{ 'Delete'|t }}</a>
-                </div>
-            {% endif %}
-            <input class="form-control" type="file" accept="image/png, image/jpeg" name="fields[icon][]"/>
-        </div>
+        <input type="color" name="fields[backgroundColor]" class="form-control form-control-color" value="{% if task %}{{ task.backgroundColor }}{% endif %}" title="{{ 'Choose your color'|t }}">
     </div>
 
     {% if task %}

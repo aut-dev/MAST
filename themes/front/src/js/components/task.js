@@ -39,6 +39,11 @@ class Task
         this.$elem.attr('data-active', active ? 1 : 0);
     }
 
+    set backgroundColor(color)
+    {
+        this.$elem.css('background-color', color ? color : 'unset');
+    }
+
     get timerIsStarted()
     {
         return this.$elem.data('timer-started');
@@ -206,6 +211,7 @@ class Task
         this.active = data.active;
         this.timerIsStarted = data.timerStarted;
         this.countdown = data.countdown;
+        this.backgroundColor = data.backgroundColor;
         if (data.active && !this.timerStarted) {
             //Only refresh the progress if we're not polling progress already, or we'd have issues 
             //with the progress bar going back and forth slightly

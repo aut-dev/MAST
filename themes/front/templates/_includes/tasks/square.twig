@@ -17,15 +17,9 @@
 {% endif %}
 
 <a class="text-body task-wrapper" href="{{ task.url }}">
-    <div class="square task p-3 bg-task rounded" data-timer-started="{{ started ? 1 : 0 }}" data-status="{{ status }}" data-id="{{ task.id }}" data-progress="{{ progress }}" data-persec="{{ persec }}" data-active="{{ is_active ? 1 : 0 }}" data-paused="{{ task.paused ? 1 : 0 }}">
+    <div class="square task p-3 bg-task rounded" data-timer-started="{{ started ? 1 : 0 }}" data-status="{{ status }}" data-id="{{ task.id }}" data-progress="{{ progress }}" data-persec="{{ persec }}" data-active="{{ is_active ? 1 : 0 }}" data-paused="{{ task.paused ? 1 : 0 }}" {% if task.backgroundColor %}style="background-color: {{ task.backgroundColor }}"{% endif %}>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            {% set has_icon = task.icon|length %}
-            <h4 class="m-0 {% if has_icon %}d-flex{% endif %} text-truncate align-items-center">
-                {% if has_icon %}
-                    {{ images.singleImg(task.icon.first, {width: 30}, 'task-icon') }}
-                {% endif %}
-                <div class="text-truncate">{{ task.title }}</div>
-            </h4>
+            <h4 class="m-0 text-truncate">{{ task.title }}</h4>
             <div class="d-flex align-items-center">
                 <small class="if-status-paused me-2">
                     {{ 'Paused'|t }}

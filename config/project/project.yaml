@@ -1,4 +1,4 @@
-dateModified: 1691229003
+dateModified: 1691821549
 elementSources:
   craft\elements\Entry:
     -
@@ -219,6 +219,7 @@ meta:
     9786f806-b266-4b7c-8bc4-a21eab3ddef4: Imagery # Imagery
     9806b1c0-5f4e-476f-8f76-3301b70e9415: Tasks # Tasks
     9950af26-8378-4f58-a7ae-f7717f8870d7: 'Payment method' # Payment method
+    34016fb2-d922-4483-809c-f30801615184: 'Background color' # Background color
     55362a93-bdb6-4413-9313-4aaefbf24d51: 'Pay subscription' # Pay subscription
     88153a03-a6b7-41a0-8649-8331ae28fe84: 'Redactor (full)' # Redactor (full)
     91581a4a-1722-498e-9e1c-bb245bbe8b3e: Default # Default
