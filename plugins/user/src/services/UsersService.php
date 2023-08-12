@@ -3,6 +3,7 @@
 namespace Plugins\Users\services;
 
 use craft\base\Component;
+use craft\elements\Entry;
 use craft\elements\User;
 
 class UsersService extends Component
