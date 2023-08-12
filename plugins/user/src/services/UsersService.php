@@ -2,6 +2,9 @@
 
 namespace Plugins\Users\services;
 
+use DateTime;
+use DateTimeZone;
+use Plugins\Tasks\Tasks;
 use craft\base\Component;
 use craft\elements\Entry;
 use craft\elements\User;
