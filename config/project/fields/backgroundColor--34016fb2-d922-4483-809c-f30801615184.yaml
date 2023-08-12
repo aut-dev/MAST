@@ -6,7 +6,7 @@ instructions: null
 name: 'Background color'
 searchable: false
 settings:
-  defaultColor: null
+  defaultColor: '#ffffff'
 translationKeyFormat: null
 translationMethod: none
 type: craft\fields\Color
