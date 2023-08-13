@@ -1,0 +1,5 @@
+{% if not currentUser %}
+    {% exit 404 %}
+{% endif %}
+
+{% include "_includes/breaks/list" %}

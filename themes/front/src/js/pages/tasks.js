@@ -6,6 +6,7 @@ import 'jquery-ui/ui/core';
 import 'jquery-ui/ui/widgets/sortable';
 import '../../css/app/components/tasks.scss';
 import { Task } from '../components/task';
+import { UnlimitedBreak } from '../components/unlimited-break';
 
 class Tasks
 {
@@ -22,7 +23,7 @@ class Tasks
             this.tasks[$(task).data('id')] = new Task(this, $(task));
         });
         setInterval(() => this.refreshTasks(), 10000);
-        setInterval(() => this.pollProgress(), 1000);
+        new UnlimitedBreak(this.refreshTasks.bind(this));
         console.log('Tasks initialised');
     }
 
@@ -30,15 +31,10 @@ class Tasks
     {
         $('#sortable').sortable({
             handle: ".task-wrapper",
-            stop: this.updatePositions
+            stop: () => {
+                this.updatePositions();
+            }
         });
-    }
-
-    pollProgress()
-    {
-        for (let id in this.tasks) {
-            this.tasks[id].updateProgress();
-        }
     }
 
     refreshTasks()

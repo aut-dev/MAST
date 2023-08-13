@@ -36,25 +36,25 @@ class DailyTaskBehavior extends Behavior
     }
 
     /**
-     * Get the task status, can be either 'active', 'inactive', 'complete', 'derailed' or 'expired'
+     * Get the task status, can be either 'active', 'inactive', 'complete', 'derailed', 'paused'
      *
      * @return string
      */
     public function getTaskStatus(): string
     {
-        if ($this->isActive()) {
-            if ($this->hasDerailed()) {
-                return 'derailed';
-            }
-            if ($this->isComplete()) {
-                return 'complete';
-            }
-            if ($this->isExpired()) {
-                return 'expired';
-            }
-            return 'active';
+        if ($this->isPaused()) {
+            return 'paused';
         }
-        return 'inactive';
+        if (!$this->isActive()) {
+            return 'inactive';
+        }
+        if ($this->isComplete()) {
+            return 'complete';
+        }
+        if ($this->hasDerailed()) {
+            return 'derailed';
+        }
+        return 'active';
     }
 
     /**
@@ -84,17 +84,30 @@ class DailyTaskBehavior extends Behavior
     }
 
     /**
+     * Is this task paused
+     *
+     * @return boolean
+     */
+    public function isPaused(): bool
+    {
+        return ($this->owner->paused or $this->owner->author->isOnBreak($this->owner->startDate));
+    }
+
+    /**
      * Is this daily task active
      *
      * @return bool
      */
     public function isActive(): bool
     {
+        if ($this->isPaused()) {
+            return false;
+        }
         return $this->owner->length > 0;
     }
 
     /**
-     * Is this task expired
+     * Is this daily task expired
      *
      * @return bool
      */
@@ -110,9 +123,6 @@ class DailyTaskBehavior extends Behavior
      */
     public function isComplete(): bool
     {
-        if (!$this->isActive()) {
-            return false;
-        }
         if ($this->owner->taskType->value == 'more') {
             return $this->getTimeSpent() >= $this->owner->length;
         }
@@ -201,7 +211,7 @@ class DailyTaskBehavior extends Behavior
             $deadline->setTime(23, 59, 59);
         }
         $total += $this->owner->author->getTimerSpent($this->getTask(), $deadline);
-        if ($previousTask = $this->getPreviousTask()) {
+        if ($previousTask = $this->getPreviousTask() and DateHelper::isTheDayBefore($previousTask->startDate, $this->owner->startDate)) {
             $start = $previousTask->getDeadlineInstance();
         }
         $total += Timesheets::$plugin->timesheets->getTimeRecorded($this->getTask(), $start, $deadline);

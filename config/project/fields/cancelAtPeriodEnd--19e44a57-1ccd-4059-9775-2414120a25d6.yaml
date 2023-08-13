@@ -1,9 +1,9 @@
-columnSuffix: qtxyqczk
+columnSuffix: rsotqjyk
 contentColumnType: boolean
-fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
-handle: hasDerailed
+fieldGroup: 2e3e24ad-d20e-48fc-ba6a-453f1ac66748 # User
+handle: cancelAtPeriodEnd
 instructions: null
-name: 'Has derailed'
+name: 'Cancel at period end'
 searchable: false
 settings:
   default: false

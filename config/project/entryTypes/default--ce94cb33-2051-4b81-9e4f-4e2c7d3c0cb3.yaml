@@ -44,13 +44,13 @@ fieldLayouts:
             width: 25
           -
             elementCondition: null
-            fieldUid: bbb5eea1-ac4b-405a-b161-08454cc1e2a7 # Icon
+            fieldUid: 34016fb2-d922-4483-809c-f30801615184 # Background color
             instructions: null
             label: null
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 5b607db2-36b1-40df-ad0a-55c1e78cf4e9
+            uid: c0502087-f13a-4462-afb5-df01db5dfe90
             userCondition: null
             warning: null
             width: 50
@@ -111,6 +111,18 @@ fieldLayouts:
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: d3387d13-058c-480f-be0c-326a605add24
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: 8c7680f9-dce8-43c7-b972-8c7b47508cb3 # Paused
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 8e4144cc-dbda-4cc0-8367-a6ff606a6416
             userCondition: null
             warning: null
             width: 50

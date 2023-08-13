@@ -12,23 +12,34 @@ use yii\web\ForbiddenHttpException;
 class TasksController extends Controller
 {
     /**
+     * (Un)Pauses a task
+     */
+    public function actionPause()
+    {
+        $user = \Craft::$app->user->identity;
+        $paused = $this->request->getRequiredParam('paused');
+        $task = Entry::find()->section('task')->authorId($user->id)->id($this->request->getRequiredParam('id'))->one();
+        if (!$task) {
+            throw new ForbiddenHttpException('Task not found');
+        }
+        $task->setFieldValue('paused', $paused);
+        \Craft::$app->elements->saveElement($task, false);
+        return $this->asJson($this->getTaskData($task));
+    }
+
+    /**
      * Poll progress of all a user's tasks
      */
     public function actionPoll()
     {
         $user = \Craft::$app->user->identity;
-        $tasks = Entry::find()->section('task')->authorId($user->id)->all();
+        $tasks = Entry::find()->section('task')->authorId($user->id);
+        if ($id = $this->request->getQueryParam('id')) {
+            $tasks->id($id);
+        }
         $out = [];
-        foreach ($tasks as $task) {
-            $daily = $task->getDailyTask();
-            $started = Timer::$plugin->timer->timerStarted($task);
-            $out[$task->id] = [
-                'countdown' => TimeHelper::minutesToNow($task->todayDeadline),
-                'active' => $daily and $daily->isActive(),
-                'status' => $task->getTaskStatus(),
-                'progress' => $daily ? $daily->getProgress(true) : false,
-                'timerStarted' => $started ? true : false
-            ];
+        foreach ($tasks->all() as $task) {
+            $out[$task->id] = $this->getTaskData($task);
         }
         return $this->asJson($out);
     }
@@ -64,11 +75,32 @@ class TasksController extends Controller
                 'taskType' => $task->taskType,
                 'deadline' => $task->deadline,
                 'length' => $task->getDuration(),
-                'committed' => $task->committed
+                'committed' => $task->committed,
+                'paused' => $task->paused
             ]);
         }
         return $this->asJson([
             'status' => $daily ? $daily->getTaskStatus() : 'inactive'
         ]);
+    }
+
+    /**
+     * Get a task data for refreshing purposes
+     *
+     * @param  Entry  $task
+     * @return array
+     */
+    protected function getTaskData(Entry $task): array
+    {
+        $daily = $task->getDailyTask();
+        $started = Timer::$plugin->timer->timerStarted($task);
+        return [
+            'countdown' => TimeHelper::minutesToNow($task->todayDeadline),
+            'active' => $daily and $daily->isActive(),
+            'status' => $task->getTaskStatus(),
+            'progress' => $daily ? $daily->getProgress(true) : false,
+            'timerStarted' => $started ? true : false,
+            'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null
+        ];
     }
 }

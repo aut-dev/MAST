@@ -6,30 +6,132 @@ class Task
     $elem;
     id;
     timerStarted = 0;
-    progressPerSec = 0;
     changingTimer = false;
+    pausing = false;
 
     constructor(tasks, $elem)
     {
         this.tasks = tasks;
         this.$elem = $elem;
+        this.$startTimer = this.$elem.find('.js-start-timer');
+        this.$pause = this.$elem.find('.js-pause');
         this.id = $elem.data('id');
-        this.progressPerSec = parseFloat(this.$elem.data('persec'));
-        if ($elem.data('timer-started')) {
+        if (this.timerIsStarted) {
             this.timerStarted = new Date().getTime() / 1000;
         }
         this.initTimerBtn();
+        this.initPause();
+        setInterval(() => this.updateProgress(), 1000);
+    }
+
+    get progressPerSec()
+    {
+        return parseFloat(this.$elem.data('persec'));
+    }
+
+    set status(status)
+    {
+        this.$elem.attr('data-status', status);
+    }
+
+    set active(active)
+    {
+        this.$elem.attr('data-active', active ? 1 : 0);
+    }
+
+    set backgroundColor(color)
+    {
+        this.$elem.css('background-color', color ? color : 'unset');
+    }
+
+    get timerIsStarted()
+    {
+        return this.$elem.data('timer-started');
+    }
+
+    set timerIsStarted(started)
+    {
+        this.$elem.data('timer-started', started ? 1 : 0).attr('data-timer-started', started ? 1 : 0);
+        if (started) {
+            this.$startTimer.html(this.$startTimer.data('textstop'));
+        } else {
+            this.$startTimer.html(this.$startTimer.data('textstart'));
+        }
+    }
+
+    set countdown(countdown)
+    {
+        this.$elem.find('.countdown').html(countdown);
+    }
+
+    get progress()
+    {
+        return parseFloat(this.$elem.data('progress'));
+    }
+
+    get paused()
+    {
+        return this.$elem.data('paused');
+    }
+
+    set paused(paused)
+    {
+        this.$elem.data('paused', paused ? 1 : 0);
+        if (paused) {
+            this.$elem.find('.fa-pause').removeClass('text-body');
+        } else {
+            this.$elem.find('.fa-pause').addClass('text-body');
+        }
+    }
+
+    setProgress(progress, updateData = false)
+    {
+        this.$elem.find('.progress-bar').css('width', progress + '%');
+        if (updateData) {
+            this.$elem.data('progress', progress);
+        }
+    }
+
+    initPause()
+    {
+        this.$pause.click((e) => {
+            e.preventDefault();
+            this.pause(!this.paused);
+        });
     }
 
     initTimerBtn()
     {
-        this.$elem.find('.js-start-timer').click((e) => {
+        this.$startTimer.click((e) => {
             e.preventDefault();
-            if (this.$elem.data('timer-started')) {
+            if (this.timerIsStarted) {
                 this.stopTimer();
             } else {
                 this.startTimer();
             }
+        });
+    }
+
+    pause(paused)
+    {
+        if (this.pausing) {
+            return;
+        }
+        this.pausing = true;
+        this.paused = paused;
+        if (paused) {
+            this.status = 'paused';
+        }
+        $.ajax({
+            url: '/?action=plugin-tasks/tasks/pause',
+            dataType: 'json',
+            data: {
+                id: this.id,
+                paused: paused ? 1 : 0
+            }
+        }).done((data) => {
+            this.refresh(data);
+            this.pausing = false;
         });
     }
 
@@ -39,8 +141,7 @@ class Task
             return;
         }
         this.changingTimer = true;
-        this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstart'));
-        this.$elem.data('timer-started', 0).attr('data-timer-started', 0);
+        this.timerIsStarted = false;
         $.ajax({
             url: '/?action=plugin-timer/timer/stop',
             data: {
@@ -49,8 +150,7 @@ class Task
         }).done((data) => {
             this.changingTimer = false;
             this.timerStarted = 0;
-            this.$elem.find('.progress-bar').css('width', data.progress + '%');
-            this.$elem.data('progress', data.progress);
+            this.setProgress(data.progress, true);
         });
     }
 
@@ -60,8 +160,7 @@ class Task
             return;
         }
         this.changingTimer = true;
-        this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstop'));
-        this.$elem.data('timer-started', 1).attr('data-timer-started', 1);
+        this.timerIsStarted = true;
         $.ajax({
             url: '/?action=plugin-timer/timer/start',
             data: {
@@ -69,7 +168,7 @@ class Task
             }
         }).done(() => {
             this.changingTimer = false;
-            if (parseFloat(this.$elem.data('progress')) < 100) {
+            if (this.progress < 100) {
                 this.timerStarted = new Date().getTime() / 1000;
             }
         });
@@ -81,31 +180,42 @@ class Task
             return;
         }
         let elapsed = (new Date().getTime() / 1000) - this.timerStarted;
-        let progress = parseFloat(this.$elem.data('progress')) + (this.progressPerSec * elapsed);
-        this.$elem.find('.progress-bar').css('width', progress + '%');
+        let progress = this.progress + (this.progressPerSec * elapsed);
+        this.setProgress(progress);
         if (progress > 100) {
             this.timerStarted = 0;
-            this.tasks.refreshTasks();
+            this.refreshTask();
         }
+    }
+
+    refreshTask()
+    {
+        if (this.tasks.refreshing) {
+            return false;
+        }
+        this.tasks.refreshing = true;
+        $.ajax({
+            url: '/?action=plugin-tasks/tasks/poll',
+            data: {
+                id: this.id
+            }
+        }).done((data) => {
+            this.tasks.refreshing = false;
+            this.refresh(data.id);
+        });
     }
 
     refresh(data)
     {
-        this.$elem.attr('data-status', data.status);
-        this.$elem.attr('data-active', data.active ? 1 : 0);
-        this.$elem.data('timer-started', data.timerStarted ? 1 : 0).attr('data-timer-started', data.timerStarted ? 1 : 0);
-        if (data.active) {
-            if (!this.timerStarted) {
-                //Only refresh the progress if we're not polling progress already, or we'd have issues 
-                //with the progress bar going back and forth slightly
-                this.$elem.find('.progress-bar').css('width', data.progress + '%');
-                this.$elem.data('progress', data.progress);
-            }
-            this.$elem.find('.countdown').html(data.countdown);
-        }
-        this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstart'));
-        if (data.timerStarted) {
-            this.$elem.find('.js-start-timer').html(this.$elem.find('.js-start-timer').data('textstop'));
+        this.status = data.status;
+        this.active = data.active;
+        this.timerIsStarted = data.timerStarted;
+        this.countdown = data.countdown;
+        this.backgroundColor = data.backgroundColor;
+        if (data.active && !this.timerStarted) {
+            //Only refresh the progress if we're not polling progress already, or we'd have issues 
+            //with the progress bar going back and forth slightly
+            this.setProgress(data.progress, true);
         }
     }
 }

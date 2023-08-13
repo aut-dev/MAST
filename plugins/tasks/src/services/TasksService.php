@@ -103,7 +103,8 @@ class TasksService extends Component
                     'taskType' => $task->taskType,
                     'deadline' => $task->deadline,
                     'length' => $task->getDuration(),
-                    'committed' => $task->committed
+                    'committed' => $task->committed,
+                    'paused' => $task->paused
                 ]);
                 $daily->enabled = $task->enabled;
                 \Craft::$app->elements->saveElement($daily, false);
@@ -231,7 +232,8 @@ class TasksService extends Component
             'taskType' => $task->taskType,
             'deadline' => $task->deadline,
             'length' => $task->getDuration($day),
-            'committed' => $task->committed
+            'committed' => $task->committed,
+            'paused' => $task->paused
         ]);
         $daily->scenario = Element::SCENARIO_LIVE;
         if (!\Craft::$app->elements->saveElement($daily)) {

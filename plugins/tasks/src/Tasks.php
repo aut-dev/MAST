@@ -6,7 +6,6 @@ use Plugins\Tasks\behaviors\DailyTaskBehavior;
 use Plugins\Tasks\behaviors\TaskBehavior;
 use Plugins\Tasks\behaviors\UserBehavior;
 use Plugins\Tasks\services\TasksService;
-use Plugins\Tasks\services\UsersService;
 use Plugins\Tasks\twig\TasksExtension;
 use craft\base\Plugin;
 use craft\elements\Entry;
@@ -33,7 +32,6 @@ class Tasks extends Plugin
         $this->registerComponents();
         $this->registerBehaviors();
         $this->registerTasksEvents();
-        $this->registerUserEvents();
         $this->registerTwig();
     }
 
@@ -71,21 +69,10 @@ class Tasks extends Plugin
         });
     }
 
-    protected function registerUserEvents()
-    {
-        Event::on(Elements::class, Elements::EVENT_BEFORE_SAVE_ELEMENT, function (Event $event) {
-            $user = $event->element;
-            if ($user instanceof User and !ElementHelper::isDraftOrRevision($user) and !$event->isNew) {
-                Tasks::$plugin->users->beforeSavingUser($user);
-            }
-        });
-    }
-
     protected function registerComponents()
     {
         $this->setComponents([
-            'tasks' => TasksService::class,
-            'users' => UsersService::class
+            'tasks' => TasksService::class
         ]);
     }
 

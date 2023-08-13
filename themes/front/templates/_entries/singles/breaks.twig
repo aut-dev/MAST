@@ -1,0 +1,29 @@
+{% extends "_layouts/matrix-content" %}
+{% requireLogin %}
+
+{% do craft.app.view.registerAssetBundle('themes\\front\\assets\\BreaksPage') %}
+
+{% block content_title %}
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>{{ entry.title }}</h1>
+            <a class="js-add-break" href="#edit-break-modal"><i class="fa-solid fa-plus fs-3 text-body"></i></a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block after_content_matrix %}
+    <div class="container">
+        <div class="my-3" id="break-filters">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="showPast" {% if craft.app.request.getQueryParam('past') %}checked{% endif %}>
+                <label class="form-check-label" for="showPast">{{ 'Show past breaks' }}</label>
+            </div>
+        </div>
+        <div id="break-list">
+            {% include "_includes/breaks/list" %}
+        </div>
+    </div>
+    {% include "_includes/breaks/edit-modal" with {mode: 'schedule'} %}
+    {% include "_includes/breaks/delete-modal" %}
+{% endblock %}

@@ -3,11 +3,31 @@
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\TasksPage') %}
 
+{% block before_content %}
+    {{ parent() }}
+    {% if currentUser.isOnScheduledBreak(now) %}
+        <div class="container">
+            <div class="alert alert-warning" role="alert">
+                {{ "All your tasks are paused as you're on a scheduled break today"|t }}
+            </div>
+        </div>
+    {% else %}
+        <div class="container unlimited-break-message" {% if not currentUser.isOnUnlimitedBreak() %}style="display:none"{% endif %}>
+            <div class="alert alert-warning" role="alert">
+                {{ "All your tasks are paused as you're on a unlimited break"|t }}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
 {% block content_title %}
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
             <h1>{{ entry.title }}</h1>
-            <a href="/tasks/new"><i class="fa-solid fa-plus fs-3 text-body"></i></a>
+            <div>
+                <a href="#unlimited-break-modal" data-bs-toggle="modal" class="me-2 js-unlimited-break {% if not currentUser.unlimitedBreakStart %}text-body{% endif %}"><i class="fa-solid fa-pause fs-3"></i></a>
+                <a href="/tasks/new"><i class="fa-solid fa-plus fs-3 text-body"></i></a>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -18,7 +38,7 @@
         {% if tasks %}
             <div class="row" id="sortable">
                 {% for task in tasks %}
-                    <div class="col-12 col-md-3 py-3 task-wrapper">
+                    <div class="col-12 col-md-6 col-lg-4 col-xl-3 py-3">
                         {% include "_includes/tasks/square" %}
                     </div>
                 {% endfor %}
@@ -27,4 +47,5 @@
             <p>{{ 'You have no tasks yet'|t }}</p>
         {% endif %}
     </div>
+    {% include "_includes/breaks/unlimited-modal" %}
 {% endblock %}

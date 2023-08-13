@@ -5,6 +5,7 @@ namespace Plugins\Tasks\helpers;
 use craft\db\Query;
 use craft\helpers\Db;
 use DateTime;
+use DateInterval;
 
 class DateHelper
 {
@@ -19,7 +20,7 @@ class DateHelper
     public static function addDateParamsBetween(Query $query, DateTime $start, DateTime $end, string $field = 'startDate')
     {
         $dateField = 'content.field_' . $field . '_' . \Craft::$app->fields->getFieldByHandle($field)->columnSuffix;
-        $query->where(['between', $dateField, Db::prepareDateForDb($start), Db::prepareDateForDb($end)]);
+        $query->andWhere(['between', $dateField, Db::prepareDateForDb($start), Db::prepareDateForDb($end)]);
     }
 
     /**
@@ -58,23 +59,32 @@ class DateHelper
     public static function addDateParamsBiggerThan(Query $query, DateTime $date, string $field = 'startDate', bool $strict = false)
     {
         $dateField = 'content.field_' . $field . '_' . \Craft::$app->fields->getFieldByHandle($field)->columnSuffix;
-        $query->where([$strict ? '>' : '>=', $dateField, Db::prepareDateForDb($date)]);
+        $query->andWhere([$strict ? '>' : '>=', $dateField, Db::prepareDateForDb($date)]);
     }
 
     public static function addDateParamsSmallerThan(Query $query, DateTime $date, string $field = 'startDate', bool $strict = false)
     {
         $dateField = 'content.field_' . $field . '_' . \Craft::$app->fields->getFieldByHandle($field)->columnSuffix;
-        $query->where([$strict ? '<' : '<=', $dateField, Db::prepareDateForDb($date)]);
+        $query->andWhere([$strict ? '<' : '<=', $dateField, Db::prepareDateForDb($date)]);
     }
 
     public static function addDateParamsEquals(Query $query, DateTime $date, string $field = 'startDate')
     {
         $dateField = 'content.field_' . $field . '_' . \Craft::$app->fields->getFieldByHandle($field)->columnSuffix;
-        $query->where(['=', $dateField, Db::prepareDateForDb($date)]);
+        $query->andWhere(['=', $dateField, Db::prepareDateForDb($date)]);
     }
 
-    public static function isSameDay(DateTime $day1, DateTime $day2): bool
+    /**
+     * Check if a date is the day before another date
+     *
+     * @param  DateTime $before
+     * @param  DateTime $after
+     * @return boolean
+     */
+    public static function isTheDayBefore(DateTime $before, DateTime $after): bool
     {
-        return $day1->format('Y-m-d') == $day2->format('Y-m-d');
+        $before = clone $before;
+        $before->add(new DateInterval('P1D'));
+        return ($before->format('d/m/Y') == $after->format('d/m/Y'));
     }
 }

@@ -5,6 +5,7 @@ namespace Plugins\Stripe\services;
 use DateInterval;
 use DateTime;
 use Exception;
+use Plugins\Stripe\exceptions\StripeException;
 use Plugins\Tasks\Tasks;
 use Stripe\BillingPortal\Session as PortalSession;
 use Stripe\Checkout\Session;
@@ -42,6 +43,12 @@ class StripeService extends Component
         return $this->_client;
     }
 
+    /**
+     * Create a checkout session in subscription mode
+     *
+     * @param  User   $user
+     * @return Session
+     */
     public function createCheckoutSession(User $user): Session
     {
         return $this->getClient()->checkout->sessions->create([
@@ -57,6 +64,12 @@ class StripeService extends Component
         ]);
     }
 
+    /**
+     * Create a portal session
+     *
+     * @param  User   $user
+     * @return PortalSession
+     */
     public function createPortalSession(User $user): PortalSession
     {
         $session = $this->getClient()->checkout->sessions->retrieve($user->stripeSessionId);
@@ -66,64 +79,43 @@ class StripeService extends Component
         ]);
     }
 
+    /**
+     * Update/Create the subscription
+     *
+     * @param  Subscription $subscription
+     */
     public function updateSubscription(Subscription $subscription)
     {
-        $customer = $this->getClient()->customers->retrieve($subscription->customer);
-        if (!$customer->email) {
-            throw StripeException("Customer doesn't have an email");
+        if ($user = $this->findUser($subscription)) {
+            $this->updateUserSubscription($user, $subscription);
         }
-        $user = User::find()->email($customer->email)->anyStatus()->one();
-        if (!$user) {
-            throw StripeException("User with email {$customer->email} doesn't exist");
-        }
-        $user->setFieldValues([
-            'stripeCustomer' => $subscription->customer,
-            'paymentMethod' => $subscription->default_payment_method ?? '',
-            'subscriptionStatus' => $subscription->status,
-            'subscriptionExpires' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
-        ]);
-        $this->clearPaymentMethodCache($user);
-        \Craft::$app->elements->saveElement($user, false);
-    }
-
-    public function deleteSubscription(Subscription $subscription)
-    {
-        $customer = $this->getClient()->customers->retrieve($subscription->customer);
-        if (!$customer->email) {
-            throw StripeException("Customer doesn't have an email");
-        }
-        $user = User::find()->email($customer->email)->anyStatus()->one();
-        if (!$user) {
-            throw StripeException("User with email {$customer->email} doesn't exist");
-        }
-        $user->setFieldValues([
-            'subscriptionStatus' => null,
-            'subscriptionExpires' => null,
-            'paymentMethod' => null
-        ]);
-        $this->clearPaymentMethodCache($user);
-        \Craft::$app->elements->saveElement($user, false);
     }
 
     /**
-     * Get or create the Stripe customer for a user
+     * Update the customer
      *
-     * @param  User   $user
-     * @return Customer
+     * @param  Customer $customer
      */
-    public function getOrCreateCustomer(User $user): Customer
+    public function updateCustomer(Customer $customer)
     {
-        if ($user->stripeCustomer) {
-            try {
-                return $this->getClient()->customers->retrieve(
-                    $user->stripeCustomer,
-                    []
-                );
-            } catch (ApiErrorException $e) {
-                return $this->createCustomer($user);
-            }
+        $user = User::find()->stripeCustomer($customer->id)->anyStatus()->one();
+        if ($user) {
+            $user->setFieldValue('paymentMethod', $customer->invoice_settings['default_payment_method']);
+            \Craft::$app->elements->saveElement($user, false);
+            $this->clearPaymentMethodCache($user);
         }
-        return $this->createCustomer($user);
+    }
+
+    /**
+     * Delete the subscription
+     *
+     * @param  Subscription $subscription
+     */
+    public function deleteSubscription(Subscription $subscription)
+    {
+        if ($user = $this->findUser($subscription)) {
+            $this->updateUserSubscription($user, null);
+        }
     }
 
     /**
@@ -139,7 +131,11 @@ class StripeService extends Component
         }
         $data = \Craft::$app->cache->get(self::PAYMENT_METHOD_CACHE_KEY . $user->id);
         if ($data === false) {
-            $data = $this->getClient()->customers->retrievePaymentMethod($user->stripeCustomer, $user->paymentMethod);
+            try {
+                $data = $this->getClient()->customers->retrievePaymentMethod($user->stripeCustomer, $user->paymentMethod);
+            } catch (\Exception $e) {
+                return null;
+            }
             $dep = new TagDependency([
                 'tags' => [self::PAYMENT_METHOD_CACHE_KEY]
             ]);
@@ -193,5 +189,52 @@ class StripeService extends Component
             $email->setTo(Tasks::getAdminEmails())->send();
         }
         return false;
+    }
+
+    /**
+     * Update a user subscription internal values
+     *
+     * @param  User         $user
+     * @param  ?Subscription $subscription
+     */
+    protected function updateUserSubscription(User $user, ?Subscription $subscription)
+    {
+        $values = [
+            'subscriptionStatus' => null,
+            'subscriptionExpires' => null,
+            'paymentMethod' => null,
+            'stripeSessionId' => null,
+            'cancelAtPeriodEnd' => false
+        ];
+        if ($subscription) {
+            $values = [
+                'stripeCustomer' => $subscription->customer,
+                'subscriptionStatus' => $subscription->status,
+                'cancelAtPeriodEnd' => $subscription->cancel_at_period_end,
+                'subscriptionExpires' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
+            ];
+            if ($subscription->default_payment_method ?? '') {
+                $values['paymentMethod'] = $subscription->default_payment_method;
+            }
+        }
+        $user->setFieldValues($values);
+        \Craft::$app->elements->saveElement($user, false);
+        $this->clearPaymentMethodCache($user);
+    }
+
+    /**
+     * Find a user from a subscription, first by stripe id, then by email
+     *
+     * @param  Subscription $subscription
+     * @return ?User
+     */
+    protected function findUser(Subscription $subscription): ?User
+    {
+        $user = User::find()->stripeCustomer($subscription->customer)->anyStatus()->one();
+        if (!$user) {
+            $customer = $this->getClient()->customers->retrieve($subscription->customer);
+            $user = User::find()->email($customer->email)->anyStatus()->one();
+        }
+        return $user;
     }
 }

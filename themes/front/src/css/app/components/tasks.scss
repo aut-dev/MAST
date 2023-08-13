@@ -6,6 +6,7 @@
     border-radius: 12px !important;
     .if-active,
     .if-status-complete,
+    .if-status-paused,
     .if-status-active {
         display: none;
     }
@@ -19,15 +20,15 @@
     }
     &[data-status="inactive"] {
         border-color: $task-inactive;
+        .if-not-inactive-or-paused {
+            display: none;
+        }
     }
     &[data-status="active"] {
         border-color: $task-active;
         .if-status-active {
             display: block;
         }
-    }
-    &[data-status="expired"] {
-        border-color: $task-expired;
     }
     &[data-status="complete"] {
         border-color: $task-complete;
@@ -37,6 +38,15 @@
     }
     &[data-status="derailed"] {
         border-color: $task-derailed;
+    }
+    &[data-status="paused"] {
+        border-color: $task-paused;
+        .if-status-paused {
+            display: block;
+        }
+        .if-not-inactive-or-paused {
+            display: none;
+        }
     }
     .complete-tick {
         position: relative;
@@ -51,24 +61,10 @@
             top: -1px;
         }
     }
-    .task-icon {
-        max-width: 30px;
-        max-height: 30px;
-        margin-right: 5px;
-    }
 }
 
 @include media-breakpoint-up(md) {
-    .task-wrapper {
-        &:nth-child(4n+1) {
-            padding-left: 0;
-        }
-        &:nth-child(4n) {
-            padding-right: 0;
-        }
-    }
-
-    #sortable {
-        padding: 0 calc(var(--bs-gutter-x) * 0.5);
+    .task.wrapper {
+        display: block;
     }
 }

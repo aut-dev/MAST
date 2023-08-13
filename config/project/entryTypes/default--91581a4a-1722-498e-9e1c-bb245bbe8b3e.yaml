@@ -1,0 +1,67 @@
+fieldLayouts:
+  24939007-079b-41a6-844c-300880a0d772:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: 724794f0-352d-4e17-85bd-f6e463c9de8c
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: beb8aabf-7970-4442-9f8b-f70568d8757a # Start date
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 15f226bd-c08e-4610-b88a-c931d34667e1
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: 285c99c4-fa78-44f1-afd3-6eed1b0d5121 # End date
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: ef271c87-bfd1-408c-9df1-72bbd152602e
+            userCondition: null
+            warning: null
+            width: 50
+        name: Content
+        uid: 7955e23e-f721-4264-843b-d94a57c35351
+        userCondition: null
+handle: default
+hasTitleField: true
+name: Default
+section: a734c52f-ac36-48ae-9b7e-3482ebdff457 # Break
+sortOrder: 1
+titleFormat: Break
+titleTranslationKeyFormat: null
+titleTranslationMethod: site
