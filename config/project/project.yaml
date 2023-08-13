@@ -1,4 +1,4 @@
-dateModified: 1691822878
+dateModified: 1691824116
 elementSources:
   craft\elements\Entry:
     -
@@ -162,7 +162,6 @@ meta:
     0bbe1fb4-9b45-447e-93e8-1f16b25a2605: Task # Task
     0c28a99f-cdd7-4c6f-ad5a-d543a3201eec: Admin # Admin
     1a74b697-1724-49fa-bed7-7a43a4833e2d: Image # Image
-    1a662491-4d5b-4de0-9054-210270093826: 'End date' # End date
     1b238269-1e74-4eb1-aca9-256f0fca08b9: 'Task type' # Task type
     1c3fe166-77a3-4dd4-8da6-f031611bb725: Sat # Sat
     2bc6ab98-71ce-4ae7-88f6-958e82e6ce7c: Breaks # Breaks
@@ -241,12 +240,10 @@ meta:
     aa6e4905-4e1c-44af-b6a2-84c73af59989: Text # Text
     ab6a1072-3bb0-460a-bf36-bbb4b5dac8da: 'Page not found' # Page not found
     af8b97a9-5da5-416b-8c43-7222862e0d19: Thu # Thu
-    b08e8001-a4eb-4e05-b022-a02061d8063a: 'Start date' # Start date
     b39f1bdf-5ce7-4286-9e4f-3162f9c70830: Full # Full
     b4520f72-9c23-445d-84c9-ed6bb056271f: 'Edit task' # Edit task
     b6662c40-1d50-47d9-bc6d-45c902bbca73: 'Reset password form' # Reset password form
     bb86fabf-06ca-4369-94a6-298c9595fce2: 'Unlimited break start' # Unlimited break start
-    bbb5eea1-ac4b-405a-b161-08454cc1e2a7: Icon # Icon
     beb8aabf-7970-4442-9f8b-f70568d8757a: 'Start date' # Start date
     bf477c2a-b2b3-4dde-a0e0-0978de99ab77: 'New task' # New task
     c02d8ea3-fd26-4084-890d-83260c7fc0dd: 'Banner Images' # Banner Images
