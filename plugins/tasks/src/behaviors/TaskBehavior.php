@@ -7,6 +7,7 @@ use DateTime;
 use Plugins\Tasks\Tasks;
 use Plugins\Tasks\helpers\TimeHelper;
 use craft\elements\Entry;
+use craft\helpers\DateTimeHelper;
 use yii\base\Behavior;
 
 class TaskBehavior extends Behavior
@@ -25,7 +26,20 @@ class TaskBehavior extends Behavior
         if ($daily = $this->getDailyTask()) {
             return $daily->getTaskStatus();
         }
+        if ($this->isPaused()) {
+            return 'paused';
+        }
         return 'inactive';
+    }
+
+    /**
+     * Is this task paused
+     *
+     * @return boolean
+     */
+    public function isPaused(): bool
+    {
+        return ($this->owner->paused or $this->owner->author->isOnBreak(DateTimeHelper::toDateTime('now')));
     }
 
     /**
