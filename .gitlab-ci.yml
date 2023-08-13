@@ -17,7 +17,7 @@ code_quality:
     - ./lockfileversion.sh "$CI_COMMIT_TITLE"
 
 #Deploy to dev
-deploy_to_dev:
+deploy_to_staging:
   stage: deploy
   script:
     - ssh webpuzzlers.co.uk@109.228.60.227 "set -e;cd autonomy-test.webpuzzlers.co.uk;git pull;./deploy prod \"$CI_COMMIT_TITLE\""
