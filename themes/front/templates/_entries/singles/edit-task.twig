@@ -4,7 +4,7 @@
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\AddTaskPage') %}
 
 {% if not task is defined %}
-    {% set task = craft.entries.section('task').with('icon').authorId(currentUser.id).id(craft.app.request.getRequiredParam('id')).one() %}
+    {% set task = craft.entries.section('task').authorId(currentUser.id).id(craft.app.request.getRequiredParam('id')).one() %}
     {% if not task %}
         {% exit 404 %}
     {% endif %}
