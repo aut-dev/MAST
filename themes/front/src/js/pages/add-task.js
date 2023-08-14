@@ -72,6 +72,10 @@ class AddTask
     createWeeks()
     {
         let total = parseInt(this.$form.find('#repeat-input').val());
+        if (total < 1) {
+            total = 1;
+            this.$form.find('#repeat-input').val(1);
+        }
         let existing = this.$form.find('.field-weeks .week');
         while (total < existing.length) {
             existing.last().remove();
