@@ -24,7 +24,34 @@ class Tasks
         });
         setInterval(() => this.refreshTasks(), 10000);
         new UnlimitedBreak(this.refreshTasks.bind(this));
+        this.initHideInactiveTasks();
         console.log('Tasks initialised');
+    }
+
+    initHideInactiveTasks()
+    {
+        $('.js-hide-inactive').click(e => {
+            e.preventDefault();
+            let isOn = $('.js-hide-inactive i').hasClass('text-body');
+            $.ajax({
+                method: 'post',
+                dataType: 'json',
+                data: {
+                    action: 'plugin-users/users/change-hide-inactive-tasks',
+                    hide: isOn ? 1 : 0
+                },
+                headers: {
+                    "X-CSRF-Token": Globals.csrfToken
+                }
+            });
+            if (isOn) {
+                $('.js-hide-inactive i').removeClass('text-body');
+                $('.task[data-status=inactive]').closest('.task-col').hide();
+            } else {
+                $('.js-hide-inactive i').addClass('text-body');
+                $('.task[data-status=inactive]').closest('.task-col').show();
+            }
+        });
     }
 
     initSortable()
@@ -35,6 +62,11 @@ class Tasks
                 this.updatePositions();
             }
         });
+    }
+
+    inactiveTasksAreHidden()
+    {
+        return !$('.js-hide-inactive i').hasClass('text-body');
     }
 
     refreshTasks()

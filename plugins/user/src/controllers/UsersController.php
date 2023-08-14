@@ -15,6 +15,17 @@ class UsersController extends Controller
     }
 
     /**
+     * Changes user hide inactive tasks switch
+     */
+    public function actionChangeHideInactiveTasks()
+    {
+        $user = \Craft::$app->user->identity;
+        $user->setFieldValue('hideInactiveTasks', $this->request->getRequiredParam('hide'));
+        \Craft::$app->elements->saveElement($user, false);
+        return $this->asJson([]);
+    }
+
+    /**
      * Changes user timezone
      */
     public function actionChangeTimezone()
