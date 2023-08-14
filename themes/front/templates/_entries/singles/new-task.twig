@@ -3,6 +3,8 @@
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\AddTaskPage') %}
 
+{% set count = craft.entries.section('task').anyStatus().authorId(currentUser.id).count() %}
+
 {% block content %}
     <div class="container container-small">
         <div class="mb-3">
@@ -10,7 +12,11 @@
         </div>
         <h1 class="text-center">{{ entry.title }}</h1>
         <div class="d-flex justify-content-center">
-            {% include "_includes/tasks/form" %}
+            {% if currentUser.subscriptionStatus != 'active' and count >= 3 %}
+                {{ entry.invalidSubscriptionMessage }}
+            {% else %}
+                {% include "_includes/tasks/form" %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

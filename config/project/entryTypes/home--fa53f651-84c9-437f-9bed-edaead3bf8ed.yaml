@@ -32,7 +32,7 @@ fieldLayouts:
             width: 75
           -
             elementCondition: null
-            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613 # Requires valid subscription
+            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613
             instructions: null
             label: null
             required: false
