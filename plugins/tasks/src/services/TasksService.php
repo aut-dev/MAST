@@ -166,6 +166,9 @@ class TasksService extends Component
         if ($task->startDate > $day or !$task->enabled) {
             return null;
         }
+        if ($task->taskType->value == 'oneOff' and $task->startDate != $day) {
+            return null;
+        }
         return $this->createDailyTask($task, $day);
     }
 

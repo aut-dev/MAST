@@ -43,6 +43,16 @@ class TaskBehavior extends Behavior
     }
 
     /**
+     * Can time be recorded on this task
+     *
+     * @return bool
+     */
+    public function canRecordTime(): bool
+    {
+        return $this->owner->taskType->value != 'oneOff';
+    }
+
+    /**
      * Get the total amount of derailed
      *
      * @return int
@@ -162,6 +172,9 @@ class TaskBehavior extends Behavior
     {
         if ($day === null) {
             $day = $this->owner->author->today;
+        }
+        if ($this->owner->taskType == 'oneOff') {
+            return $this->owner->length;
         }
         $startDate = (clone $this->owner->startDate)->setTime(0, 0, 0);
         if ($startDate <= $day) {

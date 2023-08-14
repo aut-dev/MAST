@@ -67,7 +67,19 @@ fieldLayouts:
             warning: null
             width: 50
           -
-            elementCondition: null
+            elementCondition:
+              class: craft\elements\conditions\entries\EntryCondition
+              conditionRules:
+                -
+                  class: craft\fields\conditions\OptionsFieldConditionRule
+                  fieldUid: 1b238269-1e74-4eb1-aca9-256f0fca08b9 # Task type
+                  operator: in
+                  uid: 556846bc-8cf0-4113-90cc-37a5905ae0a1
+                  values:
+                    - more
+                    - less
+              elementType: craft\elements\Entry
+              fieldContext: global
             fieldUid: 70279873-4261-4f79-b9d0-6dc067fb97b4 # Length
             instructions: null
             label: null

@@ -28,6 +28,22 @@ class TasksController extends Controller
     }
 
     /**
+     * (Un)Mark a one off task as done
+     */
+    public function actionDone()
+    {
+        $user = \Craft::$app->user->identity;
+        $done = $this->request->getRequiredParam('done');
+        $task = Entry::find()->section('task')->authorId($user->id)->id($this->request->getRequiredParam('id'))->taskType('oneOff')->one();
+        if (!$task) {
+            throw new ForbiddenHttpException('Task not found');
+        }
+        $task->setFieldValue('done', $done);
+        \Craft::$app->elements->saveElement($task, false);
+        return $this->asJson($this->getTaskData($task));
+    }
+
+    /**
      * Poll progress of all a user's tasks
      */
     public function actionPoll()

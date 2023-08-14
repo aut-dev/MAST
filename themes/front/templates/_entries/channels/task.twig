@@ -19,9 +19,11 @@
             <div class="col-6">{{ 'Deadline'|t }}</div>
             <div class="col-6">{{ entry.deadline|date('H:i') }}</div>
             <div class="col-6">{{ 'Type'|t }}</div>
-            <div class="col-6">{{ entry.taskType|ucfirst }}</div>
-            <div class="col-6">{{ 'Length'|t }}</div>
-            <div class="col-6">{{ entry.length / 60 }}min</div>
+            <div class="col-6">{{ entry.taskType.label }}</div>
+            {% if entry.taskType in ['more', 'less'] %}
+                <div class="col-6">{{ 'Length'|t }}</div>
+                <div class="col-6">{{ entry.length / 60 }}min</div>
+            {% endif %}
             <div class="col-6">{{ 'Committed'|t }}</div>
             <div class="col-6">{{ entry.committed|money }}</div>
             <div class="col-6">{{ 'Paused'|t }}</div>

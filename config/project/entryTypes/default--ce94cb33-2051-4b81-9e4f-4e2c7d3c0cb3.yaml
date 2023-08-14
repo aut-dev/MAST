@@ -67,7 +67,19 @@ fieldLayouts:
             warning: null
             width: 50
           -
-            elementCondition: null
+            elementCondition:
+              class: craft\elements\conditions\entries\EntryCondition
+              conditionRules:
+                -
+                  class: craft\fields\conditions\OptionsFieldConditionRule
+                  fieldUid: 1b238269-1e74-4eb1-aca9-256f0fca08b9 # Task type
+                  operator: in
+                  uid: 31ba3dd1-5edb-4477-827e-6d3860e0eb6b
+                  values:
+                    - more
+                    - less
+              elementType: craft\elements\Entry
+              fieldContext: global
             fieldUid: 70279873-4261-4f79-b9d0-6dc067fb97b4 # Length
             instructions: null
             label: null
@@ -127,7 +139,42 @@ fieldLayouts:
             warning: null
             width: 50
           -
-            elementCondition: null
+            elementCondition:
+              class: craft\elements\conditions\entries\EntryCondition
+              conditionRules:
+                -
+                  class: craft\fields\conditions\OptionsFieldConditionRule
+                  fieldUid: 1b238269-1e74-4eb1-aca9-256f0fca08b9 # Task type
+                  operator: in
+                  uid: 731cfaa8-283c-4d49-927f-76f01d6d8a4f
+                  values:
+                    - oneOff
+              elementType: craft\elements\Entry
+              fieldContext: global
+            fieldUid: 86c4c449-df54-4c68-a16a-68793a118c14 # Done
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 892519ec-da32-4012-8d79-7562ec2100f7
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition:
+              class: craft\elements\conditions\entries\EntryCondition
+              conditionRules:
+                -
+                  class: craft\fields\conditions\OptionsFieldConditionRule
+                  fieldUid: 1b238269-1e74-4eb1-aca9-256f0fca08b9 # Task type
+                  operator: in
+                  uid: 8841255d-ffd4-4fdd-bbe5-4f79e05be5b0
+                  values:
+                    - more
+                    - less
+              elementType: craft\elements\Entry
+              fieldContext: global
             fieldUid: ce461ea7-466c-4a18-ab4f-dddeb94af716 # Weeks
             instructions: null
             label: null

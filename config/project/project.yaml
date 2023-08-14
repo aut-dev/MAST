@@ -1,4 +1,4 @@
-dateModified: 1691824116
+dateModified: 1692001351
 elementSources:
   craft\elements\Entry:
     -
@@ -203,6 +203,7 @@ meta:
     70c0d997-a64e-47f3-956a-11deff9be426: 'New task' # New task
     75dda2af-19e9-48e0-aed1-116af08373a5: Icon # Icon
     79cfda90-52f0-4348-b604-fdb241c209cf: Task # Task
+    86c4c449-df54-4c68-a16a-68793a118c14: Done # Done
     123c86c3-404e-49c2-8fb1-8666da333b2d: 'Sign up form' # Sign up form
     285c99c4-fa78-44f1-afd3-6eed1b0d5121: 'End date' # End date
     646a52b6-154e-4e2e-846b-72c6d35feadf: Timer # Timer

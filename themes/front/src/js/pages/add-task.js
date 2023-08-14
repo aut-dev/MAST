@@ -26,7 +26,16 @@ class AddTask
         this.initWeeks();
         this.initLength();
         this.initImage();
+        this.initType();
         console.log('Add task initialised');
+    }
+
+    initType()
+    {
+        this.toggleOneOffTypeFields();
+        $('.field-taskType input').change(() => {
+            this.toggleOneOffTypeFields();
+        });
     }
 
     initImage()
@@ -67,6 +76,16 @@ class AddTask
             this.createWeeks();
         });
         this.createWeeks();
+    }
+
+    toggleOneOffTypeFields()
+    {
+        let type = $('.field-taskType input:checked').val();
+        if (type == 'oneOff') {
+            $('.field-repeat, .field-weeks, .field-length').hide();
+        } else {
+            $('.field-repeat, .field-weeks, .field-length').show();
+        }
     }
 
     createWeeks()

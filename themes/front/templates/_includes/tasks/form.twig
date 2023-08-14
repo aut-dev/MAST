@@ -22,7 +22,7 @@
     </div>
 {% endmacro %}
 
-<form id="add-task-form" method="post">
+<form id="add-task-form" method="post" action="?">
     {% set section = craft.app.sections.getSectionByHandle('task') %}
     {{ csrfInput() }}
     {{ actionInput('entries/save-entry') }}
@@ -79,6 +79,12 @@
                     {{ 'Less'|t }}
                 </label>
             </div>
+            <div class="form-check form-check-inline">
+                <input type="radio" name="fields[taskType]" id="type-oneOff" value="oneOff" {% if task and task.taskType == 'oneOff' %}checked{% endif %}>
+                <label class="form-check-label" for="type-oneOff">
+                    {{ 'One off'|t }}
+                </label>
+            </div>
         </div>
     </div>
 
@@ -116,11 +122,11 @@
         {% endif %}
     </div>
 
-    {% set weeks = task ? task.weeks.all() : null %}
+    {% set weeks = task ? task.weeks.all() : [] %}
 
     <div class="form-group mb-3 field-repeat">
         <label for="length" class="required">{{ 'Repeat your schedule every 1, 2, 3... weeks'|t }}</label>
-        {{ input('number', '', task ? weeks|length : 1, {
+        {{ input('number', '', weeks|length > 0 ? weeks|length : 1, {
             class: 'form-control',
             id: 'repeat-input',
             min: 1,
@@ -133,7 +139,7 @@
     {% set block_type = block_types.0 %}
     <div class="form-group mb-3 field-weeks">
         <label>{{ 'How many work blocks do you want to do each day?'|t }}</label>
-        {% if task %}
+        {% if weeks|length > 0 %}
             {% for week in weeks %}
                 {{ _self.week(week, block_type, week.id) }}
             {% endfor %}
