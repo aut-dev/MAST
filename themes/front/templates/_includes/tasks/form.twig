@@ -1,3 +1,5 @@
+{% from "_helpers/errors" import errorList %}
+
 {% set task = task ?? null %}
 
 {% macro week(block, type, index) %}
@@ -20,16 +22,16 @@
     </div>
 {% endmacro %}
 
-<form id="add-task-form">
+<form id="add-task-form" method="post">
     {% set section = craft.app.sections.getSectionByHandle('task') %}
     {{ csrfInput() }}
     {{ actionInput('entries/save-entry') }}
     {{ hiddenInput('sectionId', section.id) }}
     {{ hiddenInput('enabled', '1') }}
     {{ hiddenInput('entryVariable', 'task'|hash) }}
-    {{ redirectInput((task.id ?? null) ? task.url : '/tasks') }}
+    {{ redirectInput('/tasks') }}
     {{ successMessageInput('Task saved'|t) }}
-    {{ failMessageInput('Could not save task'|t) }}
+    {{ failMessageInput('Please fix the validation errors'|t) }}
     {% if task %}
         {{ hiddenInput('entryId', task.id) }}
     {% endif %}
@@ -38,8 +40,11 @@
         <label for="name" class="required">{{ 'Name'|t }}</label>
         {{ input('text', 'title', task.title ?? '', {
             id: 'title',
-            class: 'form-control'
+            class: 'form-control' ~ (task and task.hasErrors('title') ? ' is-invalid' : '')
         }) }}
+        {% if task %}
+            {{ errorList(task.getErrors('title')) }}
+        {% endif %}
     </div>
 
     <div class="form-group mb-3 field-startDate">
@@ -47,13 +52,16 @@
         <input type="hidden" class="timezone" name="fields[startDate][timezone]" value="{{ currentUser.timezone }}">
         {{ input('text', 'fields[startDate][date]', task ? task.startDate|date('Y-m-d', currentUser.timezone) : now|date('Y-m-d', currentUser.timezone), {
             id: 'startDate',
-            class: 'form-control datepicker',
+            class: 'form-control datepicker' ~ (task and task.hasErrors('startDate') ? ' is-invalid' : ''),
             data: {
                 options: {
                     minDate: now|date('Y-m-d', currentUser.timezone),
                 }
             }
         }) }}
+        {% if task %}
+            {{ errorList(task.getErrors('startDate')) }}
+        {% endif %}
     </div>
 
     <div class="form-group mb-3 field-taskType">
@@ -81,17 +89,20 @@
         <label for="length" class="required">{{ 'Work block length (minutes)'|t }}</label>
         {{ input('number', null, task ? (task.length / 60)|round : 10, {
             id: 'length',
-            class: 'form-control',
+            class: 'form-control' ~ (task and task.hasErrors('length') ? ' is-invalid' : ''),
             min: 1,
             step: 1
         }) }}
+        {% if task %}
+            {{ errorList(task.getErrors('length')) }}
+        {% endif %}
     </div>
 
     <div class="form-group mb-3">
         <label for="deadline" class="required">{{ 'Deadline'|t }}</label>
         {{ input('text', 'fields[deadline]', task ? task.deadline|date('H:i') : '23:59', {
             id: 'deadline',
-            class: 'form-control datepicker',
+            class: 'form-control datepicker' ~ (task and task.hasErrors('deadline') ? ' is-invalid' : ''),
             data: {
                 options: {
                     enableTime: true,
@@ -100,6 +111,9 @@
                 }
             }
         }) }}
+        {% if task %}
+            {{ errorList(task.getErrors('deadline')) }}
+        {% endif %}
     </div>
 
     {% set weeks = task ? task.weeks.all() : null %}
@@ -130,12 +144,15 @@
 
     <div class="form-group mb-3 field-committed">
         <label for="committed" class="required">{{ '$ committed per derail'|t }}</label>
-        {{ input('number', 'fields[committed][value]', task ? task.committed.amount / 100 : 1, {
+        {{ input('number', 'fields[committed][value]', (task and task.committed) ? task.committed.amount / 100 : 1, {
             id: 'committed',
-            class: 'form-control',
+            class: 'form-control' ~ (task and task.hasErrors('committed') ? ' is-invalid' : ''),
             min: 0.5,
             step: 0.1
         }) }}
+        {% if task %}
+            {{ errorList(task.getErrors('committed')) }}
+        {% endif %}
     </div>
 
     <div class="form-group mb-3 field-icon">

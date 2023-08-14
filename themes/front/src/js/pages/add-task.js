@@ -42,12 +42,10 @@ class AddTask
         this.$warningModal.find('.js-continue').click(() => {
             this.$warningModal.find('.spinner-border').show();
             this.$warningModal.find('[type=submit]').attr('disabled', true);
-            this.submit().always(() => {
-                this.$warningModal.find('.spinner-border').hide();
-                this.$warningModal.find('[type=submit]').attr('disabled', false);
-            });
+            this.$form.submit();
         });
         this.$warningModal[0].addEventListener('hide.bs.modal', () => {
+            this.$form.removeClass('derailed-checked');
             this.$form.find('.spinner-border').hide();
             this.$form.find('[type=submit]').attr('disabled', false);
         });
@@ -101,8 +99,9 @@ class AddTask
     initSubmit()
     {
         this.$form.submit((e) => {
-            e.preventDefault();
-            if (this.$form.find('[name=entryId]').val()) {
+            if (!this.$form.hasClass('derailed-checked') && this.$form.find('[name=entryId]').val()) {
+                e.preventDefault();
+                this.$form.addClass('derailed-checked');
                 $.ajax({
                     url: '/?action=plugin-tasks/tasks/check-edit-task',
                     method: 'post',
@@ -112,31 +111,10 @@ class AddTask
                     if (data.status == 'derailed') {
                         this.warningModal.show();
                     } else {
-                        this.submit();
+                        this.$form.submit();
                     }
                 });
-            } else {
-                this.submit();
             }
-        });
-    }
-
-    submit()
-    {
-        return $.ajax({
-            url: '/',
-            method: 'post',
-            processData: false,
-            contentType: false,
-            dataType: 'json',
-            data: new FormData(this.$form[0])
-        }).fail(response => {
-            App.handleError(response, this.$form);
-        }).done(data => {
-            window.location.href = data.redirect;
-        }).always(() => {
-            this.$form.find('.spinner-border').hide();
-            this.$form.find('[type=submit]').attr('disabled', false);
         });
     }
 }
