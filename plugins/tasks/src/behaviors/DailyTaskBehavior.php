@@ -42,11 +42,11 @@ class DailyTaskBehavior extends Behavior
      */
     public function getTaskStatus(): string
     {
-        if ($this->isPaused()) {
-            return 'paused';
-        }
         if (!$this->isActive()) {
             return 'inactive';
+        }
+        if ($this->isPaused()) {
+            return 'paused';
         }
         if ($this->isComplete()) {
             return 'complete';
@@ -64,7 +64,7 @@ class DailyTaskBehavior extends Behavior
      */
     public function hasDerailed(): bool
     {
-        if (!$this->isActive()) {
+        if (!$this->isActive() or $this->isPaused()) {
             return false;
         }
         if (!$this->owner->timeBased) {
@@ -106,9 +106,6 @@ class DailyTaskBehavior extends Behavior
      */
     public function isActive(): bool
     {
-        if ($this->isPaused()) {
-            return false;
-        }
         if (!$this->owner->timeBased) {
             return true;
         }
