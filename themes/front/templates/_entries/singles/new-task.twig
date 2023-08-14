@@ -3,12 +3,23 @@
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\AddTaskPage') %}
 
+{% set copy_id = craft.app.request.getQueryParam("copy") %}
+{% if not task is defined and copy_id %}
+    {% set task = craft.entries.section('task').authorId(currentUser.id).id(copy_id).one() %}
+{% endif %}
+
 {% block content %}
     <div class="container container-small">
         <div class="mb-3">
             <a href="/tasks" class="text-purple2"><i class="fa-solid fa-arrow-left"></i> {{ 'Back'|t }}</a>
         </div>
-        <h1 class="text-center">{{ entry.title }}</h1>
+        <h1 class="text-center">
+            {% if copy_id %}
+                {{ 'Copy task "{title}"'|t('site', {title: task.title}) }}
+            {% else %}
+                {{ entry.title }}
+            {% endif %}
+        </h1>
         <div class="d-flex justify-content-center">
             {% include "_includes/tasks/form" %}
         </div>

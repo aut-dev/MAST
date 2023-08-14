@@ -1,6 +1,7 @@
 {% from "_helpers/errors" import errorList %}
 
 {% set task = task ?? null %}
+{% set copy_id = copy_id ?? null %}
 
 {% macro week(block, type, index) %}
     <div class="row week">
@@ -10,7 +11,7 @@
             <div class="col-3 col-md p-1">
                 <label>{{ day|capitalize|t }}</label>
                 {{ input('number', 'fields[weeks][' ~ index ~ '][fields][' ~ day ~ ']', block ? block[day] : 1, {
-                    class: 'form-control day',
+                    class: 'form-control day' ~ (block and block.hasErrors(day) ? ' is-invalid' : ''),
                     min: 0,
                     step: 0.1,
                     data: {
@@ -19,6 +20,15 @@
                 }) }}
             </div>
         {% endfor %}
+        {% if block %}
+            {{ errorList(block.getErrors('mon')) }}
+            {{ errorList(block.getErrors('tue')) }}
+            {{ errorList(block.getErrors('wed')) }}
+            {{ errorList(block.getErrors('thu')) }}
+            {{ errorList(block.getErrors('fri')) }}
+            {{ errorList(block.getErrors('sat')) }}
+            {{ errorList(block.getErrors('sun')) }}
+        {% endif %}
     </div>
 {% endmacro %}
 
@@ -32,7 +42,7 @@
     {{ redirectInput('/tasks') }}
     {{ successMessageInput('Task saved'|t) }}
     {{ failMessageInput('Please fix the validation errors'|t) }}
-    {% if task %}
+    {% if task and not copy_id %}
         {{ hiddenInput('entryId', task.id) }}
     {% endif %}
 
@@ -135,7 +145,7 @@
         <label>{{ 'How many work blocks do you want to do each day?'|t }}</label>
         {% if task %}
             {% for week in weeks %}
-                {{ _self.week(week, block_type, week.id) }}
+                {{ _self.week(week, block_type, copy_id ? 'new' ~ loop.index : week.id) }}
             {% endfor %}
         {% else %}
             {{ _self.week(null, block_type, 'new1') }}
@@ -155,7 +165,7 @@
         {% endif %}
     </div>
 
-    <div class="form-group mb-3 field-icon">
+    <div class="form-group mb-3 field-backgroundColor">
         <label class="form-label">
             {{ 'Background color'|t }}
         </label>
