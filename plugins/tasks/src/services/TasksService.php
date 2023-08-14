@@ -140,7 +140,7 @@ class TasksService extends Component
             $day = $task->author->today;
         }
         $end = (clone $day)->setTime(23, 59, 59);
-        $query = Entry::find()->section('dailyTask')->relatedTo($task);
+        $query = Entry::find()->section('dailyTask')->relatedTo($task)->with('task');
         if (!$task->enabled) {
             $query->anyStatus();
         }

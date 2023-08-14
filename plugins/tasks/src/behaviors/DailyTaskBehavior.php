@@ -183,7 +183,7 @@ class DailyTaskBehavior extends Behavior
      */
     public function getPreviousTasks(): array
     {
-        $entries = Entry::find()->section('dailyTask')->relatedTo($this->getTask())->orderBy('startDate desc');
+        $entries = Entry::find()->section('dailyTask')->relatedTo($this->getTask())->with('task')->orderBy('startDate desc');
         DateHelper::addDateParamsSmallerThan($entries, $this->owner->startDate, 'startDate', true);
         return $entries->all();
     }

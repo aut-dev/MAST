@@ -101,7 +101,7 @@ class TaskBehavior extends Behavior
     public function getDailyTasks(): array
     {
         if ($this->dailys === null) {
-            $query = Entry::find()->section('dailyTask')->relatedTo($this->owner);
+            $query = Entry::find()->section('dailyTask')->relatedTo($this->owner)->with('task');
             if (!$this->owner->enabled) {
                 $query->anyStatus();
             }
