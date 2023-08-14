@@ -9,8 +9,6 @@
             <a href="/tasks" class="text-purple2"><i class="fa-solid fa-arrow-left"></i> {{ 'Back'|t }}</a>
         </div>
         <h1 class="text-center">{{ entry.title }}</h1>
-        <div class="d-flex justify-content-center">
-            {% include "_includes/tasks/form" %}
-        </div>
+        {% include "_includes/tasks/form" %}
     </div>
 {% endblock %}

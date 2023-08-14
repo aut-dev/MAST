@@ -1,0 +1,14 @@
+columnSuffix: xlxwyhkj
+contentColumnType: boolean
+fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
+handle: recurring
+instructions: null
+name: Recurring
+searchable: false
+settings:
+  default: true
+  offLabel: null
+  onLabel: null
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Lightswitch

@@ -26,15 +26,24 @@ class AddTask
         this.initWeeks();
         this.initLength();
         this.initImage();
-        this.initType();
+        this.initTimeBased();
+        this.initRecurring();
         console.log('Add task initialised');
     }
 
-    initType()
+    initTimeBased()
     {
-        this.toggleOneOffTypeFields();
-        $('.field-taskType input').change(() => {
-            this.toggleOneOffTypeFields();
+        this.toggleTimeBasedFields();
+        $('.field-timeBased input[type=checkbox]').change(() => {
+            this.toggleTimeBasedFields();
+        });
+    }
+
+    initRecurring()
+    {
+        this.toggleRecurringFields();
+        $('.field-recurring input[type=checkbox]').change(() => {
+            this.toggleRecurringFields();
         });
     }
 
@@ -62,11 +71,13 @@ class AddTask
 
     initLength()
     {
-        $('#length').keyup(() => {
-            let seconds = parseInt($('#length').val());
-            if (!isNaN(seconds)) {
-                $('#length-seconds').val(seconds * 60);
+        $('.field-length input').keyup(() => {
+            let minutes = parseInt($('.field-length input').val());
+            if (isNaN(minutes)) {
+                minutes = 10;
+                $('.field-length input').val(10);
             }
+            $('#length-seconds').val(minutes * 60);
         });
     }
 
@@ -78,19 +89,32 @@ class AddTask
         this.createWeeks();
     }
 
-    toggleOneOffTypeFields()
+    toggleTimeBasedFields()
     {
-        let type = $('.field-taskType input:checked').val();
-        if (type == 'oneOff') {
-            $('.field-repeat, .field-weeks, .field-length').hide();
+        if ($('.field-timeBased input[type=checkbox]').is(':checked')) {
+            $('.field-length, .field-taskType').show();
         } else {
-            $('.field-repeat, .field-weeks, .field-length').show();
+            $('.field-length, .field-taskType').hide();
+            this.$form.find('.field-length input').val(10).trigger('keyup');
+        }
+    }
+
+    toggleRecurringFields()
+    {
+        if ($('.field-recurring input[type=checkbox]').is(':checked')) {
+            $('.field-repeat, .field-weeks').show();
+        } else {
+            $('.field-repeat, .field-weeks').hide();
         }
     }
 
     createWeeks()
     {
         let total = parseInt(this.$form.find('#repeat-input').val());
+        if (total < 1) {
+            total = 1;
+            this.$form.find('#repeat-input').val(1);
+        }
         let existing = this.$form.find('.field-weeks .week');
         while (total < existing.length) {
             existing.last().remove();

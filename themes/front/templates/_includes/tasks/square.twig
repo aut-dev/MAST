@@ -10,7 +10,7 @@
 
 {% if daily_task %}
     {% set length = daily_task.length %}
-    {% if daily_task.isActive %}
+    {% if daily_task.isActive and task.timeBased %}
         {% set progress = daily_task.getProgress(true) %}
         {% set persec = 1 / length * 100 %}
     {% endif %}
@@ -28,13 +28,13 @@
             </div>
         </div>
         <p class="text-light mb-0">
-            {% if task.taskType == 'oneOff' %}
+            {% if not task.timeBased %}
                 One off
             {% else %}
                 {{ task.taskType|ucfirst }} than {{ (length / 60)|round }} min
             {% endif %}
         </p>
-        {% if task.canRecordTime %}
+        {% if task.timeBased %}
             <div class="if-not-inactive-or-paused">
                 <div class="progress">
                     <div class="progress-bar" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
@@ -45,7 +45,7 @@
             {{ 'Minutes until deadline:'|t }} <span class="countdown">{{ task.todayDeadline|minutesToNow }}</span>
         </p>
         <div class="actions d-flex justify-content-between align-items-center mt-2">
-            {% if task.canRecordTime %}
+            {% if task.timeBased %}
                 <span class="js-start-timer text-purple2 fs-5" data-textstart="{{ 'Start'|t }}" data-textstop="{{ 'Stop'|t }}">
                     {% if started %}
                         {{ 'Stop'|t }}
@@ -54,7 +54,7 @@
                     {% endif %}
                 </span>
             {% else %}
-                <span class="if-active js-task-done text-purple2 fs-5 {% if task.done %}done{% endif %}">
+                <span class="if-active js-task-done text-purple2 fs-5 {% if daily_task and daily_task.done %}done{% endif %}">
                     Done
                 </span>
             {% endif %}

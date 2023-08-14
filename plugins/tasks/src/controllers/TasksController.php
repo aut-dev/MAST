@@ -34,12 +34,16 @@ class TasksController extends Controller
     {
         $user = \Craft::$app->user->identity;
         $done = $this->request->getRequiredParam('done');
-        $task = Entry::find()->section('task')->authorId($user->id)->id($this->request->getRequiredParam('id'))->taskType('oneOff')->one();
+        $task = Entry::find()->section('task')->authorId($user->id)->id($this->request->getRequiredParam('id'))->one();
         if (!$task) {
             throw new ForbiddenHttpException('Task not found');
         }
-        $task->setFieldValue('done', $done);
-        \Craft::$app->elements->saveElement($task, false);
+        $daily = $task->getDailyTask();
+        if (!$daily) {
+            throw new ForbiddenHttpException('Daily task not found');
+        }
+        $daily->setFieldValue('done', $done);
+        \Craft::$app->elements->saveElement($daily, false);
         return $this->asJson($this->getTaskData($task));
     }
 
@@ -116,6 +120,7 @@ class TasksController extends Controller
             'status' => $task->getTaskStatus(),
             'progress' => $daily ? $daily->getProgress(true) : false,
             'timerStarted' => $started ? true : false,
+            'done' => $daily ? $daily->done : false,
             'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null
         ];
     }

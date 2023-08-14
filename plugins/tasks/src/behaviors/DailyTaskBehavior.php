@@ -67,7 +67,7 @@ class DailyTaskBehavior extends Behavior
         if (!$this->isActive()) {
             return false;
         }
-        if ($this->owner->taskType->value == 'oneOff') {
+        if (!$this->owner->timeBased) {
             if (!$this->isExpired()) {
                 return false;
             }
@@ -109,6 +109,9 @@ class DailyTaskBehavior extends Behavior
         if ($this->isPaused()) {
             return false;
         }
+        if (!$this->owner->timeBased) {
+            return true;
+        }
         return $this->owner->length > 0;
     }
 
@@ -129,7 +132,7 @@ class DailyTaskBehavior extends Behavior
      */
     public function isComplete(): bool
     {
-        if ($this->owner->taskType->value == 'oneOff') {
+        if (!$this->task->timeBased) {
             return $this->owner->done;
         }
         if ($this->owner->taskType->value == 'more') {

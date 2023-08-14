@@ -32,18 +32,6 @@ fieldLayouts:
             width: 75
           -
             elementCondition: null
-            fieldUid: 1b238269-1e74-4eb1-aca9-256f0fca08b9 # Task type
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 504682da-b7c2-42c7-8e00-223fa74b839e
-            userCondition: null
-            warning: null
-            width: 25
-          -
-            elementCondition: null
             fieldUid: 34016fb2-d922-4483-809c-f30801615184 # Background color
             instructions: null
             label: null
@@ -63,30 +51,6 @@ fieldLayouts:
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: 558c739a-5abc-4652-ba78-81ed443a3bb1
-            userCondition: null
-            warning: null
-            width: 50
-          -
-            elementCondition:
-              class: craft\elements\conditions\entries\EntryCondition
-              conditionRules:
-                -
-                  class: craft\fields\conditions\OptionsFieldConditionRule
-                  fieldUid: 1b238269-1e74-4eb1-aca9-256f0fca08b9 # Task type
-                  operator: in
-                  uid: 31ba3dd1-5edb-4477-827e-6d3860e0eb6b
-                  values:
-                    - more
-                    - less
-              elementType: craft\elements\Entry
-              fieldContext: global
-            fieldUid: 70279873-4261-4f79-b9d0-6dc067fb97b4 # Length
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: fc49c163-0107-4b9f-8f0a-f5e8eac03756
             userCondition: null
             warning: null
             width: 50
@@ -139,25 +103,14 @@ fieldLayouts:
             warning: null
             width: 50
           -
-            elementCondition:
-              class: craft\elements\conditions\entries\EntryCondition
-              conditionRules:
-                -
-                  class: craft\fields\conditions\OptionsFieldConditionRule
-                  fieldUid: 1b238269-1e74-4eb1-aca9-256f0fca08b9 # Task type
-                  operator: in
-                  uid: 731cfaa8-283c-4d49-927f-76f01d6d8a4f
-                  values:
-                    - oneOff
-              elementType: craft\elements\Entry
-              fieldContext: global
-            fieldUid: 86c4c449-df54-4c68-a16a-68793a118c14 # Done
+            elementCondition: null
+            fieldUid: a8096a2c-fe5e-4bee-8e2d-2fdd17c42bb5 # Recurring
             instructions: null
             label: null
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 892519ec-da32-4012-8d79-7562ec2100f7
+            uid: 89a5af8f-3c8c-4ee6-aca7-3106086ab495
             userCondition: null
             warning: null
             width: 50
@@ -166,13 +119,10 @@ fieldLayouts:
               class: craft\elements\conditions\entries\EntryCondition
               conditionRules:
                 -
-                  class: craft\fields\conditions\OptionsFieldConditionRule
-                  fieldUid: 1b238269-1e74-4eb1-aca9-256f0fca08b9 # Task type
-                  operator: in
+                  class: craft\fields\conditions\LightswitchFieldConditionRule
+                  fieldUid: a8096a2c-fe5e-4bee-8e2d-2fdd17c42bb5 # Recurring
                   uid: 8841255d-ffd4-4fdd-bbe5-4f79e05be5b0
-                  values:
-                    - more
-                    - less
+                  value: true
               elementType: craft\elements\Entry
               fieldContext: global
             fieldUid: ce461ea7-466c-4a18-ab4f-dddeb94af716 # Weeks
@@ -185,6 +135,60 @@ fieldLayouts:
             userCondition: null
             warning: null
             width: 100
+          -
+            elementCondition: null
+            fieldUid: 75f26b47-fb20-47e9-9ad1-bab31babae60 # Time based
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: dda8e09e-c90a-4a46-ae5a-45f61056d5d3
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition:
+              class: craft\elements\conditions\entries\EntryCondition
+              conditionRules:
+                -
+                  class: craft\fields\conditions\LightswitchFieldConditionRule
+                  fieldUid: 75f26b47-fb20-47e9-9ad1-bab31babae60 # Time based
+                  uid: 4b1db6ab-f3b2-4e72-96b9-7bf8dd166b7d
+                  value: true
+              elementType: craft\elements\Entry
+              fieldContext: global
+            fieldUid: 1b238269-1e74-4eb1-aca9-256f0fca08b9 # Task type
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 504682da-b7c2-42c7-8e00-223fa74b839e
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition:
+              class: craft\elements\conditions\entries\EntryCondition
+              conditionRules:
+                -
+                  class: craft\fields\conditions\LightswitchFieldConditionRule
+                  fieldUid: 75f26b47-fb20-47e9-9ad1-bab31babae60 # Time based
+                  uid: 31ba3dd1-5edb-4477-827e-6d3860e0eb6b
+                  value: true
+              elementType: craft\elements\Entry
+              fieldContext: global
+            fieldUid: 70279873-4261-4f79-b9d0-6dc067fb97b4 # Length
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: fc49c163-0107-4b9f-8f0a-f5e8eac03756
+            userCondition: null
+            warning: null
+            width: 50
         name: Content
         uid: cbfbd016-f81d-4cb1-ad1c-c411dfae2249
         userCondition: null

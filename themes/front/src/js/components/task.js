@@ -90,6 +90,20 @@ class Task
         }
     }
 
+    set done(done)
+    {
+        if (done) {
+            this.$elem.find('.js-task-done').addClass('done');
+        } else {
+            this.$elem.find('.js-task-done').removeClass('done');
+        }
+    }
+
+    get done()
+    {
+        return this.$elem.find('.js-task-done').hasClass('done');
+    }
+
     setProgress(progress, updateData = false)
     {
         this.$elem.find('.progress-bar').css('width', progress + '%');
@@ -111,7 +125,7 @@ class Task
                 dataType: 'json',
                 data: {
                     id: this.id,
-                    done: $(e.target).hasClass('done') ? 0 : 1
+                    done: this.done ? 0 : 1
                 }
             }).done(data => {
                 this.refresh(data);
@@ -229,7 +243,7 @@ class Task
             }
         }).done((data) => {
             this.tasks.refreshing = false;
-            this.refresh(data.id);
+            this.refresh(data[this.id]);
         });
     }
 
