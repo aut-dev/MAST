@@ -201,7 +201,7 @@ class Task
             }
         }).done((data) => {
             this.tasks.refreshing = false;
-            this.refresh(data.id);
+            this.refresh(data[this.id]);
         });
     }
 
