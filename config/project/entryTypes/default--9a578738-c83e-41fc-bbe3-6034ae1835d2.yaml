@@ -127,6 +127,29 @@ fieldLayouts:
             warning: null
             width: 50
           -
+            elementCondition:
+              class: craft\elements\conditions\entries\EntryCondition
+              conditionRules:
+                -
+                  class: craft\fields\conditions\OptionsFieldConditionRule
+                  fieldUid: 1b238269-1e74-4eb1-aca9-256f0fca08b9 # Task type
+                  operator: in
+                  uid: 3de37da2-d403-41b0-8393-f15e021b2f8e
+                  values:
+                    - oneOff
+              elementType: craft\elements\Entry
+              fieldContext: global
+            fieldUid: 86c4c449-df54-4c68-a16a-68793a118c14 # Done
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 1d32fdaf-a5e4-4945-b21a-2b1af43250cb
+            userCondition: null
+            warning: null
+            width: 50
+          -
             elementCondition: null
             fieldUid: 5247feef-5882-4519-9d2b-a485acf7d4bc # Processed
             instructions: null

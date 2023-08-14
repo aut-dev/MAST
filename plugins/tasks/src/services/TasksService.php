@@ -104,7 +104,8 @@ class TasksService extends Component
                     'deadline' => $task->deadline,
                     'length' => $task->getDuration(),
                     'committed' => $task->committed,
-                    'paused' => $task->paused
+                    'paused' => $task->paused,
+                    'done' => $task->done
                 ]);
                 $daily->enabled = $task->enabled;
                 \Craft::$app->elements->saveElement($daily, false);

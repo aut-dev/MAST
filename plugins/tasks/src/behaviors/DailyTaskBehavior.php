@@ -71,7 +71,7 @@ class DailyTaskBehavior extends Behavior
             if (!$this->isExpired()) {
                 return false;
             }
-            return !$this->task->done;
+            return !$this->owner->done;
         }
         $timeSpent = $this->getTimeSpent();
         if ($this->owner->taskType->value == 'more') {
@@ -130,7 +130,7 @@ class DailyTaskBehavior extends Behavior
     public function isComplete(): bool
     {
         if ($this->owner->taskType->value == 'oneOff') {
-            return $this->task->done;
+            return $this->owner->done;
         }
         if ($this->owner->taskType->value == 'more') {
             return $this->getTimeSpent() >= $this->owner->length;
