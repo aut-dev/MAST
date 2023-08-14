@@ -8,6 +8,7 @@ class Task
     timerStarted = 0;
     changingTimer = false;
     pausing = false;
+    doning = false;
 
     constructor(tasks, $elem)
     {
@@ -21,6 +22,7 @@ class Task
         }
         this.initTimerBtn();
         this.initPause();
+        this.initDone();
         setInterval(() => this.updateProgress(), 1000);
     }
 
@@ -32,6 +34,10 @@ class Task
     set status(status)
     {
         this.$elem.attr('data-status', status);
+        this.$elem.find('.js-task-done').removeClass('done');
+        if (status == 'complete') {
+            this.$elem.find('.js-task-done').addClass('done');
+        }
     }
 
     set active(active)
@@ -84,12 +90,48 @@ class Task
         }
     }
 
+    set done(done)
+    {
+        if (done) {
+            this.$elem.find('.js-task-done').addClass('done');
+        } else {
+            this.$elem.find('.js-task-done').removeClass('done');
+        }
+    }
+
+    get done()
+    {
+        return this.$elem.find('.js-task-done').hasClass('done');
+    }
+
     setProgress(progress, updateData = false)
     {
         this.$elem.find('.progress-bar').css('width', progress + '%');
         if (updateData) {
             this.$elem.data('progress', progress);
         }
+    }
+
+    initDone()
+    {
+        this.$elem.find('.js-task-done').click((e) => {
+            e.preventDefault();
+            if (this.doning) {
+                return;
+            }
+            this.doning = true;
+            $.ajax({
+                url: '/?action=plugin-tasks/tasks/done',
+                dataType: 'json',
+                data: {
+                    id: this.id,
+                    done: this.done ? 0 : 1
+                }
+            }).done(data => {
+                this.refresh(data);
+                this.doning = false;
+            });
+        });
     }
 
     initPause()

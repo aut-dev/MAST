@@ -1,4 +1,4 @@
-dateModified: 1692002313
+dateModified: 1692030846
 elementSources:
   craft\elements\Entry:
     -
@@ -104,6 +104,8 @@ elementSources:
         - 'field:45cd30bb-d856-4e04-9e66-cda6b52a0238' # Has derailed
         - 'field:4b8fd5c8-4aaa-4384-8956-861ce041def9' # Charge succeeded
         - 'field:5247feef-5882-4519-9d2b-a485acf7d4bc' # Processed
+        - 'field:86c4c449-df54-4c68-a16a-68793a118c14' # Done
+        - 'field:75f26b47-fb20-47e9-9ad1-bab31babae60' # Time based
       type: native
     -
       defaultSort:
@@ -202,7 +204,9 @@ meta:
     51e58384-83d6-4c87-966f-ba12d10e9076: Image # Image
     70c0d997-a64e-47f3-956a-11deff9be426: 'New task' # New task
     75dda2af-19e9-48e0-aed1-116af08373a5: Icon # Icon
+    75f26b47-fb20-47e9-9ad1-bab31babae60: 'Time based' # Time based
     79cfda90-52f0-4348-b604-fdb241c209cf: Task # Task
+    86c4c449-df54-4c68-a16a-68793a118c14: Done # Done
     123c86c3-404e-49c2-8fb1-8666da333b2d: 'Sign up form' # Sign up form
     285c99c4-fa78-44f1-afd3-6eed1b0d5121: 'End date' # End date
     646a52b6-154e-4e2e-846b-72c6d35feadf: Timer # Timer
@@ -235,6 +239,7 @@ meta:
     a220a4df-7337-4099-807d-b7ac71becd03: 'Redactor (simple)' # Redactor (simple)
     a260febd-af3b-4bda-ba4c-67c7a8edb8d4: 'Pay subscription' # Pay subscription
     a734c52f-ac36-48ae-9b7e-3482ebdff457: Break # Break
+    a8096a2c-fe5e-4bee-8e2d-2fdd17c42bb5: Recurring # Recurring
     a25335f0-9a1f-4a5a-bb1b-f3d4480f55b1: Committed # Committed
     aa5c9cbc-3fc7-44fd-aca8-a2410d75570e: 'Redactor (standard)' # Redactor (standard)
     aa6e4905-4e1c-44af-b6a2-84c73af59989: Text # Text

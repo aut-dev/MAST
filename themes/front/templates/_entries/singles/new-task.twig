@@ -22,12 +22,10 @@
                 {{ entry.title }}
             {% endif %}
         </h1>
-        <div class="d-flex justify-content-center">
-            {% if currentUser.subscriptionStatus != 'active' and count >= 3 %}
-                {{ entry.invalidSubscriptionMessage }}
-            {% else %}
-                {% include "_includes/tasks/form" %}
-            {% endif %}
-        </div>
+        {% if currentUser.subscriptionStatus != 'active' and count >= 3 %}
+            {{ entry.invalidSubscriptionMessage }}
+        {% else %}
+            {% include "_includes/tasks/form" %}
+        {% endif %}
     </div>
 {% endblock %}

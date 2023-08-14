@@ -67,6 +67,12 @@ class DailyTaskBehavior extends Behavior
         if (!$this->isActive()) {
             return false;
         }
+        if (!$this->owner->timeBased) {
+            if (!$this->isExpired()) {
+                return false;
+            }
+            return !$this->owner->done;
+        }
         $timeSpent = $this->getTimeSpent();
         if ($this->owner->taskType->value == 'more') {
             $deadline = $this->getDeadlineInstance();
@@ -103,6 +109,9 @@ class DailyTaskBehavior extends Behavior
         if ($this->isPaused()) {
             return false;
         }
+        if (!$this->owner->timeBased) {
+            return true;
+        }
         return $this->owner->length > 0;
     }
 
@@ -123,6 +132,9 @@ class DailyTaskBehavior extends Behavior
      */
     public function isComplete(): bool
     {
+        if (!$this->task->timeBased) {
+            return $this->owner->done;
+        }
         if ($this->owner->taskType->value == 'more') {
             return $this->getTimeSpent() >= $this->owner->length;
         }

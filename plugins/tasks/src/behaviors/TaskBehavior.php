@@ -160,6 +160,9 @@ class TaskBehavior extends Behavior
      */
     public function getDuration(?DateTime $day = null): float
     {
+        if (!$this->owner->timeBased) {
+            return 0;
+        }
         if ($day === null) {
             $day = $this->owner->author->today;
         }

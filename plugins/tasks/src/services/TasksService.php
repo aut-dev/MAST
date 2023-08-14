@@ -99,13 +99,7 @@ class TasksService extends Component
             $this->deleteOutdatedDailyTasks($task);
             $daily = $this->getDailyTask($task);
             if ($daily) {
-                $daily->setFieldValues([
-                    'taskType' => $task->taskType,
-                    'deadline' => $task->deadline,
-                    'length' => $task->getDuration(),
-                    'committed' => $task->committed,
-                    'paused' => $task->paused
-                ]);
+                $this->populateDailyTask($daily, $task);
                 $daily->enabled = $task->enabled;
                 \Craft::$app->elements->saveElement($daily, false);
             }
@@ -160,11 +154,14 @@ class TasksService extends Component
         if ($day === null) {
             $day = $task->author->today;
         }
-        if ($daily = $this->getDailyTask($task, $day)) {
-            return $daily;
-        }
         if ($task->startDate > $day or !$task->enabled) {
             return null;
+        }
+        if (!$task->recurring and $task->startDate != $day) {
+            return null;
+        }
+        if ($daily = $this->getDailyTask($task, $day)) {
+            return $daily;
         }
         return $this->createDailyTask($task, $day);
     }
@@ -228,17 +225,32 @@ class TasksService extends Component
         ]);
         $daily->setFieldValues([
             'task' => [$task->id],
-            'startDate' => $day,
-            'taskType' => $task->taskType,
-            'deadline' => $task->deadline,
-            'length' => $task->getDuration($day),
-            'committed' => $task->committed,
-            'paused' => $task->paused
+            'startDate' => $day
         ]);
+        $this->populateDailyTask($daily, $task, $day);
         $daily->scenario = Element::SCENARIO_LIVE;
         if (!\Craft::$app->elements->saveElement($daily)) {
             throw new Exception("Couldn't save daily task : " . print_r($daily->errors, true));
         }
         return $daily;
+    }
+
+    /**
+     * Populate a daily task from a task
+     *
+     * @param  Entry         $daily
+     * @param  Entry         $task
+     * @param  DateTime|null $day
+     */
+    protected function populateDailyTask(Entry $daily, Entry $task, ?DateTime $day = null)
+    {
+        $daily->setFieldValues([
+            'taskType' => $task->taskType,
+            'deadline' => $task->deadline,
+            'length' => $task->getDuration($day),
+            'committed' => $task->committed,
+            'paused' => $task->paused,
+            'timeBased' => $task->timeBased
+        ]);
     }
 }
