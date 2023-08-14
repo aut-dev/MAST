@@ -212,6 +212,11 @@ class Task
         this.timerIsStarted = data.timerStarted;
         this.countdown = data.countdown;
         this.backgroundColor = data.backgroundColor;
+        if (this.tasks.inactiveTasksAreHidden() && data.status == 'inactive') {
+            this.$elem.closest('.task-col').hide();
+        } else {
+            this.$elem.closest('.task-col').show();
+        }
         if (data.active && !this.timerStarted) {
             //Only refresh the progress if we're not polling progress already, or we'd have issues 
             //with the progress bar going back and forth slightly

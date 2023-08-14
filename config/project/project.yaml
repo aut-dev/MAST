@@ -1,4 +1,4 @@
-dateModified: 1691824116
+dateModified: 1691993834
 elementSources:
   craft\elements\Entry:
     -
@@ -240,6 +240,7 @@ meta:
     aa6e4905-4e1c-44af-b6a2-84c73af59989: Text # Text
     ab6a1072-3bb0-460a-bf36-bbb4b5dac8da: 'Page not found' # Page not found
     af8b97a9-5da5-416b-8c43-7222862e0d19: Thu # Thu
+    b0685fcd-4b89-4f1f-b2fa-c95dbf8f5691: 'Hide inactive tasks' # Hide inactive tasks
     b39f1bdf-5ce7-4286-9e4f-3162f9c70830: Full # Full
     b4520f72-9c23-445d-84c9-ed6bb056271f: 'Edit task' # Edit task
     b6662c40-1d50-47d9-bc6d-45c902bbca73: 'Reset password form' # Reset password form
