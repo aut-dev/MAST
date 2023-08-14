@@ -1,4 +1,4 @@
-dateModified: 1691993834
+dateModified: 1692002313
 elementSources:
   craft\elements\Entry:
     -
@@ -267,9 +267,9 @@ meta:
     f7edb11b-5202-431b-b3c7-0c227fe1ebed: week # week
     f65685af-7097-4049-9d06-65a2c9435fe2: Insights # Insights
     f95157d7-1eac-4192-855e-c8bdb66fba9b: Monday # Monday
-    f4994683-7a71-491d-b14b-0a986b8ec613: 'Requires valid subscription' # Requires valid subscription
     fa53f651-84c9-437f-9bed-edaead3bf8ed: Home # Home
     fb9eba24-cb32-4bf5-8a07-ba003842b35f: Tasks # Tasks
+    ff7a45f6-249e-4401-b035-ed21eb6dd7ec: 'Invalid subscription message' # Invalid subscription message
     ffcbe586-fcdc-4583-8682-0098aae96672: Fri # Fri
 plugins:
   blitz-recommendations:
