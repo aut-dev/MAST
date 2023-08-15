@@ -28,9 +28,9 @@ class TasksController extends Controller
     }
 
     /**
-     * Poll progress of all a user's tasks
+     * Get the current user tasks
      */
-    public function actionPoll()
+    public function actionGet()
     {
         $user = \Craft::$app->user->identity;
         $tasks = Entry::find()->section('task')->authorId($user->id);
@@ -94,12 +94,20 @@ class TasksController extends Controller
     {
         $daily = $task->getDailyTask();
         $started = Timer::$plugin->timer->timerStarted($task);
+        $length = $daily ? $daily->length : 0;
         return [
+            'title' => $task->title,
+            'id' => $task->id,
+            'url' => $task->url,
+            'progressPerSec' => ($length > 0 ? (1 / $length * 100) : 0),
+            'taskType' => $task->taskType->value,
+            'committed' => $task->committed->getAmount() / 100,
             'countdown' => TimeHelper::minutesToNow($task->todayDeadline),
+            'length' => $daily ? round($daily->length / 60) : round($task->length / 60),
             'active' => $daily and $daily->isActive(),
             'status' => $task->getTaskStatus(),
-            'progress' => $daily ? $daily->getProgress(true) : false,
-            'timerStarted' => $started ? true : false,
+            'progress' => $daily ? $daily->getProgress(true) : 0,
+            'timerStarted' => $started ? $started->getTimestamp() : 0,
             'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null
         ];
     }

@@ -4,49 +4,8 @@
     border-width: 3px;
     border-style: solid;
     border-radius: 12px !important;
-    .if-active,
-    .if-status-complete,
-    .if-status-paused,
-    .if-status-active {
-        display: none;
-    }
-    &[data-timer-started="1"] {
+    &.timer-started {
         border-style: dashed !important;
-    }
-    &[data-active="1"] {
-        .if-active {
-            display: block;
-        }
-    }
-    &[data-status="inactive"] {
-        border-color: $task-inactive;
-        .if-not-inactive-or-paused {
-            display: none;
-        }
-    }
-    &[data-status="active"] {
-        border-color: $task-active;
-        .if-status-active {
-            display: block;
-        }
-    }
-    &[data-status="complete"] {
-        border-color: $task-complete;
-        .if-status-complete {
-            display: block;
-        }
-    }
-    &[data-status="derailed"] {
-        border-color: $task-derailed;
-    }
-    &[data-status="paused"] {
-        border-color: $task-paused;
-        .if-status-paused {
-            display: block;
-        }
-        .if-not-inactive-or-paused {
-            display: none;
-        }
     }
     .complete-tick {
         position: relative;

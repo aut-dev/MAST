@@ -1,0 +1,137 @@
+<template>
+    <a :href="task.url" class="text-body">
+        <div :class="classes" style="background-color: {{ task.backgroundColor ?: #ffffff }}">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4 class="m-0 text-truncate">{{ task.title }}</h4>
+                <div class="d-flex align-items-center">
+                    <small v-if="task.status == 'paused'">
+                        Paused
+                    </small>
+                    <span class="complete-tick ms-3" v-if="task.status == 'complete'">
+                        <i class="fa-solid fa-check"></i>
+                    </span>
+                </div>
+            </div>
+            <p class="text-light mb-0">
+                {{ capitalize(task.taskType) }} than {{ task.length }} min
+            </p>
+            <div v-if="showProgressBar">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" :style="'width:' + progress + '%'" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            <p class="m-0" v-if="task.active">
+                Minutes until deadline: <span class="countdown">{{ task.countdown }}</span>
+            </p>
+            <div class="actions d-flex justify-content-between align-items-center mt-2">
+                <span class="text-purple2 fs-5">
+                    <span v-if="timerStarted" @click.prevent="stopTimer">Stop</span>
+                    <span v-if="!timerStarted" @click.prevent="startTimer">Start</span>
+                </span>
+                <span class="fs-4" v-if="task.active">
+                    ${{ task.committed }}
+                </span>
+            </div>
+        </div>
+    </a>
+</template>
+
+<script>
+
+import { useTasksStore } from './TasksStore';
+import { capitalize } from 'lodash';
+import axios from 'axios';
+
+export default {
+    setup() {
+        const store = useTasksStore();
+        return { store };
+    },
+    props: {
+        task: Object
+    },
+    data() {
+        return {
+            changingTimer: false,
+            timerStarted: 0,
+            progress: 0,
+            initialProgress: 0,
+            progressInterval: null
+        }
+    },
+    computed: {
+        showProgressBar() {
+            return !['inactive', 'paused'].includes(this.status);
+        },
+        status() {
+            if (this.task.status != 'inactive' && (this.task.paused || this.store.onUnlimitedBreak || this.store.onScheduledBreak)) {
+                return 'paused';
+            }
+            return this.task.status;
+        },
+        classes() {
+            let classes = 'square task p-3 bg-task rounded border-status-' + this.status;
+            if (this.timerStarted) {
+                classes += ' timer-started';
+            }
+            return classes;
+        }
+    },
+    created() {
+        this.progress = this.task.progress;
+        if (this.task.timerStarted) {
+            this.startPollingProgress(this.task.timerStarted, this.task.progress);
+        }
+    },
+    methods: {
+        capitalize(str) {
+            return capitalize(str);
+        },
+        startTimer() {
+            if (this.changingTimer) {
+                return;
+            }
+            this.changingTimer = true;
+            axios.get('/?action=plugin-timer/timer/start&taskId=' + this.task.id).then((data) => {
+                this.startPollingProgress(data.data.started, this.task.progress);
+                this.changingTimer = false;
+            });
+        },
+        stopTimer() {
+            if (this.changingTimer) {
+                return;
+            }
+            this.changingTimer = true;
+            this.stopPollingProgress();
+            this.timerStarted = 0;
+            axios.get('/?action=plugin-timer/timer/stop&taskId=' + this.task.id).then((data) => {
+                this.task.progress = data.data.progress;
+                this.progress = data.data.progress;
+                this.changingTimer = false;
+            });
+        },
+        updateProgress() {
+            let elapsed = Math.round((new Date().getTime() / 1000)) - this.timerStarted;
+            let progress = this.initialProgress + (this.task.progressPerSec * elapsed);
+            this.progress = progress;
+            if (progress > 101) {
+                this.stopPollingProgress();
+                this.store.fetchTasks(this.id);
+            }
+        },
+
+        startPollingProgress(started, progress)
+        {
+            this.timerStarted = started;
+            this.initialProgress = progress;
+            this.progressInterval = setInterval(() => this.updateProgress(), 1000);
+        },
+
+        stopPollingProgress()
+        {
+            clearInterval(this.progressInterval);
+        }
+    }
+};
+
+</script>

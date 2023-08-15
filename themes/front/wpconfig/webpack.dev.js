@@ -17,6 +17,10 @@ module.exports = merge(common, {
   module: {
     rules: [
       {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+      },
+      {
         test: require.resolve("jquery"),
         loader: "expose-loader",
         options: {
@@ -62,9 +66,6 @@ module.exports = merge(common, {
               emit: true
             }
           },
-          // {
-          //   loader: "style-loader"
-          // },
           {
             loader: "css-loader",
             options: {

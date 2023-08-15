@@ -3,6 +3,7 @@ const entries = require("./entries")
 const webpack = require("webpack")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 var fs = require('fs');
+const { VueLoaderPlugin } = require('vue-loader');
 
 class CleanDistPlugin {
   paths;
@@ -69,7 +70,10 @@ module.exports = {
   },
 
   resolve: {
-    modules: [ "node_modules" ]
+    modules: [ "node_modules" ],
+    alias: {
+      'vue$': 'vue/dist/vue.esm-bundler.js',
+    },
   },
 
   plugins: [
@@ -83,6 +87,7 @@ module.exports = {
       $: "jquery",
       jQuery: "jquery",
     }),
+    new VueLoaderPlugin()
   ],
 
   optimization: {

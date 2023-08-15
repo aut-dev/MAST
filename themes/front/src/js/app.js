@@ -78,9 +78,7 @@ class App
 
     initFontAwesome()
     {
-        if ($('.fa-brands, .fa-solid, .fa-regular, .fa-light, .fa-thin, .fa-duotone').length) {
-            import(/* webpackChunkName: "fontawesome" */ './components/fontawesome');
-        }
+        import(/* webpackChunkName: "fontawesome" */ './components/fontawesome');
     }
 
     initForms($forms)

@@ -16,8 +16,10 @@ class TimerController extends Controller
         $taskId = $this->request->getRequiredParam('taskId');
         $user = \Craft::$app->user->identity;
         $task = Entry::find()->section('task')->id($taskId)->authorId($user->id)->one();
-        Timer::$plugin->timer->start($task);
-        return $this->asJson([]);
+        $started = Timer::$plugin->timer->start($task);
+        return $this->asJson([
+            'started' => $started->getTimestamp()
+        ]);
     }
 
     public function actionStop()

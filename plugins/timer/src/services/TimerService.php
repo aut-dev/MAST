@@ -17,8 +17,9 @@ class TimerService extends Component
      * Start the time for a task
      *
      * @param  int|Entry $task
+     * @return DateTime
      */
-    public function start($task)
+    public function start($task): DateTime
     {
         if (is_int($task)) {
             $task = Entry::find()->section('task')->id($task)->one();
@@ -56,6 +57,7 @@ class TimerService extends Component
             'blocks' => $blocks
         ]);
         \Craft::$app->elements->saveElement($user, false);
+        return $user->now;
     }
 
     /**
