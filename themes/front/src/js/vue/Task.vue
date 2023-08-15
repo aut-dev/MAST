@@ -1,39 +1,49 @@
 <template>
-    <a :href="task.url" class="text-body">
-        <div :class="classes" style="background-color: {{ task.backgroundColor ?: #ffffff }}">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h4 class="m-0 text-truncate">{{ task.title }}</h4>
-                <div class="d-flex align-items-center">
-                    <small v-if="task.status == 'paused'">
-                        Paused
-                    </small>
-                    <span class="complete-tick ms-3" v-if="task.status == 'complete'">
-                        <i class="fa-solid fa-check"></i>
+    <div class="col-12 col-md-6 col-lg-4 col-xl-3 py-3" v-if="!store.hideInactiveTasks || task.status != 'inactive'">
+        <a :href="task.url" class="text-body">
+            <div :class="classes" style="background-color: {{ task.backgroundColor ?: #ffffff }}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h4 class="m-0 text-truncate">{{ task.title }}</h4>
+                    <div class="d-flex align-items-center">
+                        <small v-if="task.status == 'paused'">
+                            Paused
+                        </small>
+                        <span class="complete-tick ms-3" v-if="task.status == 'complete'">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+                    </div>
+                </div>
+                <p class="text-light mb-0">
+                    <span v-if="task.timeBased">
+                        {{ capitalize(task.taskType) }} than {{ task.length }} min
+                    </span>
+                    <span v-if="!task.timeBased">
+                        One off
+                    </span>
+                </p>
+                <div v-if="task.timeBased && task.active">
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" :style="'width:' + progress + '%'" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <p class="m-0" v-if="task.active">
+                    Minutes until deadline: <span class="countdown">{{ task.countdown }}</span>
+                </p>
+                <div class="actions d-flex justify-content-between align-items-center mt-2">
+                    <span class="text-purple2 fs-5" v-if="task.timeBased">
+                        <span v-if="timerStarted" @click.prevent="stopTimer">Stop</span>
+                        <span v-if="!timerStarted" @click.prevent="startTimer">Start</span>
+                    </span>
+                    <span :class="'text-purple2 fs-5 task-done' + (task.done ? ' done' : '')" v-if="task.active && !task.timeBased" @click.prevent="store.setTaskDone(task.id, !task.done)">
+                        Done
+                    </span>
+                    <span class="fs-4" v-if="task.active">
+                        ${{ task.committed }}
                     </span>
                 </div>
             </div>
-            <p class="text-light mb-0">
-                {{ capitalize(task.taskType) }} than {{ task.length }} min
-            </p>
-            <div v-if="showProgressBar">
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" :style="'width:' + progress + '%'" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            <p class="m-0" v-if="task.active">
-                Minutes until deadline: <span class="countdown">{{ task.countdown }}</span>
-            </p>
-            <div class="actions d-flex justify-content-between align-items-center mt-2">
-                <span class="text-purple2 fs-5">
-                    <span v-if="timerStarted" @click.prevent="stopTimer">Stop</span>
-                    <span v-if="!timerStarted" @click.prevent="startTimer">Start</span>
-                </span>
-                <span class="fs-4" v-if="task.active">
-                    ${{ task.committed }}
-                </span>
-            </div>
-        </div>
-    </a>
+        </a>
+    </div>
 </template>
 
 <script>
@@ -60,9 +70,6 @@ export default {
         }
     },
     computed: {
-        showProgressBar() {
-            return !['inactive', 'paused'].includes(this.status);
-        },
         status() {
             if (this.task.status != 'inactive' && (this.task.paused || this.store.onUnlimitedBreak || this.store.onScheduledBreak)) {
                 return 'paused';
@@ -116,17 +123,15 @@ export default {
             this.progress = progress;
             if (progress > 101) {
                 this.stopPollingProgress();
-                this.store.fetchTasks(this.id);
+                this.store.fetchTask(this.task.id);
             }
         },
-
         startPollingProgress(started, progress)
         {
             this.timerStarted = started;
             this.initialProgress = progress;
             this.progressInterval = setInterval(() => this.updateProgress(), 1000);
         },
-
         stopPollingProgress()
         {
             clearInterval(this.progressInterval);

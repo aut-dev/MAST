@@ -12,6 +12,9 @@
                 <a href="#unlimited-break-modal" data-bs-toggle="modal" :class="{'me-2': true, 'text-body': !store.onUnlimitedBreak}" title="Unlimited break">
                     <i class="fa-solid fa-pause fs-3"></i>
                 </a>
+                <a href="#" :class="{'me-2': true, 'text-body': !store.hideInactiveTasks}" title="Hide inactive tasks" @click.prevent="store.setHideInactiveTasks(!store.hideInactiveTasks)">
+                    <i class="fa-solid fa-eye-slash fs-4"></i>
+                </a>
                 <a href="/tasks/new" title="Create a new task" class="text-body">
                     <i class="fa-solid fa-plus fs-3"></i>
                 </a>
@@ -23,6 +26,7 @@
 <script>
 
 import { useTasksStore } from './TasksStore';
+import axios from 'axios';
 
 export default {
     setup() {
@@ -32,12 +36,14 @@ export default {
     props: {
         onUnlimitedBreak: Boolean,
         onScheduledBreak: Boolean,
+        hideInactiveTasks: Boolean,
         csrfToken: String
     },
     created() {
         this.store.onUnlimitedBreak = this.onUnlimitedBreak;
+        this.store.hideInactiveTasks = this.hideInactiveTasks;
         this.store.csrfToken = this.csrfToken;
-    }
+    },
 };
 
 </script>

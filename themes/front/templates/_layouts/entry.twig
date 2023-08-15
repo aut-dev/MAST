@@ -12,6 +12,7 @@
 {% do craft.puzzlers.registerGlobalJs('csrfToken', craft.app.request.csrfToken) %}
 {% do craft.puzzlers.registerGlobalJs('timezone', currentUser ? currentUser.timezone : '') %}
 {% do craft.puzzlers.registerGlobalJs('refusedTimezoneChange', craft.app.session.get('refusedTimezoneChange', false)) %}
+{% do craft.puzzlers.registerGlobalJs('loggedIn', currentUser ? true : false) %}
 {% set imagery = craft.entries.section('imagery').with(['image', 'favicon']).one() %}
 {% set seo = entry.basicSeo %}
 {% set body_classes = 'entry ' ~ entry.slug %}

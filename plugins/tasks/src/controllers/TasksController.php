@@ -54,13 +54,13 @@ class TasksController extends Controller
     public function actionGet()
     {
         $user = \Craft::$app->user->identity;
-        $tasks = Entry::find()->section('task')->authorId($user->id);
+        $tasks = Entry::find()->section('task')->authorId($user->id)->orderBy('order asc');
         if ($id = $this->request->getQueryParam('id')) {
             $tasks->id($id);
         }
         $out = [];
         foreach ($tasks->all() as $task) {
-            $out[$task->id] = $this->getTaskData($task);
+            $out[] = $this->getTaskData($task);
         }
         return $this->asJson($out);
     }
@@ -120,6 +120,7 @@ class TasksController extends Controller
             'title' => $task->title,
             'id' => $task->id,
             'url' => $task->url,
+            'timeBased' => $task->timeBased,
             'progressPerSec' => ($length > 0 ? (1 / $length * 100) : 0),
             'taskType' => $task->taskType->value,
             'committed' => $task->committed->getAmount() / 100,

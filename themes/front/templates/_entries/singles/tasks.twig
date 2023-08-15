@@ -8,6 +8,7 @@
         <tasks-header
             :on-unlimited-break="{{ currentUser.isOnUnlimitedBreak() ? 'true' : 'false' }}"
             :on-scheduled-break="{{ currentUser.isOnScheduledBreak(now) ? 'true' : 'false' }}"
+            :hide-inactive-tasks="{{ currentUser.hideInactiveTasks ? 'true' : 'false' }}"
             :csrf-token="'{{ craft.app.request.csrfToken }}'"
         >
         </tasks-header>

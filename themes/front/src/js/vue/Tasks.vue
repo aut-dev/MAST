@@ -1,10 +1,10 @@
 <template>
     <div class="container">
-        <div class="row" id="sortable">
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3 py-3" v-for="task, id in store.tasks">
-                <task :task="task" :key="id"></task>
-            </div>
-        </div>
+        <draggable v-model="store.tasks" tag="div" class="row" :animation="300" item-key="id" :disabled="store.reordering" @start="startDrag" @end="endDrag" >
+            <template #item="{ element: task }">
+                <task :task="task"/>
+            </template>
+        </draggable>
         <div class="d-flex justify-content-center" v-if="store.initialTaskLoading">
             <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -20,11 +20,13 @@ import { mapState } from 'pinia';
 import { useTasksStore } from './TasksStore';
 import Task from './Task.vue';
 import UnlimitedBreakModal from './UnlimitedBreakModal.vue';
+import draggable from 'vuedraggable';
 
 export default {
     components: {
         Task,
         UnlimitedBreakModal,
+        draggable
     },
     setup() {
         const store = useTasksStore();
@@ -33,6 +35,14 @@ export default {
     created() {
         this.store.fetchTasks();
         setInterval(() => this.store.fetchTasks(), 10000);
+    },
+    methods: {
+        startDrag(e) {
+            this.store.disableFetchingTasks = true;
+        },
+        endDrag(e) {
+            this.store.reorder();
+        }
     }
 };
 

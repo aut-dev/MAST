@@ -16,6 +16,9 @@ class App
         this.initMatrixContent();
         this.initDetectTimezone();
         $('body').css('opacity', 1);
+        if (Globals.loggedIn) {
+            setInterval(() => {this.checkSession()}, 30000);
+        }
         console.log('App initialized');
     }
 
@@ -67,6 +70,17 @@ class App
             this.bootstrap = import(/* webpackChunkName: "bootstrap" */ 'bootstrap');
         }
         return this.bootstrap;
+    }
+
+    checkSession() {
+        $.ajax({
+            url: '/?action=plugin-users/users/check-session&dontExtendSession=1',
+            contentType: 'json'
+        }).done(data => {
+            if (!data.session) {
+                window.location.reload();
+            }
+        });
     }
 
     disableLogger()

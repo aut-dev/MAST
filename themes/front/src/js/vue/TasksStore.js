@@ -1,44 +1,101 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import { findIndex } from 'lodash';
 
 export const useTasksStore = defineStore('tasks', {
     state: () => ({
         onUnlimitedBreak: false,
         initialTaskLoading: true,
-        loadingTasks: false,
+        disableFetchingTasks: false,
+        hideInactiveTasks: false,
+        doning: false,
+        reordering: false,
         csrfToken: null,
-        tasks: {}
+        tasks: []
     }),
     actions: {
-        fetchTasks(id = null) {
-            if (this.loadingTasks) {
+        fetchTasks() {
+            if (this.disableFetchingTasks) {
                 return;
             }
-            this.loadingTasks = true;
-            let url = '/?action=plugin-tasks/tasks/get';
-            if (id) {
-                url += '&id=' + id;
-            }
-            axios.get(url).then(data => {
-                if (id) {
-                    this.tasks[id] = data.data[id];
-                } else {
-                    this.tasks = data.data;
-                }
+            this.disableFetchingTasks = true;
+            axios.get('/?action=plugin-tasks/tasks/get').then(data => {
+                this.tasks = data.data;
                 this.initialTaskLoading = false;
-                this.loadingTasks = false;
+                this.disableFetchingTasks = false;
+            });
+        },
+        fetchTask(id) {
+            this.disableFetchingTasks = true;
+            axios.get('/?action=plugin-tasks/tasks/get&id=' + id).then(data => {
+                let index = findIndex(this.tasks, (task) => {
+                    return task.id == id;
+                });
+                this.tasks[index] = data.data[0];
+                this.disableFetchingTasks = false;
             });
         },
         setUnlimitedBreak(value) {
+            this.disableFetchingTasks = true;
             this.onUnlimitedBreak = value;
-            return axios.post('/?action=plugin-users/breaks/unlimited-break', {
+            axios.post('/?action=plugin-users/breaks/unlimited-break', {
                 unlimitedBreak: value
+            }, {
+                headers: {"X-CSRF-Token": this.csrfToken}
+            }).then(() => {
+                this.disableFetchingTasks = false;
+            });
+        },
+        setHideInactiveTasks(value) {
+            this.hideInactiveTasks = value;
+            axios.post('/?action=plugin-users/users/set-hide-inactive-tasks', {
+                hideInactiveTasks: value
             }, {
                 headers: {"X-CSRF-Token": this.csrfToken}
             });
         },
-        updateTask(id, data) {
-            this.tasks[id] = data;
+        setTaskDone(id, done)
+        {
+            if (this.doning) {
+                return;
+            }
+            this.doning = true;
+            this.disableFetchingTasks = true;
+            let index = findIndex(this.tasks, (task) => {
+                return task.id == id;
+            });
+            let task = this.tasks[index];
+            task.done = done;
+            axios.post('/?action=plugin-tasks/tasks/done', {
+                id: id,
+                done: done
+            }, {
+                headers: {"X-CSRF-Token": this.csrfToken}
+            }).then((data) => {
+                this.tasks[index] = data.data;
+                this.doning = false;
+                this.disableFetchingTasks = false;
+            });
+        },
+        reorder() {
+            if (this.reordering) {
+                return;
+            }
+            this.reordering = true;
+            this.disableFetchingTasks = true;
+            let data = [];
+            for (let i in this.tasks) {
+                data.push({
+                    order: i,
+                    id: this.tasks[i].id
+                });
+            }
+            axios.post('/?action=plugin-tasks/tasks/reorder', {data: data}, {
+                headers: {"X-CSRF-Token": this.csrfToken}
+            }).then(() => {
+                this.reordering = false;
+                this.disableFetchingTasks = false;
+            });
         }
     }
 });
