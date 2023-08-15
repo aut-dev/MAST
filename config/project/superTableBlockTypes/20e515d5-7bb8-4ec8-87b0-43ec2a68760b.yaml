@@ -1,4 +1,4 @@
-changedFieldIndicator: 1027384425
+changedFieldIndicator: 1706188888
 field: ce461ea7-466c-4a18-ab4f-dddeb94af716 # Weeks
 fieldLayouts:
   fe9c1089-7a9a-4028-a6ff-4a5a8db495cd:
@@ -11,7 +11,7 @@ fieldLayouts:
             fieldUid: 4df93eb0-efad-46a1-b6a2-8ae92e60f31c # Mon
             instructions: null
             label: null
-            required: false
+            required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: 245d1617-b209-49ce-bdc2-d00b1e82e5da
@@ -23,7 +23,7 @@ fieldLayouts:
             fieldUid: d0cf64d0-59b8-4a50-80de-0e5df63ec975 # Tue
             instructions: null
             label: null
-            required: false
+            required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: f96bafd0-53c3-4976-be17-b24663f69af8
@@ -35,7 +35,7 @@ fieldLayouts:
             fieldUid: 4c1d2239-ce5e-4b8f-aa18-eb05d4b0ea1a # Wed
             instructions: null
             label: null
-            required: false
+            required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: 17dab7fb-3578-4275-a87c-7dd7a3bcdc50
@@ -47,7 +47,7 @@ fieldLayouts:
             fieldUid: af8b97a9-5da5-416b-8c43-7222862e0d19 # Thu
             instructions: null
             label: null
-            required: false
+            required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: 15533daf-e378-4caa-89a3-ae0a9719d114
@@ -59,7 +59,7 @@ fieldLayouts:
             fieldUid: ffcbe586-fcdc-4583-8682-0098aae96672 # Fri
             instructions: null
             label: null
-            required: false
+            required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: 7db302f3-e568-40d9-bdfb-f1cf44c783ab
@@ -71,7 +71,7 @@ fieldLayouts:
             fieldUid: 1c3fe166-77a3-4dd4-8da6-f031611bb725 # Sat
             instructions: null
             label: null
-            required: false
+            required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: c9b66325-9b8c-4ba1-8fdd-ecf10f04107b
@@ -83,7 +83,7 @@ fieldLayouts:
             fieldUid: 28fc98a3-e1d4-4d4c-a78c-d92903e760cc # Sun
             instructions: null
             label: null
-            required: false
+            required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: 6952273d-a4ea-4478-bdef-e1ae9076579b

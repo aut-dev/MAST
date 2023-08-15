@@ -42,11 +42,11 @@ class DailyTaskBehavior extends Behavior
      */
     public function getTaskStatus(): string
     {
-        if ($this->isPaused()) {
-            return 'paused';
-        }
         if (!$this->isActive()) {
             return 'inactive';
+        }
+        if ($this->isPaused()) {
+            return 'paused';
         }
         if ($this->isComplete()) {
             return 'complete';
@@ -64,8 +64,14 @@ class DailyTaskBehavior extends Behavior
      */
     public function hasDerailed(): bool
     {
-        if (!$this->isActive()) {
+        if (!$this->isActive() or $this->isPaused()) {
             return false;
+        }
+        if (!$this->owner->timeBased) {
+            if (!$this->isExpired()) {
+                return false;
+            }
+            return !$this->owner->done;
         }
         $timeSpent = $this->getTimeSpent();
         if ($this->owner->taskType->value == 'more') {
@@ -100,8 +106,8 @@ class DailyTaskBehavior extends Behavior
      */
     public function isActive(): bool
     {
-        if ($this->isPaused()) {
-            return false;
+        if (!$this->owner->timeBased) {
+            return true;
         }
         return $this->owner->length > 0;
     }
@@ -123,6 +129,9 @@ class DailyTaskBehavior extends Behavior
      */
     public function isComplete(): bool
     {
+        if (!$this->task->timeBased) {
+            return $this->owner->done;
+        }
         if ($this->owner->taskType->value == 'more') {
             return $this->getTimeSpent() >= $this->owner->length;
         }
@@ -183,7 +192,7 @@ class DailyTaskBehavior extends Behavior
      */
     public function getPreviousTasks(): array
     {
-        $entries = Entry::find()->section('dailyTask')->relatedTo($this->getTask())->orderBy('startDate desc');
+        $entries = Entry::find()->section('dailyTask')->relatedTo($this->getTask())->with('task')->orderBy('startDate desc');
         DateHelper::addDateParamsSmallerThan($entries, $this->owner->startDate, 'startDate', true);
         return $entries->all();
     }

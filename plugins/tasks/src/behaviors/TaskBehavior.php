@@ -26,20 +26,7 @@ class TaskBehavior extends Behavior
         if ($daily = $this->getDailyTask()) {
             return $daily->getTaskStatus();
         }
-        if ($this->isPaused()) {
-            return 'paused';
-        }
         return 'inactive';
-    }
-
-    /**
-     * Is this task paused
-     *
-     * @return boolean
-     */
-    public function isPaused(): bool
-    {
-        return ($this->owner->paused or $this->owner->author->isOnBreak(DateTimeHelper::toDateTime('now')));
     }
 
     /**
@@ -101,7 +88,7 @@ class TaskBehavior extends Behavior
     public function getDailyTasks(): array
     {
         if ($this->dailys === null) {
-            $query = Entry::find()->section('dailyTask')->relatedTo($this->owner);
+            $query = Entry::find()->section('dailyTask')->relatedTo($this->owner)->with('task');
             if (!$this->owner->enabled) {
                 $query->anyStatus();
             }
@@ -160,6 +147,9 @@ class TaskBehavior extends Behavior
      */
     public function getDuration(?DateTime $day = null): float
     {
+        if (!$this->owner->timeBased) {
+            return 0;
+        }
         if ($day === null) {
             $day = $this->owner->author->today;
         }

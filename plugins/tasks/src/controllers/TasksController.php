@@ -28,6 +28,27 @@ class TasksController extends Controller
     }
 
     /**
+     * (Un)Mark a one off task as done
+     */
+    public function actionDone()
+    {
+        $user = \Craft::$app->user->identity;
+        $done = $this->request->getRequiredParam('done');
+        $task = Entry::find()->section('task')->authorId($user->id)->id($this->request->getRequiredParam('id'))->one();
+        if (!$task) {
+            throw new ForbiddenHttpException('Task not found');
+        }
+        $daily = $task->getDailyTask();
+        if (!$daily) {
+            throw new ForbiddenHttpException('Daily task not found');
+        }
+        $daily->setFieldValue('done', $done);
+        \Craft::$app->elements->saveElement($daily, false);
+        return $this->asJson($this->getTaskData($task));
+    }
+
+    /**
+     * Poll progress of all a user's tasks
      * Get the current user tasks
      */
     public function actionGet()
@@ -106,8 +127,9 @@ class TasksController extends Controller
             'length' => $daily ? round($daily->length / 60) : round($task->length / 60),
             'active' => $daily and $daily->isActive(),
             'status' => $task->getTaskStatus(),
-            'progress' => $daily ? $daily->getProgress(true) : 0,
-            'timerStarted' => $started ? $started->getTimestamp() : 0,
+            'progress' => $daily ? $daily->getProgress(true) : false,
+            'timerStarted' => $started ? true : false,
+            'done' => $daily ? $daily->done : false,
             'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null
         ];
     }

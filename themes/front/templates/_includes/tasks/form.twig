@@ -1,6 +1,7 @@
 {% from "_helpers/errors" import errorList %}
 
 {% set task = task ?? null %}
+{% set copy_id = copy_id ?? null %}
 
 {% macro week(block, type, index) %}
     <div class="row week">
@@ -10,7 +11,7 @@
             <div class="col-3 col-md p-1">
                 <label>{{ day|capitalize|t }}</label>
                 {{ input('number', 'fields[weeks][' ~ index ~ '][fields][' ~ day ~ ']', block ? block[day] : 1, {
-                    class: 'form-control day',
+                    class: 'form-control day' ~ (block and block.hasErrors(day) ? ' is-invalid' : ''),
                     min: 0,
                     step: 0.1,
                     data: {
@@ -19,6 +20,15 @@
                 }) }}
             </div>
         {% endfor %}
+        {% if block %}
+            {{ errorList(block.getErrors('mon')) }}
+            {{ errorList(block.getErrors('tue')) }}
+            {{ errorList(block.getErrors('wed')) }}
+            {{ errorList(block.getErrors('thu')) }}
+            {{ errorList(block.getErrors('fri')) }}
+            {{ errorList(block.getErrors('sat')) }}
+            {{ errorList(block.getErrors('sun')) }}
+        {% endif %}
     </div>
 {% endmacro %}
 
@@ -32,7 +42,7 @@
     {{ redirectInput('/tasks') }}
     {{ successMessageInput('Task saved'|t) }}
     {{ failMessageInput('Please fix the validation errors'|t) }}
-    {% if task %}
+    {% if task and not copy_id %}
         {{ hiddenInput('entryId', task.id) }}
     {% endif %}
 
@@ -64,6 +74,60 @@
         {% endif %}
     </div>
 
+    <div class="form-group mb-3">
+        <label for="deadline" class="required">{{ 'Deadline'|t }}</label>
+        {{ input('text', 'fields[deadline]', task ? task.deadline|date('H:i') : '23:59', {
+            id: 'deadline',
+            class: 'form-control datepicker' ~ (task and task.hasErrors('deadline') ? ' is-invalid' : ''),
+            data: {
+                options: {
+                    enableTime: true,
+                    noCalendar: true,
+                    time_24hr: true
+                }
+            }
+        }) }}
+        {% if task %}
+            {{ errorList(task.getErrors('deadline')) }}
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-3 field-committed">
+        <label for="committed" class="required">{{ '$ committed per derail'|t }}</label>
+        {{ input('number', 'fields[committed][value]', (task and task.committed) ? task.committed.amount / 100 : 1, {
+            id: 'committed',
+            class: 'form-control' ~ (task and task.hasErrors('committed') ? ' is-invalid' : ''),
+            min: 0.5,
+            step: 0.1
+        }) }}
+        {% if task %}
+            {{ errorList(task.getErrors('committed')) }}
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-3 field-timeBased">
+        <div class="form-check form-switch">
+            <input type="hidden" name="fields[timeBased]" value="0">
+            <input class="form-check-input" type="checkbox" id="timeBased" name="fields[timeBased]" value="1" {% if not task or task.timeBased %}checked{% endif %}>
+            <label class="form-check-label" for="timeBased">{{ 'Time based task'|t }}</label>
+        </div>
+    </div>
+
+    {{ hiddenInput('fields[length]', task ? task.length : 600, {
+        id: 'length-seconds'
+    }) }}
+    <div class="form-group mb-3 field-length">
+        <label for="length" class="required">{{ 'Work block length (minutes)'|t }}</label>
+        {{ input('number', null, task ? (task.length / 60)|round : 10, {
+            class: 'form-control' ~ (task and task.hasErrors('length') ? ' is-invalid' : ''),
+            min: 1,
+            step: 1
+        }) }}
+        {% if task %}
+            {{ errorList(task.getErrors('length')) }}
+        {% endif %}
+    </div>
+
     <div class="form-group mb-3 field-taskType">
         <label class="required">{{ 'More or less of something'|t }}</label>
         <div>
@@ -82,38 +146,12 @@
         </div>
     </div>
 
-    {{ hiddenInput('fields[length]', task ? task.length : 600, {
-        id: 'length-seconds'
-    }) }}
-    <div class="form-group mb-3 field-length">
-        <label for="length" class="required">{{ 'Work block length (minutes)'|t }}</label>
-        {{ input('number', null, task ? (task.length / 60)|round : 10, {
-            id: 'length',
-            class: 'form-control' ~ (task and task.hasErrors('length') ? ' is-invalid' : ''),
-            min: 1,
-            step: 1
-        }) }}
-        {% if task %}
-            {{ errorList(task.getErrors('length')) }}
-        {% endif %}
-    </div>
-
-    <div class="form-group mb-3">
-        <label for="deadline" class="required">{{ 'Deadline'|t }}</label>
-        {{ input('text', 'fields[deadline]', task ? task.deadline|date('H:i') : '23:59', {
-            id: 'deadline',
-            class: 'form-control datepicker' ~ (task and task.hasErrors('deadline') ? ' is-invalid' : ''),
-            data: {
-                options: {
-                    enableTime: true,
-                    noCalendar: true,
-                    time_24hr: true
-                }
-            }
-        }) }}
-        {% if task %}
-            {{ errorList(task.getErrors('deadline')) }}
-        {% endif %}
+    <div class="form-group mb-3 field-recurring">
+        <div class="form-check form-switch">
+            <input type="hidden" name="fields[recurring]" value="0">
+            <input class="form-check-input" type="checkbox" id="recurring" name="fields[recurring]" value="1" {% if not task or task.recurring %}checked{% endif %}>
+            <label class="form-check-label" for="recurring">{{ 'Recurring task'|t }}</label>
+        </div>
     </div>
 
     {% set weeks = task ? task.weeks.all() : null %}
@@ -135,27 +173,14 @@
         <label>{{ 'How many work blocks do you want to do each day?'|t }}</label>
         {% if task %}
             {% for week in weeks %}
-                {{ _self.week(week, block_type, week.id) }}
+                {{ _self.week(week, block_type, copy_id ? 'new' ~ loop.index : week.id) }}
             {% endfor %}
         {% else %}
             {{ _self.week(null, block_type, 'new1') }}
         {% endif %}
     </div>
 
-    <div class="form-group mb-3 field-committed">
-        <label for="committed" class="required">{{ '$ committed per derail'|t }}</label>
-        {{ input('number', 'fields[committed][value]', (task and task.committed) ? task.committed.amount / 100 : 1, {
-            id: 'committed',
-            class: 'form-control' ~ (task and task.hasErrors('committed') ? ' is-invalid' : ''),
-            min: 0.5,
-            step: 0.1
-        }) }}
-        {% if task %}
-            {{ errorList(task.getErrors('committed')) }}
-        {% endif %}
-    </div>
-
-    <div class="form-group mb-3 field-icon">
+    <div class="form-group mb-3 field-backgroundColor">
         <label class="form-label">
             {{ 'Background color'|t }}
         </label>

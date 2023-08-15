@@ -14,8 +14,32 @@ tabs:
         userCondition: null
         warning: null
         width: 100
-    name: Timer
-    uid: 8a5aa9b0-01fa-40f1-b8a9-a7966bbbb51b
+      -
+        elementCondition: null
+        fieldUid: bb86fabf-06ca-4369-94a6-298c9595fce2 # Unlimited break start
+        instructions: null
+        label: null
+        required: false
+        tip: null
+        type: craft\fieldlayoutelements\CustomField
+        uid: a4fbdc4a-fe7f-4f72-8ffd-54e2c6bff923
+        userCondition: null
+        warning: null
+        width: 50
+      -
+        elementCondition: null
+        fieldUid: b0685fcd-4b89-4f1f-b2fa-c95dbf8f5691 # Hide inactive tasks
+        instructions: null
+        label: null
+        required: false
+        tip: null
+        type: craft\fieldlayoutelements\CustomField
+        uid: 27d1edb3-2995-471f-80cf-ac066e3117ed
+        userCondition: null
+        warning: null
+        width: 50
+    name: Tasks
+    uid: 8956e8e0-6d5e-4af1-b55a-37f8788296dc
     userCondition: null
   -
     elementCondition: null
@@ -112,22 +136,4 @@ tabs:
         width: 50
     name: Stripe
     uid: 45ce7292-c287-440e-8ada-e73520920ffd
-    userCondition: null
-  -
-    elementCondition: null
-    elements:
-      -
-        elementCondition: null
-        fieldUid: bb86fabf-06ca-4369-94a6-298c9595fce2 # Unlimited break start
-        instructions: null
-        label: null
-        required: false
-        tip: null
-        type: craft\fieldlayoutelements\CustomField
-        uid: a4fbdc4a-fe7f-4f72-8ffd-54e2c6bff923
-        userCondition: null
-        warning: null
-        width: 100
-    name: Break
-    uid: 74872fa4-4b83-4dc7-9b4d-9c32261341d6
     userCondition: null

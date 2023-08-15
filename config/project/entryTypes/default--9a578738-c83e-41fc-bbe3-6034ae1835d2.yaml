@@ -68,18 +68,6 @@ fieldLayouts:
             width: 50
           -
             elementCondition: null
-            fieldUid: 70279873-4261-4f79-b9d0-6dc067fb97b4 # Length
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: a5389b7b-df93-48af-8f95-848be305fc8a
-            userCondition: null
-            warning: null
-            width: 50
-          -
-            elementCondition: null
             fieldUid: beb8aabf-7970-4442-9f8b-f70568d8757a # Start date
             instructions: null
             label: null
@@ -115,6 +103,27 @@ fieldLayouts:
             warning: null
             width: 50
           -
+            elementCondition:
+              class: craft\elements\conditions\entries\EntryCondition
+              conditionRules:
+                -
+                  class: craft\fields\conditions\LightswitchFieldConditionRule
+                  fieldUid: 75f26b47-fb20-47e9-9ad1-bab31babae60 # Time based
+                  uid: 3de37da2-d403-41b0-8393-f15e021b2f8e
+                  value: false
+              elementType: craft\elements\Entry
+              fieldContext: global
+            fieldUid: 86c4c449-df54-4c68-a16a-68793a118c14 # Done
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 1d32fdaf-a5e4-4945-b21a-2b1af43250cb
+            userCondition: null
+            warning: null
+            width: 50
+          -
             elementCondition: null
             fieldUid: 5247feef-5882-4519-9d2b-a485acf7d4bc # Processed
             instructions: null
@@ -123,6 +132,39 @@ fieldLayouts:
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: a78299eb-7fa4-4410-8e98-7c4e23ddaca9
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: 75f26b47-fb20-47e9-9ad1-bab31babae60 # Time based
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 5ff9708d-f41a-4309-ab9f-c345cbac6bff
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition:
+              class: craft\elements\conditions\entries\EntryCondition
+              conditionRules:
+                -
+                  class: craft\fields\conditions\LightswitchFieldConditionRule
+                  fieldUid: 75f26b47-fb20-47e9-9ad1-bab31babae60 # Time based
+                  uid: 556846bc-8cf0-4113-90cc-37a5905ae0a1
+                  value: true
+              elementType: craft\elements\Entry
+              fieldContext: global
+            fieldUid: 70279873-4261-4f79-b9d0-6dc067fb97b4 # Length
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: a5389b7b-df93-48af-8f95-848be305fc8a
             userCondition: null
             warning: null
             width: 50

@@ -20,6 +20,16 @@
             top: -1px;
         }
     }
+    .js-task-done {
+        &::before {
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            content: "\f00d";
+        }
+        &.done::before {
+            content: "\f00c";
+        }
+    }
 }
 
 @include media-breakpoint-up(md) {

@@ -26,7 +26,25 @@ class AddTask
         this.initWeeks();
         this.initLength();
         this.initImage();
+        this.initTimeBased();
+        this.initRecurring();
         console.log('Add task initialised');
+    }
+
+    initTimeBased()
+    {
+        this.toggleTimeBasedFields();
+        $('.field-timeBased input[type=checkbox]').change(() => {
+            this.toggleTimeBasedFields();
+        });
+    }
+
+    initRecurring()
+    {
+        this.toggleRecurringFields();
+        $('.field-recurring input[type=checkbox]').change(() => {
+            this.toggleRecurringFields();
+        });
     }
 
     initImage()
@@ -53,11 +71,13 @@ class AddTask
 
     initLength()
     {
-        $('#length').keyup(() => {
-            let seconds = parseInt($('#length').val());
-            if (!isNaN(seconds)) {
-                $('#length-seconds').val(seconds * 60);
+        $('.field-length input').keyup(() => {
+            let minutes = parseInt($('.field-length input').val());
+            if (isNaN(minutes)) {
+                minutes = 10;
+                $('.field-length input').val(10);
             }
+            $('#length-seconds').val(minutes * 60);
         });
     }
 
@@ -67,6 +87,25 @@ class AddTask
             this.createWeeks();
         });
         this.createWeeks();
+    }
+
+    toggleTimeBasedFields()
+    {
+        if ($('.field-timeBased input[type=checkbox]').is(':checked')) {
+            $('.field-length, .field-taskType').show();
+        } else {
+            $('.field-length, .field-taskType').hide();
+            this.$form.find('.field-length input').val(10).trigger('keyup');
+        }
+    }
+
+    toggleRecurringFields()
+    {
+        if ($('.field-recurring input[type=checkbox]').is(':checked')) {
+            $('.field-repeat, .field-weeks').show();
+        } else {
+            $('.field-repeat, .field-weeks').hide();
+        }
     }
 
     createWeeks()

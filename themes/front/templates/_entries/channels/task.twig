@@ -19,9 +19,11 @@
             <div class="col-6">{{ 'Deadline'|t }}</div>
             <div class="col-6">{{ entry.deadline|date('H:i') }}</div>
             <div class="col-6">{{ 'Type'|t }}</div>
-            <div class="col-6">{{ entry.taskType|ucfirst }}</div>
-            <div class="col-6">{{ 'Length'|t }}</div>
-            <div class="col-6">{{ entry.length / 60 }}min</div>
+            <div class="col-6">{{ entry.taskType.label }}</div>
+            {% if entry.taskType in ['more', 'less'] %}
+                <div class="col-6">{{ 'Length'|t }}</div>
+                <div class="col-6">{{ entry.length / 60 }}min</div>
+            {% endif %}
             <div class="col-6">{{ 'Committed'|t }}</div>
             <div class="col-6">{{ entry.committed|money }}</div>
             <div class="col-6">{{ 'Paused'|t }}</div>
@@ -34,6 +36,7 @@
             {% endif %}
             <div class="col-12 mt-3">
                 <a class="btn btn-primary" href="/edit-task?id={{ entry.id }}">{{ 'Edit'|t }}</a>
+                <a class="btn btn-secondary" href="/tasks/new?copy={{ entry.id }}">{{ 'Copy'|t }}</a>
             </div>
         </div>
         <h2 class="mt-3">{{ 'Time entries'|t }}</h2>
