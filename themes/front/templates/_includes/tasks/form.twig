@@ -48,7 +48,7 @@
 
     <div class="form-group mb-3 field-title">
         <label for="name" class="required">{{ 'Name'|t }}</label>
-        {{ input('text', 'title', task.title ?? '', {
+        {{ input('text', 'title', copy_id ? '' : (task.title ?? ''), {
             id: 'title',
             class: 'form-control' ~ (task and task.hasErrors('title') ? ' is-invalid' : '')
         }) }}
