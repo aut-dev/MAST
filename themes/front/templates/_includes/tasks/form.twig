@@ -66,6 +66,7 @@
             data: {
                 options: {
                     minDate: now|date('Y-m-d', currentUser.timezone),
+                    disableMobile: true
                 }
             }
         }) }}
@@ -83,7 +84,8 @@
                 options: {
                     enableTime: true,
                     noCalendar: true,
-                    time_24hr: true
+                    time_24hr: true,
+                    disableMobile: true
                 }
             }
         }) }}
