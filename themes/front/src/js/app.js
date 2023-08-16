@@ -1,4 +1,4 @@
-/* global $ Globals */
+/* global $ Craft */
 
 class App
 {
@@ -16,7 +16,7 @@ class App
         this.initMatrixContent();
         this.initDetectTimezone();
         $('body').css('opacity', 1);
-        if (Globals.loggedIn) {
+        if (Craft.loggedIn) {
             setInterval(() => {this.checkSession()}, 30000);
         }
         console.log('App initialized');
@@ -24,8 +24,8 @@ class App
 
     initDetectTimezone()
     {
-        let userTimezone = Globals.timezone;
-        let refused = Globals.refusedTimezoneChange;
+        let userTimezone = Craft.timezone;
+        let refused = Craft.refusedTimezoneChange;
         if (!userTimezone || refused) {
             return;
         }
@@ -85,7 +85,7 @@ class App
 
     disableLogger()
     {
-        if (window.Globals.env == 'production') {
+        if (Craft.env == 'production') {
             console.log = function() {};
         }
     }

@@ -10,6 +10,9 @@
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
+        <div v-if="store.tasks.length == 0 && !store.initialTaskLoading">
+            {{ t('You have no tasks yet') }}
+        </div>
         <unlimited-break-modal/>
     </div>
 </template>

@@ -3,13 +3,33 @@
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\TasksPage') %}
 
+{% do craft.puzzlers.registerJsTranslations('site', [
+    'You have no tasks yet',
+    'Paused',
+    'One off',
+    'Minutes until deadline:',
+    'Stop',
+    'Start',
+    'Done',
+    "All your tasks are paused as you're on a unlimited break",
+    "All your tasks are paused as you're on a scheduled break today",
+    'Unlimited break',
+    'Hide inactive tasks',
+    'Create a new task',
+    'Unlimited break',
+    'Close',
+    "I'm on a unlimited break",
+    'All your tasks will be paused until you switch this off',
+    'Close',
+    'Save'
+]) %}
+
 {% block content %}
     <div id="tasks">
         <tasks-header
             :on-unlimited-break="{{ currentUser.isOnUnlimitedBreak() ? 'true' : 'false' }}"
             :on-scheduled-break="{{ currentUser.isOnScheduledBreak(now) ? 'true' : 'false' }}"
             :hide-inactive-tasks="{{ currentUser.hideInactiveTasks ? 'true' : 'false' }}"
-            :csrf-token="'{{ craft.app.request.csrfToken }}'"
         >
         </tasks-header>
         <tasks></tasks>

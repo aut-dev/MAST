@@ -1,3 +1,5 @@
+/* globals Craft */
+
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { findIndex } from 'lodash';
@@ -10,7 +12,6 @@ export const useTasksStore = defineStore('tasks', {
         hideInactiveTasks: false,
         doning: false,
         reordering: false,
-        csrfToken: null,
         tasks: []
     }),
     actions: {
@@ -41,7 +42,7 @@ export const useTasksStore = defineStore('tasks', {
             axios.post('/?action=plugin-users/breaks/unlimited-break', {
                 unlimitedBreak: value
             }, {
-                headers: {"X-CSRF-Token": this.csrfToken}
+                headers: {"X-CSRF-Token": Craft.csrfToken}
             }).then(() => {
                 this.disableFetchingTasks = false;
             });
@@ -51,7 +52,7 @@ export const useTasksStore = defineStore('tasks', {
             axios.post('/?action=plugin-users/users/set-hide-inactive-tasks', {
                 hideInactiveTasks: value
             }, {
-                headers: {"X-CSRF-Token": this.csrfToken}
+                headers: {"X-CSRF-Token": Craft.csrfToken}
             });
         },
         setTaskDone(id, done)
@@ -70,7 +71,7 @@ export const useTasksStore = defineStore('tasks', {
                 id: id,
                 done: done
             }, {
-                headers: {"X-CSRF-Token": this.csrfToken}
+                headers: {"X-CSRF-Token": Craft.csrfToken}
             }).then((data) => {
                 this.tasks[index] = data.data;
                 this.doning = false;
@@ -91,7 +92,7 @@ export const useTasksStore = defineStore('tasks', {
                 });
             }
             axios.post('/?action=plugin-tasks/tasks/reorder', {data: data}, {
-                headers: {"X-CSRF-Token": this.csrfToken}
+                headers: {"X-CSRF-Token": Craft.csrfToken}
             }).then(() => {
                 this.reordering = false;
                 this.disableFetchingTasks = false;

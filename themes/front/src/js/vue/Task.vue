@@ -6,7 +6,7 @@
                     <h4 class="m-0 text-truncate">{{ task.title }}</h4>
                     <div class="d-flex align-items-center">
                         <small v-if="task.status == 'paused'">
-                            Paused
+                            {{ t('Paused') }}
                         </small>
                         <span class="complete-tick ms-3" v-if="task.status == 'complete'">
                             <i class="fa-solid fa-check"></i>
@@ -18,7 +18,7 @@
                         {{ capitalize(task.taskType) }} than {{ task.length }} min
                     </span>
                     <span v-if="!task.timeBased">
-                        One off
+                        {{ t('One off') }}
                     </span>
                 </p>
                 <div v-if="task.timeBased && task.active">
@@ -27,15 +27,15 @@
                     </div>
                 </div>
                 <p class="m-0" v-if="task.active">
-                    Minutes until deadline: <span class="countdown">{{ task.countdown }}</span>
+                    {{ t('Minutes until deadline:') }}<span class="countdown">{{ task.countdown }}</span>
                 </p>
                 <div class="actions d-flex justify-content-between align-items-center mt-2">
                     <span class="text-purple2 fs-5" v-if="task.timeBased">
-                        <span v-if="timerStarted" @click.prevent="stopTimer">Stop</span>
-                        <span v-if="!timerStarted" @click.prevent="startTimer">Start</span>
+                        <span v-if="timerStarted" @click.prevent="stopTimer">{{ t('Stop') }}</span>
+                        <span v-if="!timerStarted" @click.prevent="startTimer">{{ t('Start') }}</span>
                     </span>
                     <span :class="'text-purple2 fs-5 task-done' + (task.done ? ' done' : '')" v-if="task.active && !task.timeBased" @click.prevent="store.setTaskDone(task.id, !task.done)">
-                        Done
+                        {{ t('Done') }}
                     </span>
                     <span class="fs-4" v-if="task.active">
                         ${{ task.committed }}
