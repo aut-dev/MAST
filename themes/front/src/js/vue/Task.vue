@@ -21,12 +21,12 @@
                         {{ t('One off') }}
                     </span>
                 </p>
-                <div v-if="task.timeBased && status == 'active'">
+                <div v-if="showProgressBar">
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" :style="'width:' + task.progress + '%'" :aria-valuenow="task.progress" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
-                <p class="m-0" v-if="status == 'active'">
+                <p class="m-0" v-if="showCountdown">
                     {{ t('Minutes until deadline:') }} <span class="countdown">{{ task.countdown }}</span>
                 </p>
                 <div class="actions d-flex justify-content-between align-items-center mt-2">
@@ -72,7 +72,7 @@ export default {
             if (!this.task.active) {
                 return 'inactive';
             }
-            if (this.task.paused || this.store.onUnlimitedBreak || this.store.onScheduledBreak) {
+            if (this.isPaused) {
                 return 'paused';
             }
             if (this.task.complete) {
@@ -89,6 +89,39 @@ export default {
                 classes += ' timer-started';
             }
             return classes;
+        },
+        showProgressBar() {
+            if (!this.task.timeBased || this.isPaused) {
+                return false;
+            }
+            if (!this.task.active || this.deadlineHasPassed) {
+                return false;
+            }
+            if (this.task.taskType == 'less') {
+                return !this.task.derailed;
+            }
+            return this.task.complete || !this.task.derailed;
+        },
+        showCountdown() {
+            if (this.isPaused) {
+                return false;
+            }
+            if (!this.task.timeBased) {
+                return !this.task.complete;
+            }
+            if (this.deadlineHasPassed) {
+                return false;
+            }
+            if (this.task.taskType == 'less') {
+                return this.task.complete;
+            }
+            return this.task.active && !this.task.derailed;
+        },
+        deadlineHasPassed() {
+            return this.getNow() > this.task.deadline;
+        },
+        isPaused() {
+            return this.task.paused || this.store.onUnlimitedBreak || this.store.onScheduledBreak;
         }
     },
     created() {
@@ -130,7 +163,7 @@ export default {
         startPollingProgress(started)
         {
             this.timerStarted = started;
-            if (this.timerStarted && this.task.progress < 100) {
+            if (this.timerStarted && this.task.progress < 100 && !this.deadlineHasPassed) {
                 this.progressInterval = setInterval(() => this.updateProgress(), 1000);
             }
         },
