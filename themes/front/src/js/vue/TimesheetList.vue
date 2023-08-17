@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div v-if="sheets.length == 0 && !initialLoading">
-                {{ t('No sheets recorded yet') }}
+                {{ t('No time entries recorded yet') }}
             </div>
             <pager :total-pages="totalPages" :current-page="currentPage" @on-page-changed="onPageChanged" />
             <delete-timesheet-modal :task-id="deleteId" @task-deleted="onTaskDeleted" />

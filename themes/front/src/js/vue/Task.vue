@@ -23,7 +23,7 @@
                 </p>
                 <div v-if="task.timeBased && task.active">
                     <div class="progress">
-                        <div class="progress-bar" role="progressbar" :style="'width:' + progress + '%'" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar" role="progressbar" :style="'width:' + task.progress + '%'" :aria-valuenow="task.progress" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
                 <p class="m-0" v-if="task.active">
@@ -64,8 +64,6 @@ export default {
         return {
             changingTimer: false,
             timerStarted: 0,
-            progress: 0,
-            initialProgress: 0,
             progressInterval: null
         }
     },
@@ -85,10 +83,7 @@ export default {
         }
     },
     created() {
-        this.progress = this.task.progress;
-        if (this.task.timerStarted) {
-            this.startPollingProgress(this.task.timerStarted, this.task.progress);
-        }
+        this.startPollingProgress(this.task.timerStarted);
     },
     methods: {
         capitalize(str) {
@@ -99,8 +94,8 @@ export default {
                 return;
             }
             this.changingTimer = true;
-            axios.get('/?action=plugin-timer/timer/start&taskId=' + this.task.id).then((data) => {
-                this.startPollingProgress(data.data.started, this.task.progress);
+            this.startPollingProgress(this.getNow());
+            axios.get('/?action=plugin-timer/timer/start&taskId=' + this.task.id + '&started=' + this.timerStarted).then((data) => {
                 this.changingTimer = false;
             });
         },
@@ -111,30 +106,31 @@ export default {
             this.changingTimer = true;
             this.stopPollingProgress();
             this.timerStarted = 0;
-            axios.get('/?action=plugin-timer/timer/stop&taskId=' + this.task.id).then((data) => {
+            axios.get('/?action=plugin-timer/timer/stop&taskId=' + this.task.id + '&stopped=' + this.getNow()).then((data) => {
                 this.task.progress = data.data.progress;
-                this.progress = data.data.progress;
                 this.changingTimer = false;
             });
         },
         updateProgress() {
-            let elapsed = Math.round((new Date().getTime() / 1000)) - this.timerStarted;
-            let progress = this.initialProgress + (this.task.progressPerSec * elapsed);
-            this.progress = progress;
-            if (progress > 101) {
+            this.task.progress += this.task.progressPerSec;
+            if (this.task.progress > 101) {
                 this.stopPollingProgress();
                 this.store.fetchTask(this.task.id);
             }
         },
-        startPollingProgress(started, progress)
+        startPollingProgress(started)
         {
             this.timerStarted = started;
-            this.initialProgress = progress;
-            this.progressInterval = setInterval(() => this.updateProgress(), 1000);
+            if (this.timerStarted && this.task.progress < 100) {
+                this.progressInterval = setInterval(() => this.updateProgress(), 1000);
+            }
         },
         stopPollingProgress()
         {
             clearInterval(this.progressInterval);
+        },
+        getNow() {
+            return Math.round((new Date().getTime() / 1000));
         }
     }
 };

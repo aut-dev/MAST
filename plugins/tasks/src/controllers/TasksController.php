@@ -129,7 +129,7 @@ class TasksController extends Controller
             'active' => $daily and $daily->isActive(),
             'status' => $task->getTaskStatus(),
             'progress' => $daily ? $daily->getProgress(true) : false,
-            'timerStarted' => $started ? true : false,
+            'timerStarted' => $started ? $started->getTimestamp() : 0,
             'done' => $daily ? $daily->done : false,
             'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null
         ];

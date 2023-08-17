@@ -64,7 +64,7 @@ class TasksService extends Component
             if (!$task->enabled) {
                 //Stop the timer before "deleting" a task
                 if (Timer::$plugin->timer->timerStarted($task)) {
-                    Timer::$plugin->timer->stop($task, false);
+                    Timer::$plugin->timer->stop($task, null, false);
                 }
             }
         }
