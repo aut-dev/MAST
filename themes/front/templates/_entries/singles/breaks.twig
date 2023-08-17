@@ -23,7 +23,6 @@
 
 {% block content %}
     <div class="container">
-        
         <div id="breaks-list">
             {% set section = craft.app.sections.getSectionByHandle('break') %}
             <breaks-list :title="'{{ entry.title }}'" :section-id="{{ section.id }}"></breaks-list>
