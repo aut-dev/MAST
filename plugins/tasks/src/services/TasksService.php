@@ -64,7 +64,7 @@ class TasksService extends Component
             if (!$task->enabled) {
                 //Stop the timer before "deleting" a task
                 if (Timer::$plugin->timer->timerStarted($task)) {
-                    Timer::$plugin->timer->stop($task, false);
+                    Timer::$plugin->timer->stop($task, null, false);
                 }
             }
         }
@@ -181,7 +181,11 @@ class TasksService extends Component
             return false;
         }
         //Do not derail tasks if subscription isn't active
-        if ($dailyTask->author->subscriptionStatus == 'active' and $dailyTask->hasDerailed()) {
+        if ($dailyTask->author->subscriptionStatus == 'active' and
+            $dailyTask->isActive() and
+            !$dailyTask->isPaused() and
+            $dailyTask->hasDerailed()
+        ) {
             $chargeSucceeded = false;
             $amount = MoneyHelper::toNumber($dailyTask->committed);
             if ($amount > 0) {

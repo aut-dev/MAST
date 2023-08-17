@@ -60,6 +60,10 @@ var legacyBundle = merge(common, {
   module: {
     rules: [
       {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+      },
+      {
         test: require.resolve("jquery"),
         loader: "expose-loader",
         options: {
@@ -110,9 +114,6 @@ var legacyBundle = merge(common, {
               emit: true
             }
           },
-          // {
-          //   loader: "style-loader"
-          // },
           {
             loader: "css-loader",
             options: {
@@ -189,6 +190,10 @@ var modernBundle = merge(common, {
   module: {
     rules: [
       {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+      },
+      {
         test: require.resolve("jquery"),
         loader: "expose-loader",
         options: {
@@ -234,9 +239,6 @@ var modernBundle = merge(common, {
               emit: true
             }
           },
-          // {
-          //   loader: "style-loader"
-          // },
           {
             loader: "css-loader",
             options: {

@@ -101,6 +101,7 @@ AddType image/svg+xml .svg
 			*.craft-cdn.com \
 			*.placeholder.com \
 			*.facebook.com \
+			*.googletagmanager.com \
 			*.google-analytics.com;\
 		style-src 'self' \
 			'unsafe-inline' \

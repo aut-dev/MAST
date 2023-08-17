@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f48cde4061f875da4635c9b7390257c",
+    "content-hash": "7689dc541e2de9a5a93f8e53ebbfa142",
     "packages": [
         {
             "name": "adigital/cookie-consent-banner",
@@ -7393,16 +7393,16 @@
         },
         {
             "name": "puzzlers/base-plugin",
-            "version": "2.0.3",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.webpuzzlers.co.uk/craft-plugins/base-plugin.git",
-                "reference": "f9887649341eb3e99d53eb65bdf43501d4aacb9d"
+                "reference": "abef020b0e000cedea449ef299ef73c938866baf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.webpuzzlers.co.uk/api/v4/projects/18/packages/composer/archives/puzzlers/base-plugin.zip?sha=f9887649341eb3e99d53eb65bdf43501d4aacb9d",
-                "reference": "f9887649341eb3e99d53eb65bdf43501d4aacb9d",
+                "url": "https://gitlab.webpuzzlers.co.uk/api/v4/projects/18/packages/composer/archives/puzzlers/base-plugin.zip?sha=abef020b0e000cedea449ef299ef73c938866baf",
+                "reference": "abef020b0e000cedea449ef299ef73c938866baf",
                 "shasum": ""
             },
             "require": {

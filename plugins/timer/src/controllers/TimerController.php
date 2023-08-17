@@ -16,8 +16,14 @@ class TimerController extends Controller
         $taskId = $this->request->getRequiredParam('taskId');
         $user = \Craft::$app->user->identity;
         $task = Entry::find()->section('task')->id($taskId)->authorId($user->id)->one();
-        Timer::$plugin->timer->start($task);
-        return $this->asJson([]);
+        $started = null;
+        if ($timestamp = $this->request->getParam('started')) {
+            $started = $user->getDate((new DateTime())->setTimestamp($timestamp));
+        }
+        $started = Timer::$plugin->timer->start($task, $started);
+        return $this->asJson([
+            'started' => $started->getTimestamp()
+        ]);
     }
 
     public function actionStop()
@@ -25,7 +31,11 @@ class TimerController extends Controller
         $taskId = $this->request->getRequiredParam('taskId');
         $user = \Craft::$app->user->identity;
         $task = Entry::find()->section('task')->id($taskId)->authorId($user->id)->one();
-        Timer::$plugin->timer->stop($task);
+        $stopped = null;
+        if ($timestamp = $this->request->getParam('stopped')) {
+            $stopped = $user->getDate((new DateTime())->setTimestamp($timestamp));
+        }
+        Timer::$plugin->timer->stop($task, $stopped);
         return $this->asJson([
             'progress' => $task->getDailyTask() ? $task->getDailyTask()->getProgress(true) : false
         ]);

@@ -19,7 +19,7 @@
         "plugins/users": "^1.0",
         "putyourlightson/craft-blitz-recommendations": "^2.0",
         "putyourlightson/craft-elements-panel": "^2.0",
-        "puzzlers/base-plugin": "^2.0",
+        "puzzlers/base-plugin": "^3.0",
         "puzzlers/craft-menus": "^2.0",
         "puzzlers/emails": "^2.0",
         "puzzlers/imager": "^3.0",

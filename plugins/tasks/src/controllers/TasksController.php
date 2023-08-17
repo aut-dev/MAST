@@ -49,17 +49,18 @@ class TasksController extends Controller
 
     /**
      * Poll progress of all a user's tasks
+     * Get the current user tasks
      */
-    public function actionPoll()
+    public function actionGet()
     {
         $user = \Craft::$app->user->identity;
-        $tasks = Entry::find()->section('task')->authorId($user->id);
+        $tasks = Entry::find()->section('task')->authorId($user->id)->orderBy('order asc');
         if ($id = $this->request->getQueryParam('id')) {
             $tasks->id($id);
         }
         $out = [];
         foreach ($tasks->all() as $task) {
-            $out[$task->id] = $this->getTaskData($task);
+            $out[] = $this->getTaskData($task);
         }
         return $this->asJson($out);
     }
@@ -100,7 +101,7 @@ class TasksController extends Controller
             ]);
         }
         return $this->asJson([
-            'status' => $daily ? $daily->getTaskStatus() : 'inactive'
+            'derailed' => $daily ? $daily->hasDerailed() : false
         ]);
     }
 
@@ -114,13 +115,24 @@ class TasksController extends Controller
     {
         $daily = $task->getDailyTask();
         $started = Timer::$plugin->timer->timerStarted($task);
+        $length = $daily ? $daily->length : 0;
         return [
+            'title' => $task->title,
+            'id' => $task->id,
+            'url' => $task->url,
+            'timeBased' => $task->timeBased,
+            'progressPerSec' => ($length > 0 ? (1 / $length * 100) : 0),
+            'taskType' => $task->taskType->value,
+            'committed' => $task->committed->getAmount() / 100,
             'countdown' => TimeHelper::minutesToNow($task->todayDeadline),
+            'length' => ($daily and $daily->isActive()) ? round($daily->length / 60) : round($task->length / 60),
             'active' => $daily and $daily->isActive(),
-            'status' => $task->getTaskStatus(),
+            'complete' => $daily and $daily->isComplete(),
+            'derailed' => $daily and $daily->hasDerailed(),
             'progress' => $daily ? $daily->getProgress(true) : false,
-            'timerStarted' => $started ? true : false,
+            'timerStarted' => $started ? $started->getTimestamp() : 0,
             'done' => $daily ? $daily->done : false,
+            'paused' => $task->paused,
             'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null
         ];
     }

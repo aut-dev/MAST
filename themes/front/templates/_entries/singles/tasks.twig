@@ -1,52 +1,37 @@
-{% extends "_layouts/matrix-content" %}
+{% extends "_layouts/entry" %}
 {% requireLogin %}
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\TasksPage') %}
 
-{% block before_content %}
-    {{ parent() }}
-    {% if currentUser.isOnScheduledBreak(now) %}
-        <div class="container">
-            <div class="alert alert-warning" role="alert">
-                {{ "All your tasks are paused as you're on a scheduled break today"|t }}
-            </div>
-        </div>
-    {% else %}
-        <div class="container unlimited-break-message" {% if not currentUser.isOnUnlimitedBreak() %}style="display:none"{% endif %}>
-            <div class="alert alert-warning" role="alert">
-                {{ "All your tasks are paused as you're on a unlimited break"|t }}
-            </div>
-        </div>
-    {% endif %}
-{% endblock %}
+{% do craft.puzzlers.registerJsTranslations('site', [
+    'You have no tasks yet',
+    'Paused',
+    'One off',
+    'Minutes until deadline:',
+    'Stop',
+    'Start',
+    'Done',
+    "All your tasks are paused as you're on a unlimited break",
+    "All your tasks are paused as you're on a scheduled break today",
+    'Unlimited break',
+    'Hide inactive tasks',
+    'Create a new task',
+    'Unlimited break',
+    'Close',
+    "I'm on a unlimited break",
+    'All your tasks will be paused until you switch this off',
+    'Close',
+    'Save'
+]) %}
 
-{% block content_title %}
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1>{{ entry.title }}</h1>
-            <div>
-                <a href="#unlimited-break-modal" data-bs-toggle="modal" class="me-2 js-unlimited-break {% if not currentUser.unlimitedBreakStart %}text-body{% endif %}" title="{{ 'Unlimited break'|t }}"><i class="fa-solid fa-pause fs-3"></i></a>
-                <a href="#" class="me-2 js-hide-inactive" title="{{ 'Hide inactive tasks'|t }}"><i class="fa-solid fa-eye-slash fs-4 {% if not currentUser.hideInactiveTasks %}text-body{% endif %}"></i></a>
-                <a href="/tasks/new" title="{{ 'Create a new task'|t }}"><i class="fa-solid fa-plus fs-3 text-body"></i></a>
-            </div>
-        </div>
+{% block content %}
+    <div id="tasks">
+        <tasks-header
+            :on-unlimited-break="{{ currentUser.isOnUnlimitedBreak() ? 'true' : 'false' }}"
+            :on-scheduled-break="{{ currentUser.isOnScheduledBreak(now) ? 'true' : 'false' }}"
+            :hide-inactive-tasks="{{ currentUser.hideInactiveTasks ? 'true' : 'false' }}"
+        >
+        </tasks-header>
+        <tasks></tasks>
     </div>
-{% endblock %}
-
-{% block after_content_matrix %}
-    <div class="container">
-        {% set tasks = craft.entries.section('task').authorId(currentUser.id).orderBy('order').all() %}
-        {% if tasks %}
-            <div class="row" id="sortable">
-                {% for task in tasks %}
-                    <div class="task-col col-12 col-md-6 col-lg-4 col-xl-3 py-3" {% if currentUser.hideInactiveTasks and task.taskStatus == 'inactive' %}style="display: none"{% endif %}>
-                        {% include "_includes/tasks/square" %}
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>{{ 'You have no tasks yet'|t }}</p>
-        {% endif %}
-    </div>
-    {% include "_includes/breaks/unlimited-modal" %}
 {% endblock %}

@@ -36,37 +36,12 @@ class DailyTaskBehavior extends Behavior
     }
 
     /**
-     * Get the task status, can be either 'active', 'inactive', 'complete', 'derailed', 'paused'
-     *
-     * @return string
-     */
-    public function getTaskStatus(): string
-    {
-        if (!$this->isActive()) {
-            return 'inactive';
-        }
-        if ($this->isPaused()) {
-            return 'paused';
-        }
-        if ($this->isComplete()) {
-            return 'complete';
-        }
-        if ($this->hasDerailed()) {
-            return 'derailed';
-        }
-        return 'active';
-    }
-
-    /**
-     * Has the daily task derailed
+     * Has the daily task derailed. this will NOT check if the task is paused or active
      *
      * @return bool
      */
     public function hasDerailed(): bool
     {
-        if (!$this->isActive() or $this->isPaused()) {
-            return false;
-        }
         if (!$this->owner->timeBased) {
             if (!$this->isExpired()) {
                 return false;

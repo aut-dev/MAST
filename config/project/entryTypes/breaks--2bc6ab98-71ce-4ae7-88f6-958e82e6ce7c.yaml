@@ -30,30 +30,6 @@ fieldLayouts:
             userCondition: null
             warning: null
             width: 75
-          -
-            elementCondition: null
-            fieldUid: f4994683-7a71-491d-b14b-0a986b8ec613
-            instructions: null
-            label: null
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: febae898-fc63-48e8-8e7e-0dd870770e13
-            userCondition: null
-            warning: null
-            width: 25
-          -
-            elementCondition: null
-            fieldUid: e4dc77ff-7c96-4d98-b434-ed37c72fa8be # Matrix Content
-            instructions: null
-            label: null
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 0c7ad3d5-15ee-462d-9bd4-ba4ba623e775
-            userCondition: null
-            warning: null
-            width: 100
         name: Content
         uid: c4b2ede2-8d31-4a1b-b964-e30970963215
         userCondition: null
