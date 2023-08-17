@@ -66,6 +66,7 @@ export default {
                 minuteIncrement: 1,
                 time_24hr: true,
                 altInput: true,
+                disableMobile: true,
                 altFormat: 'd/m/Y H:i:S',
                 dateFormat: 'Y-m-d H:i:S',
                 maxDate: new Date,
