@@ -37,7 +37,7 @@ class TimerController extends Controller
         }
         Timer::$plugin->timer->stop($task, $stopped);
         return $this->asJson([
-            'progress' => $task->getDailyTask() ? $task->getDailyTask()->getProgress(true) : false
+            'progress' => $task->getDailyTask() ? $task->getDailyTask()->getProgress() : false
         ]);
     }
 }
