@@ -4,8 +4,11 @@
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\AddTaskPage') %}
 
 {% set copy_id = craft.app.request.getQueryParam("copy") %}
-{% if not task is defined and copy_id %}
-    {% set task = craft.entries.section('task').authorId(currentUser.id).id(copy_id).one() %}
+{% if copy_id %}
+    {% set task_copied = craft.entries.section('task').authorId(currentUser.id).id(copy_id).one() %}
+    {% if not task is defined %}
+        {% set task = task_copied %}
+    {% endif %}
 {% endif %}
 
 {% set count = craft.entries.section('task').anyStatus().authorId(currentUser.id).count() %}
@@ -17,7 +20,7 @@
         </div>
         <h1 class="text-center">
             {% if copy_id %}
-                {{ 'Copy task "{title}"'|t('site', {title: task.title}) }}
+                {{ 'Copy task "{title}"'|t('site', {title: task_copied.title}) }}
             {% else %}
                 {{ entry.title }}
             {% endif %}
