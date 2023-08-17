@@ -14,29 +14,29 @@
         </div>
         <div class="position-relative">
             <div class="row fw-bold mb-2" v-if="breaks.length > 0">
-                <div class="col-4">
+                <div class="col-4 pe-1">
                     {{ t('Title') }}
                 </div>
-                <div class="col-3">
+                <div class="col-3 px-1">
                     {{ t('Start date') }}
                 </div>
-                <div class="col-3">
+                <div class="col-3 px-1">
                     {{ t('End date') }}
                 </div>
-                <div class="col-2">
+                <div class="col-3 ps-1">
                 </div>
             </div>
             <div :class="'row mb-2' + (breakk.past ? ' text-light' : '')" v-for="breakk in breaks" :key="breakk.id">
-                <div class="col-4">
+                <div class="col-4 pe-1">
                     {{ breakk.title }}
                 </div>
-                <div class="col-3">
+                <div class="col-3 px-1">
                     {{ breakk.startDate }}
                 </div>
-                <div class="col-3">
+                <div class="col-3 px-1">
                     {{ breakk.endDate }}
                 </div>
-                <div class="col-2">
+                <div class="col-2 ps-1">
                     <a href="#edit-break-modal" data-bs-toggle="modal" class="me-2" @click="cloneBreak(breakk)">
                         <i class="fa-solid fa-pen-to-square"></i>
                     </a>
