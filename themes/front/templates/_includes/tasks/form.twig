@@ -65,7 +65,6 @@
             class: 'form-control datepicker' ~ (task and task.hasErrors('startDate') ? ' is-invalid' : ''),
             data: {
                 options: {
-                    minDate: now|date('Y-m-d', currentUser.timezone),
                     altInput: true,
                     altFormat: 'd/m/Y',
                     dateFormat: 'Y-m-d',

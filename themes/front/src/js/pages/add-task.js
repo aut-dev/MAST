@@ -71,19 +71,18 @@ class AddTask
 
     initLength()
     {
-        $('.field-length input').keyup(() => {
-            let minutes = parseInt($('.field-length input').val());
-            if (isNaN(minutes)) {
-                minutes = 10;
-                $('.field-length input').val(10);
+        let $input = this.$form.find('.field-length input');
+        $input.keyup(() => {
+            let minutes = parseInt($input.val());
+            if (!isNaN(minutes)) {
+                this.$form.find('#length-seconds').val(minutes * 60);
             }
-            $('#length-seconds').val(minutes * 60);
         });
     }
 
     initWeeks()
     {
-        this.$form.find('#repeat-input').change(() => {
+        this.$form.find('#repeat-input').keyup(() => {
             this.createWeeks();
         });
         this.createWeeks();
@@ -110,10 +109,14 @@ class AddTask
 
     createWeeks()
     {
-        let total = parseInt(this.$form.find('#repeat-input').val());
+        let $input = this.$form.find('#repeat-input');
+        let total = parseInt($input.val());
+        if (isNaN(total)) {
+            return;
+        }
         if (total < 1) {
             total = 1;
-            this.$form.find('#repeat-input').val(1);
+            $input.val(1);
         }
         let existing = this.$form.find('.field-weeks .week');
         while (total < existing.length) {
