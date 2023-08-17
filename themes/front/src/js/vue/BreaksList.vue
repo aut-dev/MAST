@@ -93,7 +93,6 @@ export default {
     },
     created() {
         this.showPastBreaks = parseInt(Cookies.get('showPastBreaks')) ? true : false;
-        console.log(this.showPastBreaks);
         this.fetchBreaks();
     },
     methods: {

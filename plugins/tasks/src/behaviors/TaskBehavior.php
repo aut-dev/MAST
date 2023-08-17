@@ -17,19 +17,6 @@ class TaskBehavior extends Behavior
     protected $dailys;
 
     /**
-     * Get the task status, can be either 'active', 'inactive', 'complete', 'derailed' or 'expired'
-     *
-     * @return string
-     */
-    public function getTaskStatus(): string
-    {
-        if ($daily = $this->getDailyTask()) {
-            return $daily->getTaskStatus();
-        }
-        return 'inactive';
-    }
-
-    /**
      * Get the total amount of derailed
      *
      * @return int

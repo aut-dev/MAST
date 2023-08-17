@@ -1,14 +1,14 @@
 <template>
-    <div class="col-12 col-md-6 col-lg-4 col-xl-3 py-3" v-if="!store.hideInactiveTasks || task.status != 'inactive'">
+    <div class="col-12 col-md-6 col-lg-4 col-xl-3 py-3" v-if="!store.hideInactiveTasks || status != 'inactive'">
         <a :href="task.url" class="text-body">
             <div :class="classes" style="background-color: {{ task.backgroundColor ?: #ffffff }}">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h4 class="m-0 text-truncate">{{ task.title }}</h4>
                     <div class="d-flex align-items-center">
-                        <small v-if="task.status == 'paused'">
+                        <small v-if="status == 'paused'">
                             {{ t('Paused') }}
                         </small>
-                        <span class="complete-tick ms-3" v-if="task.status == 'complete'">
+                        <span class="complete-tick ms-3" v-if="status == 'complete'">
                             <i class="fa-solid fa-check"></i>
                         </span>
                     </div>
@@ -21,12 +21,12 @@
                         {{ t('One off') }}
                     </span>
                 </p>
-                <div v-if="task.timeBased && task.active">
+                <div v-if="task.timeBased && status == 'active'">
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" :style="'width:' + task.progress + '%'" :aria-valuenow="task.progress" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
-                <p class="m-0" v-if="task.active">
+                <p class="m-0" v-if="status == 'active'">
                     {{ t('Minutes until deadline:') }} <span class="countdown">{{ task.countdown }}</span>
                 </p>
                 <div class="actions d-flex justify-content-between align-items-center mt-2">
@@ -69,10 +69,19 @@ export default {
     },
     computed: {
         status() {
-            if (this.task.status != 'inactive' && (this.task.paused || this.store.onUnlimitedBreak || this.store.onScheduledBreak)) {
+            if (!this.task.active) {
+                return 'inactive';
+            }
+            if (this.task.paused || this.store.onUnlimitedBreak || this.store.onScheduledBreak) {
                 return 'paused';
             }
-            return this.task.status;
+            if (this.task.complete) {
+                return 'complete';
+            }
+            if (this.task.derailed) {
+                return 'derailed';
+            }
+            return 'active';
         },
         classes() {
             let classes = 'square task p-3 bg-task rounded border-status-' + this.status;

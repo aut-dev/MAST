@@ -101,7 +101,7 @@ class TasksController extends Controller
             ]);
         }
         return $this->asJson([
-            'status' => $daily ? $daily->getTaskStatus() : 'inactive'
+            'derailed' => $daily ? $daily->hasDerailed() : false
         ]);
     }
 
@@ -125,12 +125,14 @@ class TasksController extends Controller
             'taskType' => $task->taskType->value,
             'committed' => $task->committed->getAmount() / 100,
             'countdown' => TimeHelper::minutesToNow($task->todayDeadline),
-            'length' => $daily ? round($daily->length / 60) : round($task->length / 60),
+            'length' => ($daily and $daily->isActive()) ? round($daily->length / 60) : round($task->length / 60),
             'active' => $daily and $daily->isActive(),
-            'status' => $task->getTaskStatus(),
+            'complete' => $daily and $daily->isComplete(),
+            'derailed' => $daily and $daily->hasDerailed(),
             'progress' => $daily ? $daily->getProgress(true) : false,
             'timerStarted' => $started ? $started->getTimestamp() : 0,
             'done' => $daily ? $daily->done : false,
+            'paused' => $task->paused,
             'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null
         ];
     }

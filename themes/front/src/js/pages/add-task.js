@@ -154,7 +154,7 @@ class AddTask
                     dataType: 'json',
                     data: this.$form.serialize()
                 }).done((data) => {
-                    if (data.status == 'derailed') {
+                    if (data.derailed) {
                         this.warningModal.show();
                     } else {
                         this.$form.submit();
