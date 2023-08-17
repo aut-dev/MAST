@@ -39,7 +39,7 @@ export const useTasksStore = defineStore('tasks', {
         setUnlimitedBreak(value) {
             this.disableFetchingTasks = true;
             this.onUnlimitedBreak = value;
-            axios.post('/?action=plugin-users/breaks/unlimited-break', {
+            axios.post('/?action=plugin-users/breaks/set-unlimited-break', {
                 unlimitedBreak: value
             }, {
                 headers: {"X-CSRF-Token": Craft.csrfToken}

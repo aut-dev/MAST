@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <p class="m-0" v-if="task.active">
-                    {{ t('Minutes until deadline:') }}<span class="countdown">{{ task.countdown }}</span>
+                    {{ t('Minutes until deadline:') }} <span class="countdown">{{ task.countdown }}</span>
                 </p>
                 <div class="actions d-flex justify-content-between align-items-center mt-2">
                     <span class="text-purple2 fs-5" v-if="task.timeBased">
@@ -130,7 +130,7 @@ export default {
             clearInterval(this.progressInterval);
         },
         getNow() {
-            return Math.round((new Date().getTime() / 1000));
+            return Math.floor((new Date().getTime() / 1000));
         }
     }
 };

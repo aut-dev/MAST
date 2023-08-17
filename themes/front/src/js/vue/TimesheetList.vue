@@ -4,7 +4,7 @@
             <a href="#edit-timesheet-modal" data-bs-toggle="modal" class="btn btn-primary" @click="editedSheet = {}">{{ t('Add time entry') }}</a>
         </div>
         <div class="position-relative">
-            <div class="row mt-2 timesheet" v-for="sheet in sheets">
+            <div class="row mt-2 timesheet" v-for="sheet in sheets" :key="sheet.id">
                 <div class="col-12 col-lg-8 mb-2 mb-lg-0">
                     <span class="start-date">
                         {{ sheet.startDateAlt }}
@@ -34,9 +34,9 @@
                 {{ t('No time entries recorded yet') }}
             </div>
             <pager :total-pages="totalPages" :current-page="currentPage" @on-page-changed="onPageChanged" />
-            <delete-timesheet-modal :task-id="deleteId" @task-deleted="onTaskDeleted" />
-            <edit-timesheet-modal :task-id="taskId" :sheet="editedSheet" :section-id="sectionId" @task-saved="fetchTimeEntries" />
         </div>
+        <delete-timesheet-modal :task-id="deleteId" @task-deleted="onTaskDeleted" />
+        <edit-timesheet-modal :task-id="taskId" :sheet="editedSheet" :section-id="sectionId" @task-saved="fetchTimeEntries" />
     </div>
 </template>
 
