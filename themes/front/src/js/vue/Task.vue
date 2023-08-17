@@ -23,7 +23,7 @@
                 </p>
                 <div v-if="showProgressBar">
                     <div class="progress">
-                        <div class="progress-bar" role="progressbar" :style="'width:' + task.progress + '%'" :aria-valuenow="task.progress" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div :class="progressBarClasses" role="progressbar" :style="'width:' + task.progress + '%'" :aria-valuenow="task.progress" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
                 <p class="m-0" v-if="showCountdown">
@@ -34,7 +34,7 @@
                         <span v-if="timerStarted" @click.prevent="stopTimer">{{ t('Stop') }}</span>
                         <span v-if="!timerStarted" @click.prevent="startTimer">{{ t('Start') }}</span>
                     </span>
-                    <span :class="'text-purple2 fs-5 task-done' + (task.complete ? ' done' : '')" v-if="task.active && !task.timeBased" @click.prevent="store.setTaskDone(task.id, !task.complete)">
+                    <span :class="'text-purple2 fs-5 task-done' + (task.complete ? ' done' : '')" v-if="task.active && !task.timeBased" @click.prevent="store.setTaskDone(task.id, !task.complete, deadlineHasPassed)">
                         {{ t('Done') }}
                     </span>
                     <span class="fs-4" v-if="task.active">
@@ -91,23 +91,17 @@ export default {
             return classes;
         },
         showProgressBar() {
-            if (!this.task.timeBased || this.isPaused) {
+            if (!this.task.timeBased || this.isPaused || !this.task.active) {
                 return false;
             }
-            if (!this.task.active || this.deadlineHasPassed) {
-                return false;
-            }
-            if (this.task.taskType == 'less') {
-                return !this.task.derailed;
-            }
-            return this.task.complete || !this.task.derailed;
+            return true;
         },
         showCountdown() {
             if (this.isPaused) {
                 return false;
             }
             if (!this.task.timeBased) {
-                return !this.task.complete;
+                return !this.task.complete && this.task.countdown > 0;
             }
             if (this.deadlineHasPassed) {
                 return false;
@@ -115,13 +109,23 @@ export default {
             if (this.task.taskType == 'less') {
                 return this.task.complete;
             }
-            return this.task.active && !this.task.derailed;
+            return this.task.active && !this.task.derailed && !this.complete;
         },
         deadlineHasPassed() {
             return this.getNow() > this.task.deadline;
         },
         isPaused() {
             return this.task.paused || this.store.onUnlimitedBreak || this.store.onScheduledBreak;
+        },
+        progressBarClasses() {
+            let classes = 'progress-bar';
+            if (this.deadlineHasPassed) {
+                classes += ' bg-light';
+            }
+            if (this.task.taskType == 'less' && this.task.derailed) {
+                classes += ' bg-light';
+            }
+            return classes;
         }
     },
     created() {

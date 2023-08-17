@@ -55,7 +55,7 @@ export const useTasksStore = defineStore('tasks', {
                 headers: {"X-CSRF-Token": Craft.csrfToken}
             });
         },
-        setTaskDone(id, done)
+        setTaskDone(id, done, deadlineHasPassed)
         {
             if (this.doning) {
                 return;
@@ -67,6 +67,9 @@ export const useTasksStore = defineStore('tasks', {
             });
             let task = this.tasks[index];
             task.complete = done;
+            if (!done && deadlineHasPassed) {
+                task.derailed = true;
+            }
             axios.post('/', {
                 action: 'entries/save-entry',
                 entryId: task.dailyId,
