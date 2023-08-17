@@ -12,42 +12,6 @@ use yii\web\ForbiddenHttpException;
 class TasksController extends Controller
 {
     /**
-     * (Un)Pauses a task
-     */
-    public function actionPause()
-    {
-        $user = \Craft::$app->user->identity;
-        $paused = $this->request->getRequiredParam('paused');
-        $task = Entry::find()->section('task')->authorId($user->id)->id($this->request->getRequiredParam('id'))->one();
-        if (!$task) {
-            throw new ForbiddenHttpException('Task not found');
-        }
-        $task->setFieldValue('paused', $paused);
-        \Craft::$app->elements->saveElement($task, false);
-        return $this->asJson($this->getTaskData($task));
-    }
-
-    /**
-     * (Un)Mark a one off task as done
-     */
-    public function actionDone()
-    {
-        $user = \Craft::$app->user->identity;
-        $done = $this->request->getRequiredParam('done');
-        $task = Entry::find()->section('task')->authorId($user->id)->id($this->request->getRequiredParam('id'))->one();
-        if (!$task) {
-            throw new ForbiddenHttpException('Task not found');
-        }
-        $daily = $task->getDailyTask();
-        if (!$daily) {
-            throw new ForbiddenHttpException('Daily task not found');
-        }
-        $daily->setFieldValue('done', $done);
-        \Craft::$app->elements->saveElement($daily, false);
-        return $this->asJson($this->getTaskData($task));
-    }
-
-    /**
      * Poll progress of all a user's tasks
      * Get the current user tasks
      */
@@ -119,6 +83,7 @@ class TasksController extends Controller
         return [
             'title' => $task->title,
             'id' => $task->id,
+            'dailyId' => $daily ? $daily->id : null,
             'url' => $task->url,
             'timeBased' => $task->timeBased,
             'progressPerSec' => ($length > 0 ? (1 / $length * 100) : 0),
@@ -131,7 +96,6 @@ class TasksController extends Controller
             'derailed' => $daily and $daily->hasDerailed(),
             'progress' => $daily ? $daily->getProgress(true) : false,
             'timerStarted' => $started ? $started->getTimestamp() : 0,
-            'done' => $daily ? $daily->done : false,
             'paused' => $task->paused,
             'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null
         ];

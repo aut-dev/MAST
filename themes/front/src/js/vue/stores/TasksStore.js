@@ -66,14 +66,19 @@ export const useTasksStore = defineStore('tasks', {
                 return task.id == id;
             });
             let task = this.tasks[index];
-            task.done = done;
-            axios.post('/?action=plugin-tasks/tasks/done', {
-                id: id,
-                done: done
+            task.complete = done;
+            axios.post('/', {
+                action: 'entries/save-entry',
+                entryId: task.dailyId,
+                fields: {
+                    done: done ? 1 : 0
+                }
             }, {
-                headers: {"X-CSRF-Token": Craft.csrfToken}
-            }).then((data) => {
-                this.tasks[index] = data.data;
+                headers: {
+                    "X-CSRF-Token": Craft.csrfToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then(() => {
                 this.doning = false;
                 this.disableFetchingTasks = false;
             });
