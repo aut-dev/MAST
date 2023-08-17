@@ -2,6 +2,7 @@
 
 namespace Plugins\Timesheets\controllers;
 
+use craft\db\Paginator;
 use craft\elements\Entry;
 use craft\web\Controller;
 use yii\web\ForbiddenHttpException;
@@ -12,14 +13,23 @@ class TimesheetsController extends Controller
     {
         $this->requireLogin();
         $user = \Craft::$app->user->identity;
-        $id = $this->request->getRequiredParam('id');
-        $sheet = Entry::find()->section('timesheet')->id($id)->authorId($user->id)->one();
-        if (!$sheet) {
-            throw new ForbiddenHttpException('Timesheet not found');
-        }
+        $paginator = new Paginator(Entry::find()->section('timesheet')->authorId($user->id)->relatedTo($this->request->getRequiredParam('id')), [
+            'pageSize' => 10,
+            'currentPage' => $this->request->getBodyParam('page', 1)
+        ]);
+        $sheets = array_map(function ($sheet) use ($user) {
+            return [
+                'id' => $sheet->id,
+                'startDate' => $sheet->startDate->format('Y-m-d H:i:s'),
+                'endDate' => $sheet->endDate->format('Y-m-d H:i:s'),
+                'startDateAlt' => $sheet->startDate->format('d/m/Y H:i:s'),
+                'endDateAlt' => $sheet->endDate->format('d/m/Y H:i:s'),
+                'friendlySpentTime' => $sheet->friendlySpentTime()
+            ];
+        }, $paginator->getPageResults());
         return $this->asJson([
-            'start' => $sheet->startDate->setTimezone($user->getTimezoneInstance())->format('Y-m-d H:i:s'),
-            'end' => $sheet->endDate->setTimezone($user->getTimezoneInstance())->format('Y-m-d H:i:s')
+            'sheets' => $sheets,
+            'totalPages' => $paginator->getTotalPages()
         ]);
     }
 }

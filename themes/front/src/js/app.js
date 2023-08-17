@@ -138,11 +138,16 @@ class App
 
     handleError(data, $elem, showToast = true)
     {
+        if (!($elem instanceof $)) {
+            $elem = $($elem);
+        }
+        console.log(data);
         if (data.status == 400) {
-            let errors = {};
+            let errors = data.errors;
             if (data.responseJSON && data.responseJSON.errors) {
                 errors = data.responseJSON.errors;
             }
+            console.log(errors);
             if (showToast) {
                 this.addToast("Please fix the validation errors", "danger");
             }

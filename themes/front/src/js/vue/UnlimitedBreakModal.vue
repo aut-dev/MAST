@@ -27,7 +27,7 @@
 <script>
 
 import { mapState } from 'pinia';
-import { useTasksStore } from './TasksStore';
+import { useTasksStore } from './stores/TasksStore';
 
 export default {
     setup() {

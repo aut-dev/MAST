@@ -20,7 +20,7 @@
 <script>
 
 import { mapState } from 'pinia';
-import { useTasksStore } from './TasksStore';
+import { useTasksStore } from './stores/TasksStore';
 import Task from './Task.vue';
 import UnlimitedBreakModal from './UnlimitedBreakModal.vue';
 import draggable from 'vuedraggable';

@@ -25,7 +25,7 @@
 
 <script>
 
-import { useTasksStore } from './TasksStore';
+import { useTasksStore } from './stores/TasksStore';
 import axios from 'axios';
 
 export default {

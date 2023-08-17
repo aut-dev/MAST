@@ -7,6 +7,20 @@
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\TaskPage') %}
 
+{% do craft.puzzlers.registerJsTranslations('site', [
+    'Time entries',
+    'Add time entry',
+    'Close',
+    'Delete time entry',
+    'Add time entry',
+    'Edit time entry',
+    'This will delete the time entry, are you sure ?',
+    'Time entry deleted',
+    'Could not delete time entry',
+    'Start date',
+    'No sheets recorded yet'
+]) %}
+
 {% block content %}
     <div class="container">
         <div class="mb-3">
@@ -15,9 +29,9 @@
         <h1>{{ entry.title }}</h1>
         <div class="row">
             <div class="col-6">{{ 'Starting date'|t }}</div>
-            <div class="col-6">{{ entry.startDate|date('d/m/Y', currentUser.timezone) }}</div>
+            <div class="col-6">{{ entry.startDate|date('short', currentUser.timezone) }}</div>
             <div class="col-6">{{ 'Deadline'|t }}</div>
-            <div class="col-6">{{ entry.deadline|date('H:i') }}</div>
+            <div class="col-6">{{ entry.deadline|time('short') }}</div>
             <div class="col-6">{{ 'Type'|t }}</div>
             <div class="col-6">{{ entry.taskType.label }}</div>
             {% if entry.taskType in ['more', 'less'] %}
@@ -40,25 +54,9 @@
             </div>
         </div>
         <h2 class="mt-3">{{ 'Time entries'|t }}</h2>
-        <div class="my-3">
-            <a href="#" class="btn btn-primary js-add">{{ 'Add time entry'|t }}</a>
-        </div>
-        <div class="row mt-2 timesheet timesheet-skeleton d-none">
-            <div class="col-5"></div>
-            <div class="col-5">
-                <span class="start-date">
-                </span> -
-                <span class="end-date">
-                </span>
-            </div>
-            <div class="col-2">
-                <a href="#" class="js-edit"><i class="fa-solid fa-pen-to-square"></i></a>
-            </div>
-        </div>
-        <div id="timesheet-list" data-id="{{ entry.id }}">
-            {% include "_includes/timesheets/list" with {task: entry} %}
-        </div>
     </div>
-    {% include "_includes/timesheets/edit-modal" with {task: entry} %}
-    {% include "_includes/timesheets/delete-modal" %}
+    <div id="timesheet-list">
+        {% set section = craft.app.sections.getSectionByHandle('timesheet') %}
+        <timesheet-list :task-id="{{ entry.id }}" :section-id="{{ section.id }}"></timesheet-list>
+    </div>
 {% endblock %}
