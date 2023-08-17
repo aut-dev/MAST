@@ -34,7 +34,7 @@
                         <span v-if="timerStarted" @click.prevent="stopTimer">{{ t('Stop') }}</span>
                         <span v-if="!timerStarted" @click.prevent="startTimer">{{ t('Start') }}</span>
                     </span>
-                    <span :class="'text-purple2 fs-5 task-done' + (task.done ? ' done' : '')" v-if="task.active && !task.timeBased" @click.prevent="store.setTaskDone(task.id, !task.done)">
+                    <span :class="'text-purple2 fs-5 task-done' + (task.complete ? ' done' : '')" v-if="task.active && !task.timeBased" @click.prevent="store.setTaskDone(task.id, !task.complete)">
                         {{ t('Done') }}
                     </span>
                     <span class="fs-4" v-if="task.active">
