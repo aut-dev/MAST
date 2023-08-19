@@ -28,7 +28,7 @@
     <div id="tasks">
         <tasks-header
             :on-unlimited-break="{{ currentUser.isOnUnlimitedBreak() ? 'true' : 'false' }}"
-            :on-scheduled-break="{{ currentUser.isOnScheduledBreak(now) ? 'true' : 'false' }}"
+            :on-scheduled-break="{{ currentUser.isOnScheduledBreak(currentUser.now) ? 'true' : 'false' }}"
             :hide-inactive-tasks="{{ currentUser.hideInactiveTasks ? 'true' : 'false' }}"
         >
         </tasks-header>

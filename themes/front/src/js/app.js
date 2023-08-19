@@ -15,6 +15,10 @@ class App
         this.initFontAwesome();
         this.initMatrixContent();
         this.initDetectTimezone();
+        this.fixContentHeight();
+        $(window).resize(() => {
+            this.fixContentHeight();
+        });
         $('body').css('opacity', 1);
         if (Craft.loggedIn) {
             setInterval(() => {this.checkSession()}, 30000);
@@ -62,6 +66,12 @@ class App
                 new chunk.MatrixContent;
             });
         }
+    }
+
+    fixContentHeight()
+    {
+        let height = $(document).height() - ($('header').height() + $('footer').height());
+        $('main').css('min-height', height + 'px');
     }
 
     getBootstrap()

@@ -46,16 +46,6 @@ class UserBehavior extends Behavior
     }
 
     /**
-     * Get the end of today DateTime
-     *
-     * @return DateTime
-     */
-    public function getEndOfToday(): DateTime
-    {
-        return $this->getNow()->setTime(23, 59, 59);
-    }
-
-    /**
      * Get a date in user timezone
      *
      * @param  DateTime $date

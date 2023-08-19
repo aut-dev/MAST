@@ -90,4 +90,11 @@
 {% endblock %}
 
 {% block footer %}
+    {% if currentUser %}
+        <div class="bg-light">
+            <div class="container py-3">
+                Your timezone is {{ currentUser.timezone }}, now is {{ currentUser.now|date('d/m/Y H:i', currentUser.timezone) }}. 
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

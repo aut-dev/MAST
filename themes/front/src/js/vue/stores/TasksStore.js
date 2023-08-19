@@ -7,6 +7,7 @@ import { findIndex } from 'lodash';
 export const useTasksStore = defineStore('tasks', {
     state: () => ({
         onUnlimitedBreak: false,
+        onScheduledBreak: false,
         initialTaskLoading: true,
         disableFetchingTasks: false,
         hideInactiveTasks: false,

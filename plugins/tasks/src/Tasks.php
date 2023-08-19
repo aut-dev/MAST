@@ -51,14 +51,14 @@ class Tasks extends Plugin
     {
         Event::on(Elements::class, Elements::EVENT_AFTER_SAVE_ELEMENT, function (Event $event) {
             $entry = $event->element;
-            if ($entry instanceof Entry and !ElementHelper::isDraftOrRevision($entry) and $entry->section->handle == 'task') {
-                Tasks::$plugin->tasks->afterSavingTask($entry, $event->isNew);
+            if ($entry instanceof Entry and !ElementHelper::isDraftOrRevision($entry) and $entry->section->handle == 'task' and !$event->isNew) {
+                Tasks::$plugin->tasks->afterSavingTask($entry);
             }
         });
         Event::on(Elements::class, Elements::EVENT_BEFORE_SAVE_ELEMENT, function (Event $event) {
             $entry = $event->element;
-            if ($entry instanceof Entry and !ElementHelper::isDraftOrRevision($entry) and $entry->section->handle == 'task') {
-                Tasks::$plugin->tasks->beforeSavingTask($entry, $event->isNew);
+            if ($entry instanceof Entry and !ElementHelper::isDraftOrRevision($entry) and $entry->section->handle == 'task' and !$event->isNew) {
+                Tasks::$plugin->tasks->beforeSavingTask($entry);
             }
         });
         Event::on(Elements::class, Elements::EVENT_BEFORE_DELETE_ELEMENT, function (Event $event) {

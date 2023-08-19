@@ -2,6 +2,7 @@
 
 namespace Plugins\Tasks\controllers;
 
+use Plugins\Tasks\Tasks;
 use Plugins\Tasks\helpers\TimeHelper;
 use Plugins\Timer\Timer;
 use craft\elements\Entry;
@@ -47,22 +48,18 @@ class TasksController extends Controller
     }
 
     /**
-     * Check if editing a task could make them derail instantly
+     * Check if editing a task could make them derail instantly,
+     * Create an unsaved daily task and check if it has derailed
      */
     public function actionCheckEditTask()
     {
         $this->requirePostRequest();
         $task = Entry::find()->id($this->request->getRequiredParam('entryId'))->one();
         $task->setFieldValuesFromRequest('fields');
-        $daily = $task->getDailyTask();
-        if ($daily) {
-            $daily->setFieldValues([
-                'taskType' => $task->taskType,
-                'deadline' => $task->deadline,
-                'length' => $task->getDuration(),
-                'committed' => $task->committed,
-                'paused' => $task->paused
-            ]);
+        $service = Tasks::$plugin->tasks;
+        $daily = false;
+        if ($service->dayHasDailyTask($task)) {
+            $daily = $service->createDailyTask($task, $task->author->today, false);
         }
         return $this->asJson([
             'derailed' => $daily ? $daily->hasDerailed() : false
@@ -89,9 +86,9 @@ class TasksController extends Controller
             'progressPerSec' => ($length > 0 ? (1 / $length * 100) : 0),
             'taskType' => $task->taskType->value,
             'committed' => $task->committed->getAmount() / 100,
-            'countdown' => TimeHelper::minutesToNow($task->todayDeadline),
-            'length' => ($daily and $daily->isActive()) ? round($daily->length / 60) : round($task->length / 60),
-            'active' => $daily and $daily->isActive(),
+            'countdown' => $daily ? TimeHelper::minutesToNow($daily->deadlineInstance) : null,
+            'length' => $daily ? round($daily->length / 60) : round($task->length / 60),
+            'active' => $daily !== null,
             'complete' => $daily and $daily->isComplete(),
             'derailed' => $daily and $daily->hasDerailed(),
             'progress' => $daily ? $daily->getProgress() : false,

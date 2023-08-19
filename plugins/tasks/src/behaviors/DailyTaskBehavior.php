@@ -29,7 +29,7 @@ class DailyTaskBehavior extends Behavior
             if ($this->owner->task instanceof Collection) {
                 $this->_task = $this->owner->task->first();
             } else {
-                $this->_task = $this->owner->task->one();
+                $this->_task = $this->owner->task->anyStatus()->one();
             }
         }
         return $this->_task;
@@ -72,19 +72,6 @@ class DailyTaskBehavior extends Behavior
     public function isPaused(): bool
     {
         return ($this->owner->paused or $this->owner->author->isOnBreak($this->owner->startDate));
-    }
-
-    /**
-     * Is this daily task active
-     *
-     * @return bool
-     */
-    public function isActive(): bool
-    {
-        if (!$this->owner->timeBased) {
-            return true;
-        }
-        return $this->owner->length > 0;
     }
 
     /**
@@ -157,19 +144,9 @@ class DailyTaskBehavior extends Behavior
      */
     public function getPreviousTask(): ?Entry
     {
-        return $this->getPreviousTasks()[0] ?? null;
-    }
-
-    /**
-     * Get the previous daily tasks, ordered by date desc
-     *
-     * @return array
-     */
-    public function getPreviousTasks(): array
-    {
-        $entries = Entry::find()->section('dailyTask')->relatedTo($this->getTask())->with('task')->orderBy('startDate desc');
-        DateHelper::addDateParamsSmallerThan($entries, $this->owner->startDate, 'startDate', true);
-        return $entries->all();
+        $query = Entry::find()->section('dailyTask')->relatedTo($this->getTask())->with('task')->orderBy('startDate desc');
+        DateHelper::addDateParamsSmallerThan($query, $this->owner->startDate, 'startDate', true);
+        return $query->one();
     }
 
     /**
