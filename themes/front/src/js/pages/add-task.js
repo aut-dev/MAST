@@ -33,17 +33,17 @@ class AddTask
 
     initTimeBased()
     {
-        this.toggleTimeBasedFields();
+        this.toggleFields();
         $('.field-timeBased input[type=checkbox]').change(() => {
-            this.toggleTimeBasedFields();
+            this.toggleFields();
         });
     }
 
     initRecurring()
     {
-        this.toggleRecurringFields();
+        this.toggleFields();
         $('.field-recurring input[type=checkbox]').change(() => {
-            this.toggleRecurringFields();
+            this.toggleFields();
         });
     }
 
@@ -88,22 +88,20 @@ class AddTask
         this.createWeeks();
     }
 
-    toggleTimeBasedFields()
+    toggleFields()
     {
         if ($('.field-timeBased input[type=checkbox]').is(':checked')) {
-            $('.field-length, .field-taskType').show();
+            $('.field-length, .field-taskType, .field-weeks').show();
+            $('.field-weeksToggle').hide();
         } else {
-            $('.field-length, .field-taskType').hide();
+            $('.field-length, .field-taskType, .field-weeks').hide();
+            $('.field-weeksToggle').show();
             this.$form.find('.field-length input').val(10).trigger('keyup');
         }
-    }
-
-    toggleRecurringFields()
-    {
         if ($('.field-recurring input[type=checkbox]').is(':checked')) {
-            $('.field-repeat, .field-weeks').show();
+            $('.field-repeat').show();
         } else {
-            $('.field-repeat, .field-weeks').hide();
+            $('.field-repeat, .field-weeks, .field-weeksToggle').hide();
         }
     }
 
@@ -118,26 +116,38 @@ class AddTask
             total = 1;
             $input.val(1);
         }
-        let existing = this.$form.find('.field-weeks .week');
+        let selector = '.field-weeksToggle .week';
+        let field = '.field-weeksToggle';
+        let name = 'weeksToggle';
+        if ($('.field-timeBased input[type=checkbox]').is(':checked')) {
+            selector = '.field-weeks .week';
+            field = 'field-weeks';
+            name = 'weeks';
+        }
+        let existing = this.$form.find(selector);
         while (total < existing.length) {
             existing.last().remove();
-            existing = this.$form.find('.field-weeks .week');
+            existing = this.$form.find(selector);
         }
         while (total > existing.length) {
-            this.$form.find('.field-weeks').append(this.createWeek());
-            existing = this.$form.find('.field-weeks .week');
+            this.$form.find(field).append(this.createWeek(selector, name));
+            existing = this.$form.find(selector);
         }
     }
 
-    createWeek()
+    createWeek(selector, name)
     {
-        let week = this.$form.find('.field-weeks .week').first().clone();
-        let index = 'new' + (this.$form.find('.field-weeks .week').length + 1);
-        let namespace = 'fields[weeks][' + index + ']';
+        let week = this.$form.find(selector).first().clone();
+        let index = 'new' + (this.$form.find(selector).length + 1);
+        let namespace = 'fields[' + name + '][' + index + ']';
         week.find('.type').attr('name', namespace + '[type]');
         week.find('.enabled').attr('name', namespace + '[enabled]');
         $.each(week.find('.day'), (i, item) => {
-            $(item).attr('name', namespace + '[fields][' + $(item).data('day') + ']').val(1);
+            if (name == 'weeks') {
+                $(item).attr('name', namespace + '[fields][' + $(item).data('day') + ']').val(1);
+            } else {
+                $(item).attr('name', namespace + '[fields][' + $(item).data('day') + ']').attr('checked', true);
+            }
         });
         return week;
     }

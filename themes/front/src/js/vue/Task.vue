@@ -109,7 +109,7 @@ export default {
             if (this.task.taskType == 'less') {
                 return this.task.complete;
             }
-            return this.task.active && !this.task.derailed && !this.complete;
+            return this.task.active && !this.task.derailed && !this.task.complete;
         },
         deadlineHasPassed() {
             return this.getNow() > this.task.deadline;
@@ -176,7 +176,7 @@ export default {
             clearInterval(this.progressInterval);
         },
         getNow() {
-            return Math.floor((new Date().getTime() / 1000));
+            return (new Date().getTime() / 1000);
         }
     }
 };

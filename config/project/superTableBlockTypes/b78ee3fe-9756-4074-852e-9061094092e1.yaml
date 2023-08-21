@@ -1,0 +1,201 @@
+changedFieldIndicator: 385933878
+field: aab9913c-15e8-4209-b0b1-a72e0945aecb # Weeks
+fieldLayouts:
+  af055b55-02aa-41ff-836a-93632945e2d9:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: d8e6583d-cac2-4e43-b492-687232234955 # Mon
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 594ee4c2-5fc9-4481-9070-0077d5035c83
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: ef036cf0-f8e0-43c2-8865-3706cbae1c3c # Tue
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: c428a429-adbf-4cd6-aa28-71f98cc3872f
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 710a7eff-aa51-42fe-886c-51590f147dd7 # Wed
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: c0b855bf-19b0-4d27-b22b-352672125acd
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: a94c6d7e-2908-40ca-a902-ac3457a73d26 # Thu
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 78d6b970-eaf1-4b3c-8ffa-edbfb7869bfe
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 65836395-28ff-4249-8dfe-4a1de34d3939 # Fri
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 20ed707a-0d5a-4380-95d4-526db0421b2c
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 18cdb983-638e-488a-8e8f-1df5244e2d03 # Sat
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 75976b2c-2037-4d07-92ed-f8e19d2fcdeb
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 9ed0591a-e479-4c5e-bd6a-f1bcb15c1c1f # Sun
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 6735ae8a-cc21-4e27-9dd6-0f9dd91e264e
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: bac74ec4-9ed1-474d-bbce-1b8afc091ca6
+        userCondition: null
+fields:
+  9ed0591a-e479-4c5e-bd6a-f1bcb15c1c1f: # Sun
+    columnSuffix: kqrkxhqd
+    contentColumnType: boolean
+    fieldGroup: null
+    handle: sun
+    instructions: null
+    name: Sun
+    searchable: false
+    settings:
+      default: true
+      offLabel: null
+      onLabel: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Lightswitch
+  18cdb983-638e-488a-8e8f-1df5244e2d03: # Sat
+    columnSuffix: mihaheir
+    contentColumnType: boolean
+    fieldGroup: null
+    handle: sat
+    instructions: null
+    name: Sat
+    searchable: false
+    settings:
+      default: true
+      offLabel: null
+      onLabel: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Lightswitch
+  710a7eff-aa51-42fe-886c-51590f147dd7: # Wed
+    columnSuffix: dkgmmoia
+    contentColumnType: boolean
+    fieldGroup: null
+    handle: wed
+    instructions: null
+    name: Wed
+    searchable: false
+    settings:
+      default: true
+      offLabel: null
+      onLabel: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Lightswitch
+  65836395-28ff-4249-8dfe-4a1de34d3939: # Fri
+    columnSuffix: auykqnhf
+    contentColumnType: boolean
+    fieldGroup: null
+    handle: fri
+    instructions: null
+    name: Fri
+    searchable: false
+    settings:
+      default: true
+      offLabel: null
+      onLabel: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Lightswitch
+  a94c6d7e-2908-40ca-a902-ac3457a73d26: # Thu
+    columnSuffix: flafhqcu
+    contentColumnType: boolean
+    fieldGroup: null
+    handle: thu
+    instructions: null
+    name: Thu
+    searchable: false
+    settings:
+      default: true
+      offLabel: null
+      onLabel: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Lightswitch
+  d8e6583d-cac2-4e43-b492-687232234955: # Mon
+    columnSuffix: xdgyhtqt
+    contentColumnType: boolean
+    fieldGroup: null
+    handle: mon
+    instructions: null
+    name: Mon
+    searchable: false
+    settings:
+      default: true
+      offLabel: null
+      onLabel: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Lightswitch
+  ef036cf0-f8e0-43c2-8865-3706cbae1c3c: # Tue
+    columnSuffix: cfnvhrwv
+    contentColumnType: boolean
+    fieldGroup: null
+    handle: tue
+    instructions: null
+    name: Tue
+    searchable: false
+    settings:
+      default: true
+      offLabel: null
+      onLabel: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Lightswitch

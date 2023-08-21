@@ -32,6 +32,31 @@
     </div>
 {% endmacro %}
 
+{% macro weekToggle(block, type, index) %}
+    <div class="row week">
+        <input type="hidden" class="type" name="fields[weeksToggle][{{ index }}][type]" value="{{ type.id }}">
+        <input type="hidden" class="enabled" name="fields[weeksToggle][{{ index }}][enabled]" value="1">
+        {% for day in ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] %}
+            <div class="col-3 col-md p-1">
+                <div class="form-check">
+                    <input type="hidden" name="fields[weeksToggle][{{ index }}][fields][{{ day }}]" value="0">
+                    <input type="checkbox" class="form-check-input day" id="toggle-{{ day ~ index }}" name="fields[weeksToggle][{{ index }}][fields][{{ day }}]" value="1" {% if not block or (block and block[day]) %}checked{% endif %} data-day="{{ day }}">
+                    <label for="toggle-{{ day ~ index }}">{{ day|capitalize|t }}</label>
+                </div>
+            </div>
+        {% endfor %}
+        {% if block %}
+            {{ errorList(block.getErrors('mon')) }}
+            {{ errorList(block.getErrors('tue')) }}
+            {{ errorList(block.getErrors('wed')) }}
+            {{ errorList(block.getErrors('thu')) }}
+            {{ errorList(block.getErrors('fri')) }}
+            {{ errorList(block.getErrors('sat')) }}
+            {{ errorList(block.getErrors('sun')) }}
+        {% endif %}
+    </div>
+{% endmacro %}
+
 <form id="add-task-form" method="post">
     {% set section = craft.app.sections.getSectionByHandle('task') %}
     {{ csrfInput() }}
@@ -159,10 +184,14 @@
     </div>
 
     {% set weeks = task ? task.weeks.all() : null %}
+    {% if task and not task.timeBased %}
+        {% set weeks = task.weeksToggle.all() %}
+    {% endif %}
+    {% set nb_of_weeks = weeks|length %}
 
     <div class="form-group mb-3 field-repeat">
         <label for="length" class="required">{{ 'Repeat your schedule every 1, 2, 3... weeks'|t }}</label>
-        {{ input('number', '', task ? weeks|length : 1, {
+        {{ input('number', '', task ? nb_of_weeks : 1, {
             class: 'form-control',
             id: 'repeat-input',
             min: 1,
@@ -181,6 +210,20 @@
             {% endfor %}
         {% else %}
             {{ _self.week(null, block_type, 'new1') }}
+        {% endif %}
+    </div>
+
+    {% set field = craft.app.fields.getFieldByHandle('weeksToggle') %}
+    {% set block_types = craft.superTable.getSuperTableBlocks(field.id) %}
+    {% set block_type = block_types.0 %}
+    <div class="form-group mb-3 field-weeksToggle">
+        <label>{{ 'Do you want to the task each day?'|t }}</label>
+        {% if task %}
+            {% for week in weeks %}
+                {{ _self.weekToggle(week, block_type, (not copy_id and week.id) ? week.id : 'new' ~ loop.index) }}
+            {% endfor %}
+        {% else %}
+            {{ _self.weekToggle(null, block_type, 'new1') }}
         {% endif %}
     </div>
 

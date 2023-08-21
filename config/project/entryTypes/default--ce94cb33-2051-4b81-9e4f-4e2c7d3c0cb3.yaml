@@ -44,6 +44,18 @@ fieldLayouts:
             width: 50
           -
             elementCondition: null
+            fieldUid: beb8aabf-7970-4442-9f8b-f70568d8757a # Start date
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 4f90d6aa-c774-4617-a35f-164ba30b1dd2
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
             fieldUid: a7c9164e-c77f-412f-8498-26092f7a0289 # Deadline
             instructions: null
             label: null
@@ -51,18 +63,6 @@ fieldLayouts:
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: 558c739a-5abc-4652-ba78-81ed443a3bb1
-            userCondition: null
-            warning: null
-            width: 50
-          -
-            elementCondition: null
-            fieldUid: beb8aabf-7970-4442-9f8b-f70568d8757a # Start date
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: b3e941ae-2f3c-4a4b-b65f-ef18a9a6e4ac
             userCondition: null
             warning: null
             width: 50
@@ -115,6 +115,18 @@ fieldLayouts:
             warning: null
             width: 50
           -
+            elementCondition: null
+            fieldUid: 75f26b47-fb20-47e9-9ad1-bab31babae60 # Time based
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: dda8e09e-c90a-4a46-ae5a-45f61056d5d3
+            userCondition: null
+            warning: null
+            width: 50
+          -
             elementCondition:
               class: craft\elements\conditions\entries\EntryCondition
               conditionRules:
@@ -122,6 +134,11 @@ fieldLayouts:
                   class: craft\fields\conditions\LightswitchFieldConditionRule
                   fieldUid: a8096a2c-fe5e-4bee-8e2d-2fdd17c42bb5 # Recurring
                   uid: 8841255d-ffd4-4fdd-bbe5-4f79e05be5b0
+                  value: true
+                -
+                  class: craft\fields\conditions\LightswitchFieldConditionRule
+                  fieldUid: 75f26b47-fb20-47e9-9ad1-bab31babae60 # Time based
+                  uid: d57375ae-f458-4aba-8809-8c98bbf0f74c
                   value: true
               elementType: craft\elements\Entry
               fieldContext: global
@@ -136,17 +153,31 @@ fieldLayouts:
             warning: null
             width: 100
           -
-            elementCondition: null
-            fieldUid: 75f26b47-fb20-47e9-9ad1-bab31babae60 # Time based
+            elementCondition:
+              class: craft\elements\conditions\entries\EntryCondition
+              conditionRules:
+                -
+                  class: craft\fields\conditions\LightswitchFieldConditionRule
+                  fieldUid: 75f26b47-fb20-47e9-9ad1-bab31babae60 # Time based
+                  uid: a2cd8359-a2f8-442c-9ab5-4a69b362c601
+                  value: false
+                -
+                  class: craft\fields\conditions\LightswitchFieldConditionRule
+                  fieldUid: a8096a2c-fe5e-4bee-8e2d-2fdd17c42bb5 # Recurring
+                  uid: 6b5b2a2a-f7a0-4d2b-921d-669b42f97387
+                  value: true
+              elementType: craft\elements\Entry
+              fieldContext: global
+            fieldUid: aab9913c-15e8-4209-b0b1-a72e0945aecb # Weeks
             instructions: null
             label: null
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: dda8e09e-c90a-4a46-ae5a-45f61056d5d3
+            uid: 60773b37-a08a-4088-9f78-063d52df5211
             userCondition: null
             warning: null
-            width: 50
+            width: 100
           -
             elementCondition:
               class: craft\elements\conditions\entries\EntryCondition
