@@ -36,7 +36,7 @@ class UsersService extends Component
         $old = User::find()->id($user->id)->one();
         $today = $user->today;
         $oldToday = (new DateTime())->setTimezone(new DateTimeZone($old->timezone))->setTime(0, 0, 0);
-        if ($old->timezone != $user->timezone) {
+        if ($user->timezone and $old->timezone and $old->timezone != $user->timezone) {
             $tasks = Entry::find()->section('task')->authorId($user->id)->anyStatus()->all();
             foreach ($tasks as $task) {
                 $daily = Tasks::$plugin->tasks->getDailyTask($task, $oldToday);
