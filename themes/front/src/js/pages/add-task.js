@@ -91,10 +91,10 @@ class AddTask
     toggleFields()
     {
         if ($('.field-timeBased input[type=checkbox]').is(':checked')) {
-            $('.field-length, .field-taskType, .field-weeks').show();
+            $('.field-length, .field-weeks').show();
             $('.field-weeksToggle').hide();
         } else {
-            $('.field-length, .field-taskType, .field-weeks').hide();
+            $('.field-length, .field-weeks').hide();
             $('.field-weeksToggle').show();
             this.$form.find('.field-length input').val(10).trigger('keyup');
         }

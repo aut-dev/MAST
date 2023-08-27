@@ -169,6 +169,9 @@ class TasksService extends Component
             'startDate' => $day
         ]);
         $this->populateDailyTask($daily, $task, $day);
+        if (!$task->timeBased and $task->taskType->value == 'less') {
+            $daily->setFieldValue('done', true);
+        }
         $daily->scenario = Element::SCENARIO_LIVE;
         if ($save and !\Craft::$app->elements->saveElement($daily)) {
             throw new Exception("Couldn't save daily task : " . print_r($daily->errors, true));

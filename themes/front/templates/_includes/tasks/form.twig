@@ -134,6 +134,24 @@
         {% endif %}
     </div>
 
+    <div class="form-group mb-3 field-taskType">
+        <label class="required">{{ 'More or less of something'|t }}</label>
+        <div>
+            <div class="form-check form-check-inline">
+                <input type="radio" name="fields[taskType]" id="type-more" value="more" {% if task and task.taskType == 'more' or not task %}checked{% endif %}>
+                <label class="form-check-label" for="type-more">
+                    {{ 'More'|t }}
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input type="radio" name="fields[taskType]" id="type-less" value="less" {% if task and task.taskType == 'less' %}checked{% endif %}>
+                <label class="form-check-label" for="type-less">
+                    {{ 'Less'|t }}
+                </label>
+            </div>
+        </div>
+    </div>
+
     <div class="form-group mb-3 field-timeBased">
         <div class="form-check form-switch">
             <input type="hidden" name="fields[timeBased]" value="0">
@@ -155,24 +173,6 @@
         {% if task %}
             {{ errorList(task.getErrors('length')) }}
         {% endif %}
-    </div>
-
-    <div class="form-group mb-3 field-taskType">
-        <label class="required">{{ 'More or less of something'|t }}</label>
-        <div>
-            <div class="form-check form-check-inline">
-                <input type="radio" name="fields[taskType]" id="type-more" value="more" {% if task and task.taskType == 'more' or not task %}checked{% endif %}>
-                <label class="form-check-label" for="type-more">
-                    {{ 'More'|t }}
-                </label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input type="radio" name="fields[taskType]" id="type-less" value="less" {% if task and task.taskType == 'less' %}checked{% endif %}>
-                <label class="form-check-label" for="type-less">
-                    {{ 'Less'|t }}
-                </label>
-            </div>
-        </div>
     </div>
 
     <div class="form-group mb-3 field-recurring">
@@ -204,7 +204,7 @@
     {% set block_type = block_types.0 %}
     <div class="form-group mb-3 field-weeks">
         <label>{{ 'How many work blocks do you want to do each day?'|t }}</label>
-        {% if task %}
+        {% if task and weeks|length > 0 %}
             {% for week in weeks %}
                 {{ _self.week(week, block_type, (not copy_id and week.id) ? week.id : 'new' ~ loop.index) }}
             {% endfor %}
@@ -218,7 +218,7 @@
     {% set block_type = block_types.0 %}
     <div class="form-group mb-3 field-weeksToggle">
         <label>{{ 'Do you want to the task each day?'|t }}</label>
-        {% if task %}
+        {% if task and weeks|length > 0 %}
             {% for week in weeks %}
                 {{ _self.weekToggle(week, block_type, (not copy_id and week.id) ? week.id : 'new' ~ loop.index) }}
             {% endfor %}

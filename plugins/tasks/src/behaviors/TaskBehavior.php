@@ -126,6 +126,12 @@ class TaskBehavior extends Behavior
         }
         $weeks = $this->owner->timeBased ? $this->owner->weeks : $this->owner->weeksToggle;
         $date = $this->owner->startDate;
+        if (!$this->owner->recurring) {
+            if ($date == $day) {
+                return $this->owner->timeBased ? $this->owner->length : 1;
+            }
+            return 0;
+        }
         if ($date <= $day) {
             $thisWeek = $this->beginningOfWeek(clone $day);
             $start = $this->beginningOfWeek($date);
