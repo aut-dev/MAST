@@ -1,6 +1,16 @@
 {% extends "_layouts/base" %}
 {% import "_helpers/images" as images %}
 
+{% set requires_valid_subscription = requires_valid_subscription ?? false %}
+{% set max_tasks_inactive_subscription = max_tasks_inactive_subscription ?? 4 %}
+
+{% if requires_valid_subscription and currentUser.subscriptionStatus != 'active' %}
+    {% set tasks = craft.entries.section('task').authorId(currentUser.id).count() %}
+    {% if tasks >= max_tasks_inactive_subscription %}
+        {% redirect '/my-account?errorSubscription=1' %}
+    {% endif %}
+{% endif %}
+
 {% if currentUser %}
     {% do eagerLoadElements(currentUser, [
         'timer.timer:task'

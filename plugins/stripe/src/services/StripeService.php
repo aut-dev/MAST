@@ -60,7 +60,7 @@ class StripeService extends Component
             "payment_method_types" => ["card", "link"],
             'mode' => 'subscription',
             'success_url' => UrlHelper::siteUrl('stripe-subscription-success?session_id={CHECKOUT_SESSION_ID}'),
-            'cancel_url' => UrlHelper::siteUrl('pay-subscription'),
+            'cancel_url' => UrlHelper::siteUrl('my-account'),
         ]);
     }
 

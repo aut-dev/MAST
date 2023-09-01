@@ -1,6 +1,9 @@
 {% extends "_layouts/entry" %}
 {% requireLogin %}
 
+{% set requires_valid_subscription = true %}
+{% set max_tasks_inactive_subscription = 3 %}
+
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\AddTaskPage') %}
 
 {% set copy_id = craft.app.request.getQueryParam("copy") %}

@@ -1,3 +1,5 @@
-<div class="container d-flex justify-content-center">
-   {% include "_includes/user/signup-form" %}
-</div>
+{% if not currentUser %}
+   <div class="container d-flex justify-content-center">
+      {% include "_includes/user/signup-form" %}
+   </div>
+{% endif %}

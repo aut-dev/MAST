@@ -3,7 +3,7 @@
         <div class="alert alert-warning" role="alert" v-if="store.onUnlimitedBreak">
             {{ t("All your tasks are paused as you're on a unlimited break") }}
         </div>
-        <div class="alert alert-warning" role="alert" v-if="onScheduledBreak && !store.onUnlimitedBreak">
+        <div class="alert alert-warning" role="alert" v-if="store.onScheduledBreak && !store.onUnlimitedBreak">
             {{ t("All your tasks are paused as you're on a scheduled break today") }}
         </div>
         <div class="d-flex justify-content-between align-items-center">
@@ -40,6 +40,7 @@ export default {
     },
     created() {
         this.store.onUnlimitedBreak = this.onUnlimitedBreak;
+        this.store.onScheduledBreak = this.onScheduledBreak;
         this.store.hideInactiveTasks = this.hideInactiveTasks;
     },
 };
