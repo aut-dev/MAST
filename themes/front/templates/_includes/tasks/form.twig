@@ -1,6 +1,7 @@
 {% from "_helpers/errors" import errorList %}
 
 {% set task = task ?? null %}
+{% set copy_id = copy_id ?? null %}
 
 {% macro week(block, type, index) %}
     <div class="row week">
@@ -10,7 +11,7 @@
             <div class="col-3 col-md p-1">
                 <label>{{ day|capitalize|t }}</label>
                 {{ input('number', 'fields[weeks][' ~ index ~ '][fields][' ~ day ~ ']', block ? block[day] : 1, {
-                    class: 'form-control day',
+                    class: 'form-control no-error-icon day' ~ (block and block.hasErrors(day) ? ' is-invalid' : ''),
                     min: 0,
                     step: 0.1,
                     data: {
@@ -19,6 +20,40 @@
                 }) }}
             </div>
         {% endfor %}
+        {% if block %}
+            {{ errorList(block.getErrors('mon')) }}
+            {{ errorList(block.getErrors('tue')) }}
+            {{ errorList(block.getErrors('wed')) }}
+            {{ errorList(block.getErrors('thu')) }}
+            {{ errorList(block.getErrors('fri')) }}
+            {{ errorList(block.getErrors('sat')) }}
+            {{ errorList(block.getErrors('sun')) }}
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro weekToggle(block, type, index) %}
+    <div class="row week">
+        <input type="hidden" class="type" name="fields[weeksToggle][{{ index }}][type]" value="{{ type.id }}">
+        <input type="hidden" class="enabled" name="fields[weeksToggle][{{ index }}][enabled]" value="1">
+        {% for day in ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] %}
+            <div class="col-3 col-md p-1">
+                <div class="form-check">
+                    <input type="hidden" name="fields[weeksToggle][{{ index }}][fields][{{ day }}]" value="0">
+                    <input type="checkbox" class="form-check-input day" id="toggle-{{ day ~ index }}" name="fields[weeksToggle][{{ index }}][fields][{{ day }}]" value="1" {% if not block or (block and block[day]) %}checked{% endif %} data-day="{{ day }}">
+                    <label for="toggle-{{ day ~ index }}">{{ day|capitalize|t }}</label>
+                </div>
+            </div>
+        {% endfor %}
+        {% if block %}
+            {{ errorList(block.getErrors('mon')) }}
+            {{ errorList(block.getErrors('tue')) }}
+            {{ errorList(block.getErrors('wed')) }}
+            {{ errorList(block.getErrors('thu')) }}
+            {{ errorList(block.getErrors('fri')) }}
+            {{ errorList(block.getErrors('sat')) }}
+            {{ errorList(block.getErrors('sun')) }}
+        {% endif %}
     </div>
 {% endmacro %}
 
@@ -32,13 +67,13 @@
     {{ redirectInput('/tasks') }}
     {{ successMessageInput('Task saved'|t) }}
     {{ failMessageInput('Please fix the validation errors'|t) }}
-    {% if task %}
+    {% if task and not copy_id %}
         {{ hiddenInput('entryId', task.id) }}
     {% endif %}
 
     <div class="form-group mb-3 field-title">
         <label for="name" class="required">{{ 'Name'|t }}</label>
-        {{ input('text', 'title', task.title ?? '', {
+        {{ input('text', 'title', copy_id ? '' : (task.title ?? ''), {
             id: 'title',
             class: 'form-control' ~ (task and task.hasErrors('title') ? ' is-invalid' : '')
         }) }}
@@ -55,47 +90,15 @@
             class: 'form-control datepicker' ~ (task and task.hasErrors('startDate') ? ' is-invalid' : ''),
             data: {
                 options: {
-                    minDate: now|date('Y-m-d', currentUser.timezone),
+                    altInput: true,
+                    altFormat: 'd/m/Y',
+                    dateFormat: 'Y-m-d',
                     disableMobile: true
                 }
             }
         }) }}
         {% if task %}
             {{ errorList(task.getErrors('startDate')) }}
-        {% endif %}
-    </div>
-
-    <div class="form-group mb-3 field-taskType">
-        <label class="required">{{ 'More or less of something'|t }}</label>
-        <div>
-            <div class="form-check form-check-inline">
-                <input type="radio" name="fields[taskType]" id="type-more" value="more" {% if task and task.taskType == 'more' or not task %}checked{% endif %}>
-                <label class="form-check-label" for="type-more">
-                    {{ 'More'|t }}
-                </label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input type="radio" name="fields[taskType]" id="type-less" value="less" {% if task and task.taskType == 'less' %}checked{% endif %}>
-                <label class="form-check-label" for="type-less">
-                    {{ 'Less'|t }}
-                </label>
-            </div>
-        </div>
-    </div>
-
-    {{ hiddenInput('fields[length]', task ? task.length : 600, {
-        id: 'length-seconds'
-    }) }}
-    <div class="form-group mb-3 field-length">
-        <label for="length" class="required">{{ 'Work block length (minutes)'|t }}</label>
-        {{ input('number', null, task ? (task.length / 60)|round : 10, {
-            id: 'length',
-            class: 'form-control' ~ (task and task.hasErrors('length') ? ' is-invalid' : ''),
-            min: 1,
-            step: 1
-        }) }}
-        {% if task %}
-            {{ errorList(task.getErrors('length')) }}
         {% endif %}
     </div>
 
@@ -118,32 +121,6 @@
         {% endif %}
     </div>
 
-    {% set weeks = task ? task.weeks.all() : null %}
-
-    <div class="form-group mb-3 field-repeat">
-        <label for="length" class="required">{{ 'Repeat your schedule every 1, 2, 3... weeks'|t }}</label>
-        {{ input('number', '', task ? weeks|length : 1, {
-            class: 'form-control',
-            id: 'repeat-input',
-            min: 1,
-            step: 1
-        }) }}
-    </div>
-
-    {% set field = craft.app.fields.getFieldByHandle('weeks') %}
-    {% set block_types = craft.superTable.getSuperTableBlocks(field.id) %}
-    {% set block_type = block_types.0 %}
-    <div class="form-group mb-3 field-weeks">
-        <label>{{ 'How many work blocks do you want to do each day?'|t }}</label>
-        {% if task %}
-            {% for week in weeks %}
-                {{ _self.week(week, block_type, week.id) }}
-            {% endfor %}
-        {% else %}
-            {{ _self.week(null, block_type, 'new1') }}
-        {% endif %}
-    </div>
-
     <div class="form-group mb-3 field-committed">
         <label for="committed" class="required">{{ '$ committed per derail'|t }}</label>
         {{ input('number', 'fields[committed][value]', (task and task.committed) ? task.committed.amount / 100 : 1, {
@@ -157,7 +134,100 @@
         {% endif %}
     </div>
 
-    <div class="form-group mb-3 field-icon">
+    <div class="form-group mb-3 field-taskType">
+        <label class="required">{{ 'More or less of something'|t }}</label>
+        <div>
+            <div class="form-check form-check-inline">
+                <input type="radio" name="fields[taskType]" id="type-more" value="more" {% if task and task.taskType == 'more' or not task %}checked{% endif %}>
+                <label class="form-check-label" for="type-more">
+                    {{ 'More'|t }}
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input type="radio" name="fields[taskType]" id="type-less" value="less" {% if task and task.taskType == 'less' %}checked{% endif %}>
+                <label class="form-check-label" for="type-less">
+                    {{ 'Less'|t }}
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mb-3 field-timeBased">
+        <div class="form-check form-switch">
+            <input type="hidden" name="fields[timeBased]" value="0">
+            <input class="form-check-input" type="checkbox" id="timeBased" name="fields[timeBased]" value="1" {% if not task or task.timeBased %}checked{% endif %}>
+            <label class="form-check-label" for="timeBased">{{ 'Time based task'|t }}</label>
+        </div>
+    </div>
+
+    {{ hiddenInput('fields[length]', task ? task.length : 600, {
+        id: 'length-seconds'
+    }) }}
+    <div class="form-group mb-3 field-length">
+        <label for="length" class="required">{{ 'Work block length (minutes)'|t }}</label>
+        {{ input('number', null, task ? (task.length / 60)|round : 10, {
+            class: 'form-control' ~ (task and task.hasErrors('length') ? ' is-invalid' : ''),
+            min: 1,
+            step: 1
+        }) }}
+        {% if task %}
+            {{ errorList(task.getErrors('length')) }}
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-3 field-recurring">
+        <div class="form-check form-switch">
+            <input type="hidden" name="fields[recurring]" value="0">
+            <input class="form-check-input" type="checkbox" id="recurring" name="fields[recurring]" value="1" {% if not task or task.recurring %}checked{% endif %}>
+            <label class="form-check-label" for="recurring">{{ 'Recurring task'|t }}</label>
+        </div>
+    </div>
+
+    {% set weeks = task ? task.weeks.all() : null %}
+    {% if task and not task.timeBased %}
+        {% set weeks = task.weeksToggle.all() %}
+    {% endif %}
+    {% set nb_of_weeks = weeks|length %}
+
+    <div class="form-group mb-3 field-repeat">
+        <label for="length" class="required">{{ 'Repeat your schedule every 1, 2, 3... weeks'|t }}</label>
+        {{ input('number', '', task ? nb_of_weeks : 1, {
+            class: 'form-control',
+            id: 'repeat-input',
+            min: 1,
+            step: 1
+        }) }}
+    </div>
+
+    {% set field = craft.app.fields.getFieldByHandle('weeks') %}
+    {% set block_types = craft.superTable.getSuperTableBlocks(field.id) %}
+    {% set block_type = block_types.0 %}
+    <div class="form-group mb-3 field-weeks">
+        <label>{{ 'How many work blocks do you want to do each day?'|t }}</label>
+        {% if task and weeks|length > 0 %}
+            {% for week in weeks %}
+                {{ _self.week(week, block_type, (not copy_id and week.id) ? week.id : 'new' ~ loop.index) }}
+            {% endfor %}
+        {% else %}
+            {{ _self.week(null, block_type, 'new1') }}
+        {% endif %}
+    </div>
+
+    {% set field = craft.app.fields.getFieldByHandle('weeksToggle') %}
+    {% set block_types = craft.superTable.getSuperTableBlocks(field.id) %}
+    {% set block_type = block_types.0 %}
+    <div class="form-group mb-3 field-weeksToggle">
+        <label>{{ 'Do you want to the task each day?'|t }}</label>
+        {% if task and weeks|length > 0 %}
+            {% for week in weeks %}
+                {{ _self.weekToggle(week, block_type, (not copy_id and week.id) ? week.id : 'new' ~ loop.index) }}
+            {% endfor %}
+        {% else %}
+            {{ _self.weekToggle(null, block_type, 'new1') }}
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-3 field-backgroundColor">
         <label class="form-label">
             {{ 'Background color'|t }}
         </label>

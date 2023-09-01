@@ -1,0 +1,72 @@
+columnSuffix: null
+contentColumnType: string
+fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
+handle: weeksToggle
+instructions: null
+name: Weeks
+searchable: false
+settings:
+  blockTypeFields: 0
+  changedFieldIndicator: 595330503
+  columns:
+    __assoc__:
+      -
+        - d8e6583d-cac2-4e43-b492-687232234955 # Mon
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - ef036cf0-f8e0-43c2-8865-3706cbae1c3c # Tue
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - 710a7eff-aa51-42fe-886c-51590f147dd7 # Wed
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - a94c6d7e-2908-40ca-a902-ac3457a73d26 # Thu
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - 65836395-28ff-4249-8dfe-4a1de34d3939 # Fri
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - 18cdb983-638e-488a-8e8f-1df5244e2d03 # Sat
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+      -
+        - 9ed0591a-e479-4c5e-bd6a-f1bcb15c1c1f # Sun
+        -
+          __assoc__:
+            -
+              - width
+              - ''
+  contentTable: '{{%stc_weekstoggle}}'
+  fieldLayout: table
+  maxRows: null
+  minRows: 1
+  propagationKeyFormat: null
+  propagationMethod: all
+  selectionLabel: null
+  staticField: null
+translationKeyFormat: null
+translationMethod: none
+type: verbb\supertable\fields\SuperTableField

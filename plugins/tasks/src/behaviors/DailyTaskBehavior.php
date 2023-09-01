@@ -29,43 +29,24 @@ class DailyTaskBehavior extends Behavior
             if ($this->owner->task instanceof Collection) {
                 $this->_task = $this->owner->task->first();
             } else {
-                $this->_task = $this->owner->task->one();
+                $this->_task = $this->owner->task->anyStatus()->one();
             }
         }
         return $this->_task;
     }
 
     /**
-     * Get the task status, can be either 'active', 'inactive', 'complete', 'derailed', 'paused'
-     *
-     * @return string
-     */
-    public function getTaskStatus(): string
-    {
-        if ($this->isPaused()) {
-            return 'paused';
-        }
-        if (!$this->isActive()) {
-            return 'inactive';
-        }
-        if ($this->isComplete()) {
-            return 'complete';
-        }
-        if ($this->hasDerailed()) {
-            return 'derailed';
-        }
-        return 'active';
-    }
-
-    /**
-     * Has the daily task derailed
+     * Has the daily task derailed. this will NOT check if the task is paused or active
      *
      * @return bool
      */
     public function hasDerailed(): bool
     {
-        if (!$this->isActive()) {
-            return false;
+        if (!$this->owner->timeBased) {
+            if (!$this->isExpired()) {
+                return false;
+            }
+            return !$this->owner->done;
         }
         $timeSpent = $this->getTimeSpent();
         if ($this->owner->taskType->value == 'more') {
@@ -94,19 +75,6 @@ class DailyTaskBehavior extends Behavior
     }
 
     /**
-     * Is this daily task active
-     *
-     * @return bool
-     */
-    public function isActive(): bool
-    {
-        if ($this->isPaused()) {
-            return false;
-        }
-        return $this->owner->length > 0;
-    }
-
-    /**
      * Is this daily task expired
      *
      * @return bool
@@ -123,6 +91,9 @@ class DailyTaskBehavior extends Behavior
      */
     public function isComplete(): bool
     {
+        if (!$this->task->timeBased) {
+            return $this->owner->done;
+        }
         if ($this->owner->taskType->value == 'more') {
             return $this->getTimeSpent() >= $this->owner->length;
         }
@@ -173,19 +144,9 @@ class DailyTaskBehavior extends Behavior
      */
     public function getPreviousTask(): ?Entry
     {
-        return $this->getPreviousTasks()[0] ?? null;
-    }
-
-    /**
-     * Get the previous daily tasks, ordered by date desc
-     *
-     * @return array
-     */
-    public function getPreviousTasks(): array
-    {
-        $entries = Entry::find()->section('dailyTask')->relatedTo($this->getTask())->orderBy('startDate desc');
-        DateHelper::addDateParamsSmallerThan($entries, $this->owner->startDate, 'startDate', true);
-        return $entries->all();
+        $query = Entry::find()->section('dailyTask')->relatedTo($this->getTask())->with('task')->orderBy('startDate desc');
+        DateHelper::addDateParamsSmallerThan($query, $this->owner->startDate, 'startDate', true);
+        return $query->one();
     }
 
     /**

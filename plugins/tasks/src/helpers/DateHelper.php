@@ -87,4 +87,28 @@ class DateHelper
         $before->add(new DateInterval('P1D'));
         return ($before->format('d/m/Y') == $after->format('d/m/Y'));
     }
+
+    /**
+     * Check if a date is after another date
+     *
+     * @param  DateTime $before
+     * @param  DateTime $after
+     * @return boolean
+     */
+    public static function isAfter(DateTime $before, DateTime $after): bool
+    {
+        return ($after->format('Y-m-d') > $before->format('Y-m-d'));
+    }
+
+    /**
+     * Check if a date is after another date
+     *
+     * @param  DateTime $date1
+     * @param  DateTime $date2
+     * @return boolean
+     */
+    public static function isSameDay(DateTime $date1, DateTime $date2): bool
+    {
+        return ($date1->format('Y-m-d') == $date2->format('Y-m-d'));
+    }
 }

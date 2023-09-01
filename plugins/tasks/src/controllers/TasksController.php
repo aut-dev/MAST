@@ -2,6 +2,7 @@
 
 namespace Plugins\Tasks\controllers;
 
+use Plugins\Tasks\Tasks;
 use Plugins\Tasks\helpers\TimeHelper;
 use Plugins\Timer\Timer;
 use craft\elements\Entry;
@@ -12,34 +13,19 @@ use yii\web\ForbiddenHttpException;
 class TasksController extends Controller
 {
     /**
-     * (Un)Pauses a task
-     */
-    public function actionPause()
-    {
-        $user = \Craft::$app->user->identity;
-        $paused = $this->request->getRequiredParam('paused');
-        $task = Entry::find()->section('task')->authorId($user->id)->id($this->request->getRequiredParam('id'))->one();
-        if (!$task) {
-            throw new ForbiddenHttpException('Task not found');
-        }
-        $task->setFieldValue('paused', $paused);
-        \Craft::$app->elements->saveElement($task, false);
-        return $this->asJson($this->getTaskData($task));
-    }
-
-    /**
      * Poll progress of all a user's tasks
+     * Get the current user tasks
      */
-    public function actionPoll()
+    public function actionGet()
     {
         $user = \Craft::$app->user->identity;
-        $tasks = Entry::find()->section('task')->authorId($user->id);
+        $tasks = Entry::find()->section('task')->authorId($user->id)->orderBy('order asc');
         if ($id = $this->request->getQueryParam('id')) {
             $tasks->id($id);
         }
         $out = [];
         foreach ($tasks->all() as $task) {
-            $out[$task->id] = $this->getTaskData($task);
+            $out[] = $this->getTaskData($task);
         }
         return $this->asJson($out);
     }
@@ -62,25 +48,21 @@ class TasksController extends Controller
     }
 
     /**
-     * Check if editing a task could make them derail instantly
+     * Check if editing a task could make them derail instantly,
+     * Create an unsaved daily task and check if it has derailed
      */
     public function actionCheckEditTask()
     {
         $this->requirePostRequest();
         $task = Entry::find()->id($this->request->getRequiredParam('entryId'))->one();
         $task->setFieldValuesFromRequest('fields');
-        $daily = $task->getDailyTask();
-        if ($daily) {
-            $daily->setFieldValues([
-                'taskType' => $task->taskType,
-                'deadline' => $task->deadline,
-                'length' => $task->getDuration(),
-                'committed' => $task->committed,
-                'paused' => $task->paused
-            ]);
+        $service = Tasks::$plugin->tasks;
+        $daily = false;
+        if ($service->dayHasDailyTask($task)) {
+            $daily = $service->createDailyTask($task, $task->author->today, false);
         }
         return $this->asJson([
-            'status' => $daily ? $daily->getTaskStatus() : 'inactive'
+            'derailed' => $daily ? $daily->hasDerailed() : false
         ]);
     }
 
@@ -94,12 +76,25 @@ class TasksController extends Controller
     {
         $daily = $task->getDailyTask();
         $started = Timer::$plugin->timer->timerStarted($task);
+        $length = $daily ? $daily->length : 0;
         return [
-            'countdown' => TimeHelper::minutesToNow($task->todayDeadline),
-            'active' => $daily and $daily->isActive(),
-            'status' => $task->getTaskStatus(),
-            'progress' => $daily ? $daily->getProgress(true) : false,
-            'timerStarted' => $started ? true : false,
+            'title' => $task->title,
+            'id' => $task->id,
+            'dailyId' => $daily ? $daily->id : null,
+            'url' => $task->url,
+            'timeBased' => $task->timeBased,
+            'progressPerSec' => ($length > 0 ? (1 / $length * 100) : 0),
+            'taskType' => $task->taskType->value,
+            'committed' => $task->committed->getAmount() / 100,
+            'countdown' => $daily ? TimeHelper::minutesToNow($daily->deadlineInstance) : null,
+            'length' => $daily ? round($daily->length / 60) : round($task->length / 60),
+            'active' => $daily !== null,
+            'complete' => $daily and $daily->isComplete(),
+            'derailed' => $daily and $daily->hasDerailed(),
+            'progress' => $daily ? $daily->getProgress() : false,
+            'timerStarted' => $started ? $started->getTimestamp() : 0,
+            'paused' => $task->paused,
+            'deadline' => $daily ? $daily->deadlineInstance->getTimestamp() : null,
             'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null
         ];
     }

@@ -13,6 +13,10 @@ form {
     .datepicker[readonly] {
         background-color: unset;
     }
+    .is-invalid.no-error-icon {
+        background-image: unset;
+        padding-right: 0.75rem;
+    }
 }
 
 .grecaptcha-badge {

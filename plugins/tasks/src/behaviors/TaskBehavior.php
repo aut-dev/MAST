@@ -17,32 +17,6 @@ class TaskBehavior extends Behavior
     protected $dailys;
 
     /**
-     * Get the task status, can be either 'active', 'inactive', 'complete', 'derailed' or 'expired'
-     *
-     * @return string
-     */
-    public function getTaskStatus(): string
-    {
-        if ($daily = $this->getDailyTask()) {
-            return $daily->getTaskStatus();
-        }
-        if ($this->isPaused()) {
-            return 'paused';
-        }
-        return 'inactive';
-    }
-
-    /**
-     * Is this task paused
-     *
-     * @return boolean
-     */
-    public function isPaused(): bool
-    {
-        return ($this->owner->paused or $this->owner->author->isOnBreak(DateTimeHelper::toDateTime('now')));
-    }
-
-    /**
      * Get the total amount of derailed
      *
      * @return int
@@ -101,11 +75,7 @@ class TaskBehavior extends Behavior
     public function getDailyTasks(): array
     {
         if ($this->dailys === null) {
-            $query = Entry::find()->section('dailyTask')->relatedTo($this->owner);
-            if (!$this->owner->enabled) {
-                $query->anyStatus();
-            }
-            $this->dailys = $query->all();
+            $this->dailys = Entry::find()->section('dailyTask')->relatedTo($this->owner)->with('task')->all();
         }
         return $this->dailys;
     }
@@ -127,16 +97,6 @@ class TaskBehavior extends Behavior
     }
 
     /**
-     * Get today's deadline
-     *
-     * @return DateTime
-     */
-    public function getTodayDeadline(): DateTime
-    {
-        return $this->owner->author->today->setTime($this->owner->deadline->format('H'), $this->owner->deadline->format('i'), 59);
-    }
-
-    /**
      * Get the next deadline
      *
      * @return DateTime
@@ -153,7 +113,8 @@ class TaskBehavior extends Behavior
     }
 
     /**
-     * Get the duration in seconds for any given day, default to today if null
+     * Get the duration in seconds for any given day, default to today if null.
+     * For non time based tasks this will return 1 if the task is active for the day, 0 otherwise
      *
      * @param  ?DateTime $day
      * @return float
@@ -163,12 +124,19 @@ class TaskBehavior extends Behavior
         if ($day === null) {
             $day = $this->owner->author->today;
         }
-        $startDate = (clone $this->owner->startDate)->setTime(0, 0, 0);
-        if ($startDate <= $day) {
+        $weeks = $this->owner->timeBased ? $this->owner->weeks : $this->owner->weeksToggle;
+        $date = $this->owner->startDate;
+        if (!$this->owner->recurring) {
+            if ($date == $day) {
+                return $this->owner->timeBased ? $this->owner->length : 1;
+            }
+            return 0;
+        }
+        if ($date <= $day) {
             $thisWeek = $this->beginningOfWeek(clone $day);
-            $start = $this->beginningOfWeek($startDate);
+            $start = $this->beginningOfWeek($date);
             $current = 0;
-            $weeks = $this->owner->weeks instanceof Collection ? $this->owner->weeks : $this->owner->weeks->all();
+            $weeks = $weeks instanceof Collection ? $weeks : $weeks->all();
             $max = sizeof($weeks);
             while ($start < $thisWeek) {
                 $current++;
@@ -180,6 +148,9 @@ class TaskBehavior extends Behavior
             $week = $weeks[$current];
             $day = strtolower($day->format('D'));
             $length = $week[$day];
+            if (!$this->owner->timeBased) {
+                return $length ? 1 : 0;
+            }
             return $length * $this->owner->length;
         }
         return 0;

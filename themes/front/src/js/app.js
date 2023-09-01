@@ -1,4 +1,4 @@
-/* global $ Globals */
+/* global $ Craft */
 
 class App
 {
@@ -15,14 +15,21 @@ class App
         this.initFontAwesome();
         this.initMatrixContent();
         this.initDetectTimezone();
+        this.fixContentHeight();
+        $(window).resize(() => {
+            this.fixContentHeight();
+        });
         $('body').css('opacity', 1);
+        if (Craft.loggedIn) {
+            setInterval(() => {this.checkSession()}, 30000);
+        }
         console.log('App initialized');
     }
 
     initDetectTimezone()
     {
-        let userTimezone = Globals.timezone;
-        let refused = Globals.refusedTimezoneChange;
+        let userTimezone = Craft.timezone;
+        let refused = Craft.refusedTimezoneChange;
         if (!userTimezone || refused) {
             return;
         }
@@ -61,6 +68,12 @@ class App
         }
     }
 
+    fixContentHeight()
+    {
+        let height = $(document).height() - ($('header').height() + $('footer').height());
+        $('main').css('min-height', height + 'px');
+    }
+
     getBootstrap()
     {
         if (!this.bootstrap) {
@@ -69,18 +82,27 @@ class App
         return this.bootstrap;
     }
 
+    checkSession() {
+        $.ajax({
+            url: '/?action=plugin-users/users/check-session&dontExtendSession=1',
+            contentType: 'json'
+        }).done(data => {
+            if (!data.session) {
+                window.location.reload();
+            }
+        });
+    }
+
     disableLogger()
     {
-        if (window.Globals.env == 'production') {
+        if (Craft.env == 'production') {
             console.log = function() {};
         }
     }
 
     initFontAwesome()
     {
-        if ($('.fa-brands, .fa-solid, .fa-regular, .fa-light, .fa-thin, .fa-duotone').length) {
-            import(/* webpackChunkName: "fontawesome" */ './components/fontawesome');
-        }
+        import(/* webpackChunkName: "fontawesome" */ './components/fontawesome');
     }
 
     initForms($forms)
@@ -126,8 +148,11 @@ class App
 
     handleError(data, $elem, showToast = true)
     {
+        if (!($elem instanceof $)) {
+            $elem = $($elem);
+        }
         if (data.status == 400) {
-            let errors = {};
+            let errors = data.errors;
             if (data.responseJSON && data.responseJSON.errors) {
                 errors = data.responseJSON.errors;
             }

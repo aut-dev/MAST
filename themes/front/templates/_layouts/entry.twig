@@ -1,10 +1,6 @@
 {% extends "_layouts/base" %}
 {% import "_helpers/images" as images %}
 
-{% if currentUser and currentUser.subscriptionStatus != 'active' and (entry.requiresValidSubscription ?? false) %}
-    {% redirect '/pay-subscription' %}
-{% endif %}
-
 {% if currentUser %}
     {% do eagerLoadElements(currentUser, [
         'timer.timer:task'
@@ -12,19 +8,14 @@
 {% endif %}
 
 {% do craft.prefetch.asynchronousFont('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap') %}
-{% do craft.puzzlers.registerGlobalJs('csrfTokenName', craft.app.config.general.csrfTokenName) %}
-{% do craft.puzzlers.registerGlobalJs('csrfToken', craft.app.request.csrfToken) %}
-{% do craft.puzzlers.registerGlobalJs('timezone', currentUser ? currentUser.timezone : '') %}
-{% do craft.puzzlers.registerGlobalJs('refusedTimezoneChange', craft.app.session.get('refusedTimezoneChange', false)) %}
+{% do craft.puzzlers.registerJsGlobal('timezone', currentUser ? currentUser.timezone : '') %}
+{% do craft.puzzlers.registerJsGlobal('refusedTimezoneChange', craft.app.session.get('refusedTimezoneChange', false)) %}
+{% do craft.puzzlers.registerJsGlobal('loggedIn', currentUser ? true : false) %}
 {% set imagery = craft.entries.section('imagery').with(['image', 'favicon']).one() %}
 {% set seo = entry.basicSeo %}
 {% set body_classes = 'entry ' ~ entry.slug %}
 {% set favicon = imagery.favicon.first %}
 {% set main_classes = 'py-3' %}
-
-{% block head_extra %}
-    {% hook "jsGlobals" %}
-{% endblock %}
 
 {% block before_end_body_tag %}
     {{ craft.twigpack.includeSafariNomoduleFix() }}
@@ -99,4 +90,11 @@
 {% endblock %}
 
 {% block footer %}
+    {% if currentUser %}
+        <div class="bg-light">
+            <div class="container py-3">
+                Your timezone is {{ currentUser.timezone }}, now is {{ currentUser.now|date('d/m/Y H:i', currentUser.timezone) }}.
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

@@ -14,22 +14,27 @@ use craft\elements\User;
 class TimerService extends Component
 {
     /**
-     * Start the time for a task
+     * Start the time for a task. Optionally set when the timer was started, defaults to now
      *
      * @param  int|Entry $task
+     * @param  ?DateTime $started
+     * @return DateTime
      */
-    public function start($task)
+    public function start($task, ?DateTime $started = null): DateTime
     {
         if (is_int($task)) {
             $task = Entry::find()->section('task')->id($task)->one();
         }
-        if (!$task instanceof Entry) {
+        if (!($task instanceof Entry)) {
             throw new Exception("Could not find task");
         }
         if ($this->timerStarted($task)) {
             throw new Exception("Timer is already started");
         }
         $user = $task->author;
+        if (is_null($started)) {
+            $started = $user->now;
+        }
         $timer = $user->timer instanceof Collection ? $user->timer : $user->timer->with('timer:task')->all();
         $blocks = [];
         $order = [];
@@ -47,7 +52,7 @@ class TimerService extends Component
             'type' => 'timer',
             'fields' => [
                 'task' => [$task->id],
-                'started' => $user->now
+                'started' => $started
             ]
         ];
         $order[] = 'new1';
@@ -56,15 +61,17 @@ class TimerService extends Component
             'blocks' => $blocks
         ]);
         \Craft::$app->elements->saveElement($user, false);
+        return $user->now;
     }
 
     /**
      * Stop the timer for a task
      *
-     * @param  int|Entry    $task
-     * @param  bool   $saveTimesheet
+     * @param  int|Entry $task
+     * @param  ?DateTime $stopped
+     * @param  bool      $saveTimesheet
      */
-    public function stop($task, bool $saveTimesheet = true)
+    public function stop($task, ?DateTime $stopped = null, bool $saveTimesheet = true)
     {
         if (is_int($task)) {
             $task = Entry::find()->section('task')->id($task)->one();
@@ -77,9 +84,12 @@ class TimerService extends Component
         if (!$block) {
             throw new Exception("Timer is not started");
         }
+        if (is_null($stopped)) {
+            $stopped = $user->now;
+        }
         $task = $block->task[0];
         if ($saveTimesheet) {
-            Timesheets::$plugin->timesheets->addTimesheet($task, $block->started, $user->now);
+            Timesheets::$plugin->timesheets->addTimesheet($task, $block->started, $stopped);
         }
         $timer = $user->timer instanceof Collection ? $user->timer : $user->timer->with('timer:task')->all();
         $blocks = [];

@@ -26,7 +26,25 @@ class AddTask
         this.initWeeks();
         this.initLength();
         this.initImage();
+        this.initTimeBased();
+        this.initRecurring();
         console.log('Add task initialised');
+    }
+
+    initTimeBased()
+    {
+        this.toggleFields();
+        $('.field-timeBased input[type=checkbox]').change(() => {
+            this.toggleFields();
+        });
+    }
+
+    initRecurring()
+    {
+        this.toggleFields();
+        $('.field-recurring input[type=checkbox]').change(() => {
+            this.toggleFields();
+        });
     }
 
     initImage()
@@ -53,49 +71,83 @@ class AddTask
 
     initLength()
     {
-        $('#length').keyup(() => {
-            let seconds = parseInt($('#length').val());
-            if (!isNaN(seconds)) {
-                $('#length-seconds').val(seconds * 60);
+        let $input = this.$form.find('.field-length input');
+        $input.keyup(() => {
+            let minutes = parseInt($input.val());
+            if (!isNaN(minutes)) {
+                this.$form.find('#length-seconds').val(minutes * 60);
             }
         });
     }
 
     initWeeks()
     {
-        this.$form.find('#repeat-input').change(() => {
+        this.$form.find('#repeat-input').keyup(() => {
             this.createWeeks();
         });
         this.createWeeks();
     }
 
-    createWeeks()
+    toggleFields()
     {
-        let total = parseInt(this.$form.find('#repeat-input').val());
-        if (total < 1) {
-            total = 1;
-            this.$form.find('#repeat-input').val(1);
+        if ($('.field-timeBased input[type=checkbox]').is(':checked')) {
+            $('.field-length, .field-weeks').show();
+            $('.field-weeksToggle').hide();
+        } else {
+            $('.field-length, .field-weeks').hide();
+            $('.field-weeksToggle').show();
+            this.$form.find('.field-length input').val(10).trigger('keyup');
         }
-        let existing = this.$form.find('.field-weeks .week');
-        while (total < existing.length) {
-            existing.last().remove();
-            existing = this.$form.find('.field-weeks .week');
-        }
-        while (total > existing.length) {
-            this.$form.find('.field-weeks').append(this.createWeek());
-            existing = this.$form.find('.field-weeks .week');
+        if ($('.field-recurring input[type=checkbox]').is(':checked')) {
+            $('.field-repeat').show();
+        } else {
+            $('.field-repeat, .field-weeks, .field-weeksToggle').hide();
         }
     }
 
-    createWeek()
+    createWeeks()
     {
-        let week = this.$form.find('.field-weeks .week').first().clone();
-        let index = 'new' + (this.$form.find('.field-weeks .week').length + 1);
-        let namespace = 'fields[weeks][' + index + ']';
+        let $input = this.$form.find('#repeat-input');
+        let total = parseInt($input.val());
+        if (isNaN(total)) {
+            return;
+        }
+        if (total < 1) {
+            total = 1;
+            $input.val(1);
+        }
+        let selector = '.field-weeksToggle .week';
+        let field = '.field-weeksToggle';
+        let name = 'weeksToggle';
+        if ($('.field-timeBased input[type=checkbox]').is(':checked')) {
+            selector = '.field-weeks .week';
+            field = 'field-weeks';
+            name = 'weeks';
+        }
+        let existing = this.$form.find(selector);
+        while (total < existing.length) {
+            existing.last().remove();
+            existing = this.$form.find(selector);
+        }
+        while (total > existing.length) {
+            this.$form.find(field).append(this.createWeek(selector, name));
+            existing = this.$form.find(selector);
+        }
+    }
+
+    createWeek(selector, name)
+    {
+        let week = this.$form.find(selector).first().clone();
+        let index = 'new' + (this.$form.find(selector).length + 1);
+        let namespace = 'fields[' + name + '][' + index + ']';
         week.find('.type').attr('name', namespace + '[type]');
         week.find('.enabled').attr('name', namespace + '[enabled]');
         $.each(week.find('.day'), (i, item) => {
-            $(item).attr('name', namespace + '[fields][' + $(item).data('day') + ']').val(1);
+            if (name == 'weeks') {
+                $(item).attr('name', namespace + '[fields][' + $(item).data('day') + ']').val(1);
+            } else {
+                $(item).attr('name', namespace + '[fields][' + $(item).data('day') + ']').attr('checked', true);
+            }
         });
         return week;
     }
@@ -112,7 +164,7 @@ class AddTask
                     dataType: 'json',
                     data: this.$form.serialize()
                 }).done((data) => {
-                    if (data.status == 'derailed') {
+                    if (data.derailed) {
                         this.warningModal.show();
                     } else {
                         this.$form.submit();
