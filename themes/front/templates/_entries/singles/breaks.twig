@@ -1,6 +1,8 @@
 {% extends "_layouts/entry" %}
 {% requireLogin %}
 
+{% set requires_valid_subscription = true %}
+
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\BreaksPage') %}
 
 {% do craft.puzzlers.registerJsTranslations('site', [

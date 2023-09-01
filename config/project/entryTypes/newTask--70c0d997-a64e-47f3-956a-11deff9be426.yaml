@@ -30,18 +30,6 @@ fieldLayouts:
             userCondition: null
             warning: null
             width: 75
-          -
-            elementCondition: null
-            fieldUid: ff7a45f6-249e-4401-b035-ed21eb6dd7ec # Invalid subscription message
-            instructions: null
-            label: null
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 8a2c5b6b-daa5-4ecf-bf95-a305b98066ad
-            userCondition: null
-            warning: null
-            width: 100
         name: Content
         uid: d587d831-bd70-4f82-a9bc-68024ea75421
         userCondition: null
@@ -67,6 +55,9 @@ handle: newTask
 hasTitleField: true
 name: 'New task'
 section: bf477c2a-b2b3-4dde-a0e0-0978de99ab77 # New task
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
 sortOrder: 1
 titleFormat: '{section.name|raw}'
 titleTranslationKeyFormat: null
