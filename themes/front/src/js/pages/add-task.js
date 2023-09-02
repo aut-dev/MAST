@@ -85,6 +85,9 @@ class AddTask
         this.$form.find('#repeat-input').keyup(() => {
             this.createWeeks();
         });
+        this.$form.find('#repeat-input').on('wheel', () => {
+            setTimeout(() => {this.createWeeks();}, 100);
+        });
         this.createWeeks();
     }
 
