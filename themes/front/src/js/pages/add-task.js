@@ -123,11 +123,13 @@ class AddTask
             existing.last().remove();
             existingToggle.last().remove();
             existing = this.$form.find('.field-weeks .week');
+            existingToggle = this.$form.find('.field-weeksToggle .week');
         }
         while (total > existing.length) {
             this.$form.find('.field-weeksToggle').append(this.createWeek('.field-weeksToggle .week', 'weeksToggle'));
             this.$form.find('.field-weeks').append(this.createWeek('.field-weeks .week', 'weeks'));
             existing = this.$form.find('.field-weeks .week');
+            existingToggle = this.$form.find('.field-weeksToggle .week');
         }
     }
 
