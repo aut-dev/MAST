@@ -29,6 +29,7 @@ class Form
     initDatepicker()
     {
         import(/* webpackChunkName: "flatpickr" */ './flatpickr').then((chunk) => {
+            chunk.flatpickr.l10ns.default.firstDayOfWeek = 1;
             $.each(this.$form.find(".datepicker"),(i, elem) => {
                 chunk.flatpickr(elem, $(elem).data('options'));
             });

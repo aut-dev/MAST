@@ -1,6 +1,16 @@
 .week.row {
+    position: relative;
     margin-right: -4px;
     margin-left: -4px;
+    &.current::after {
+        position: absolute;
+        content: "\f00c";
+        color: $red;
+        right: -15px;
+        top: 35px;
+        font-weight: bold;
+        font-family: "Font Awesome 6 Free";
+    }
 }
 .task-image {
     max-height: 40px;

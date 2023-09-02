@@ -70,7 +70,6 @@
     {% if task and not copy_id %}
         {{ hiddenInput('entryId', task.id) }}
     {% endif %}
-
     <div class="form-group mb-3 field-title">
         <label for="name" class="required">{{ 'Name'|t }}</label>
         {{ input('text', 'title', copy_id ? '' : (task.title ?? ''), {
@@ -87,7 +86,7 @@
         <input type="hidden" class="timezone" name="fields[startDate][timezone]" value="{{ currentUser.timezone }}">
         {{ input('text', 'fields[startDate][date]', task ? task.startDate|date('Y-m-d', currentUser.timezone) : now|date('Y-m-d', currentUser.timezone), {
             id: 'startDate',
-            class: 'form-control datepicker' ~ (task and task.hasErrors('startDate') ? ' is-invalid' : ''),
+            class: 'form-control' ~ (task and task.hasErrors('startDate') ? ' is-invalid' : ''),
             data: {
                 options: {
                     altInput: true,

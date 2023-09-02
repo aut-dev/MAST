@@ -9,6 +9,7 @@ class AddTask
     modal;
     warningModal;
     $warningModal;
+    flatpickr;
 
     constructor () 
     {
@@ -28,7 +29,19 @@ class AddTask
         this.initImage();
         this.initTimeBased();
         this.initRecurring();
+        this.initStartDate();
         console.log('Add task initialised');
+    }
+
+    initStartDate()
+    {
+        import(/* webpackChunkName: "flatpickr" */ '../components/flatpickr').then((chunk) => {
+            chunk.flatpickr.l10ns.default.firstDayOfWeek = 1;
+            let options = $('#startDate').data('options');
+            options.onChange = () => this.setCurrentWeekMarker();
+            this.flatpickr = chunk.flatpickr('#startDate', options);
+            this.setCurrentWeekMarker();
+        });
     }
 
     initTimeBased()
@@ -88,6 +101,35 @@ class AddTask
         this.createWeeks();
     }
 
+    setCurrentWeekMarker()
+    {
+        if (!this.flatpickr) {
+            return;
+        }
+        this.$form.find('.field-weeks .week').removeClass('current');
+        this.$form.find('.field-weeksToggle .week').removeClass('current');
+        let current = new Date;
+        let date = new Date(this.flatpickr.selectedDates[0]);
+        if (date > current) {
+            return;
+        }
+        while (date.getDay() != 1) {
+            date.setDate(date.getDate() - 1);
+        }
+        let index = 0;
+        let max = this.$form.find('.field-weeks .week').length - 1;
+        date.setDate(date.getDate() + 7);
+        while (date < current) {
+            date.setDate(date.getDate() + 7);
+            index++;
+            if (index > max) {
+                index = 0;
+            }
+        }
+        this.$form.find('.field-weeks .week').eq(index).addClass('current');
+        this.$form.find('.field-weeksToggle .week').eq(index).addClass('current');
+    }
+
     toggleFields()
     {
         if ($('.field-timeBased input[type=checkbox]').is(':checked')) {
@@ -129,11 +171,13 @@ class AddTask
             this.$form.find('.field-weeks').append(this.createWeek('.field-weeks .week', 'weeks'));
             existing = this.$form.find('.field-weeks .week');
         }
+        this.setCurrentWeekMarker();
     }
 
     createWeek(selector, name)
     {
         let week = this.$form.find(selector).first().clone();
+        week.removeClass('current');
         let index = 'new' + (this.$form.find(selector).length + 1);
         let namespace = 'fields[' + name + '][' + index + ']';
         week.find('.type').attr('name', namespace + '[type]');
