@@ -110,28 +110,24 @@ class AddTask
         let $input = this.$form.find('#repeat-input');
         let total = parseInt($input.val());
         if (isNaN(total)) {
-            return;
+            total = 1;
+            $input.val(1);
         }
         if (total < 1) {
             total = 1;
             $input.val(1);
         }
-        let selector = '.field-weeksToggle .week';
-        let field = '.field-weeksToggle';
-        let name = 'weeksToggle';
-        if ($('.field-timeBased input[type=checkbox]').is(':checked')) {
-            selector = '.field-weeks .week';
-            field = 'field-weeks';
-            name = 'weeks';
-        }
-        let existing = this.$form.find(selector);
+        let existing = this.$form.find('.field-weeks .week');
+        let existingToggle = this.$form.find('.field-weeksToggle .week');
         while (total < existing.length) {
             existing.last().remove();
-            existing = this.$form.find(selector);
+            existingToggle.last().remove();
+            existing = this.$form.find('.field-weeks .week');
         }
         while (total > existing.length) {
-            this.$form.find(field).append(this.createWeek(selector, name));
-            existing = this.$form.find(selector);
+            this.$form.find('.field-weeksToggle').append(this.createWeek('.field-weeksToggle .week', 'weeksToggle'));
+            this.$form.find('.field-weeks').append(this.createWeek('.field-weeks .week', 'weeks'));
+            existing = this.$form.find('.field-weeks .week');
         }
     }
 
