@@ -7,11 +7,16 @@
         content: "\f00c";
         color: $red;
         right: -15px;
-        top: 35px;
+        top: 4px;
         font-weight: bold;
         font-family: "Font Awesome 6 Free";
     }
 }
+
+.field-weeks .week.current::after {
+    top: 35px;
+}
+
 .task-image {
     max-height: 40px;
     max-width: 40px;
