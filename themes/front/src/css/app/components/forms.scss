@@ -10,7 +10,7 @@ form {
     .invalid-feedback {
         display: block;
     }
-    .datepicker[readonly] {
+    .form-control[readonly] {
         background-color: unset;
     }
     .is-invalid.no-error-icon {
