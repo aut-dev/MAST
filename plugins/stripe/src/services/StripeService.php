@@ -162,11 +162,11 @@ class StripeService extends Component
      */
     public function chargeForDerail(Entry $task): bool
     {
+        $amount = MoneyHelper::toNumber($task->committed) * 100;
         if (!$task->author->stripeCustomer or !$task->author->paymentMethod) {
             $this->sendChargeFailAdminEmail($task, $amount, "User " . $task->author->email . " cannot be charged, it's missing a stripe customer id or a payment method id.");
         }
         try {
-            $amount = MoneyHelper::toNumber($task->committed) * 100;
             $this->getClient()->paymentIntents->create([
                 'amount' => $amount,
                 'currency' => 'usd',
