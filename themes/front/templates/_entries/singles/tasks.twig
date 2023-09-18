@@ -29,6 +29,7 @@
 {% block content %}
     <div id="tasks">
         <tasks-header
+            :today="'{{ currentUser.today|date('l, F jS') }}'"
             :on-unlimited-break="{{ currentUser.isOnUnlimitedBreak() ? 'true' : 'false' }}"
             :on-scheduled-break="{{ currentUser.isOnScheduledBreak(currentUser.now) ? 'true' : 'false' }}"
             :hide-inactive-tasks="{{ currentUser.hideInactiveTasks ? 'true' : 'false' }}"

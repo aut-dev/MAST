@@ -67,13 +67,13 @@ export const useTasksStore = defineStore('tasks', {
                 return task.id == id;
             });
             let task = this.tasks[index];
-            task.complete = done;
+            task.daily.complete = done;
             if (!done && deadlineHasPassed) {
-                task.derailed = true;
+                task.daily.derailed = true;
             }
             axios.post('/', {
                 action: 'entries/save-entry',
-                entryId: task.dailyId,
+                entryId: task.daily.id,
                 fields: {
                     done: done ? 1 : 0
                 }

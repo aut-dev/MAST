@@ -9,11 +9,11 @@ use craft\elements\Entry;
 use craft\helpers\DateTimeHelper;
 use craft\web\Controller;
 use yii\web\ForbiddenHttpException;
+use DateInterval;
 
 class TasksController extends Controller
 {
     /**
-     * Poll progress of all a user's tasks
      * Get the current user tasks
      */
     public function actionGet()
@@ -75,27 +75,63 @@ class TasksController extends Controller
     protected function getTaskData(Entry $task): array
     {
         $daily = $task->getDailyTask();
+        $date = ($task->author->today)->sub(new DateInterval('P3D'));
+        $pastTasks = $futureTasks = [];
+        $i = 3;
+        while ($i > 0) {
+            $pdaily = Tasks::$plugin->tasks->getDailyTask($task, $date);
+            $pastTask = [
+                'day' => substr($date->format('l'), 0, 1),
+                'active' => false
+            ];
+            if ($pdaily) {
+                $pastTask['active'] = true;
+                $pastTask['complete'] = $pdaily->isComplete();
+                $pastTask['derailed'] = $pdaily->hasDerailed();
+                $pastTask['progress'] = $pdaily->getProgress();
+            }
+            $pastTasks[] = $pastTask;
+            $date->add(new DateInterval('P1D'));
+            $i--;
+        }
+        $i = 3;
+        $date = $task->author->today;
+        while ($i > 0) {
+            $date->add(new DateInterval('P1D'));
+            $futureTasks[] = [
+                'day' => substr($date->format('l'), 0, 1),
+                'active' => Tasks::$plugin->tasks->dayHasDailyTask($task, $date)
+            ];
+            $i--;
+        }
         $started = Timer::$plugin->timer->timerStarted($task);
         $length = $daily ? $daily->length : 0;
         return [
             'title' => $task->title,
             'id' => $task->id,
-            'dailyId' => $daily ? $daily->id : null,
             'url' => $task->url,
             'timeBased' => $task->timeBased,
             'progressPerSec' => ($length > 0 ? (1 / $length * 100) : 0),
             'taskType' => $task->taskType->value,
             'committed' => $task->committed->getAmount() / 100,
-            'countdown' => $daily ? TimeHelper::minutesToNow($daily->deadlineInstance) : null,
             'length' => $daily ? round($daily->length / 60) : round($task->length / 60),
-            'active' => $daily !== null,
-            'complete' => $daily and $daily->isComplete(),
-            'derailed' => $daily and $daily->hasDerailed(),
-            'progress' => $daily ? $daily->getProgress() : false,
             'timerStarted' => $started ? $started->getTimestamp() : 0,
             'paused' => $task->paused,
-            'deadline' => $daily ? $daily->deadlineInstance->getTimestamp() : null,
-            'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null
+            'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null,
+            'daily' => $daily ? [
+                'active' => true,
+                'id' => $daily->id,
+                'complete' => $daily->isComplete(),
+                'derailed' => $daily->hasDerailed(),
+                'progress' => $daily->getProgress(),
+                'day' => substr($task->author->today->format('l'), 0, 1),
+                'deadline' => $daily->deadlineInstance->getTimestamp()
+            ] : [
+                'active' => false,
+                'day' => substr($task->author->today->format('l'), 0, 1)
+            ],
+            'past' => $pastTasks,
+            'future' => $futureTasks
         ];
     }
 }
