@@ -16,7 +16,6 @@ class DailyTaskBehavior extends Behavior
     public $owner;
     protected $_task;
     protected $_timeSpent;
-    protected $_timeSpentAfterDeadline;
 
     /**
      * Get the associated task
@@ -101,25 +100,19 @@ class DailyTaskBehavior extends Behavior
     }
 
     /**
-     * Get the time spent in seconds on that daily task.
+     * Get the time spent in seconds on that daily task until the deadline.
      * Includes timesheets + timer (if today)
-     * if $includeAfterDeadline is true it will return all the time recorded after the deadline has passed (until midnight),
-     * otherwise will only return until the deadline.
-     * Will start counting from yesterday's task deadline if existing.
      *
-     * @param  bool $includeAfterDeadline
      * @return int
      */
-    public function getTimeSpent(bool $includeAfterDeadline = false): int
+    public function getTimeSpent(): int
     {
-        if ($includeAfterDeadline) {
-            if ($this->_timeSpentAfterDeadline === null) {
-                $this->_timeSpentAfterDeadline = $this->_getTimeSpent(true);
-            }
-            return $this->_timeSpentAfterDeadline;
-        }
         if ($this->_timeSpent === null) {
-            $this->_timeSpent = $this->_getTimeSpent(false);
+            $start = $this->owner->author->getDate($this->owner->startDate);
+            $deadline = $this->getDeadlineInstance();
+            $total = $this->owner->author->getTimerSpent($this->getTask(), $deadline);
+            $total += Timesheets::$plugin->timesheets->getTimeRecorded($this->getTask(), $start, $deadline);
+            $this->_timeSpent = $total;
         }
         return $this->_timeSpent;
     }
@@ -129,24 +122,12 @@ class DailyTaskBehavior extends Behavior
      *
      * @return float
      */
-    public function getProgress(bool $includeAfterDeadline = false): float
+    public function getProgress(): float
     {
         if (!$this->owner->length) {
             return 0;
         }
-        return $this->getTimeSpent($includeAfterDeadline) / $this->owner->length * 100;
-    }
-
-    /**
-     * Get the previous daily task
-     *
-     * @return ?Entry
-     */
-    public function getPreviousTask(): ?Entry
-    {
-        $query = Entry::find()->section('dailyTask')->relatedTo($this->getTask())->with('task')->orderBy('startDate desc');
-        DateHelper::addDateParamsSmallerThan($query, $this->owner->startDate, 'startDate', true);
-        return $query->one();
+        return $this->getTimeSpent() / $this->owner->length * 100;
     }
 
     /**
@@ -157,25 +138,5 @@ class DailyTaskBehavior extends Behavior
     public function getDeadlineInstance(): DateTime
     {
         return $this->owner->author->getDate($this->owner->startDate)->setTime($this->owner->deadline->format('H'), $this->owner->deadline->format('i'), 59);
-    }
-
-    /**
-     * @param  bool $includeAfterDeadline
-     * @return int
-     */
-    protected function _getTimeSpent(bool $includeAfterDeadline = false): int
-    {
-        $start = $this->owner->author->getDate($this->owner->startDate);
-        $total = 0;
-        $deadline = $this->getDeadlineInstance();
-        if ($includeAfterDeadline) {
-            $deadline->setTime(23, 59, 59);
-        }
-        $total += $this->owner->author->getTimerSpent($this->getTask(), $deadline);
-        if ($previousTask = $this->getPreviousTask() and DateHelper::isTheDayBefore($previousTask->startDate, $this->owner->startDate)) {
-            $start = $previousTask->getDeadlineInstance();
-        }
-        $total += Timesheets::$plugin->timesheets->getTimeRecorded($this->getTask(), $start, $deadline);
-        return $total;
     }
 }
