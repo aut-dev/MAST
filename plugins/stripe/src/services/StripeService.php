@@ -126,9 +126,10 @@ class StripeService extends Component
             'expand' => ['subscription']
         ]);
         $user = \Craft::$app->user->identity;
-        $user->setFieldValues([
-            'stripeSessionId' => $sessionId
-        ]);
+        $user->setFieldValue('stripeSessionId', $sessionId);
+        if (!$user->paymentMethod) {
+            $user->setFieldValue('paymentMethod', $session->subscription->default_payment_method);
+        }
         $this->updateUserSubscription($user, $session->subscription);
     }
 
