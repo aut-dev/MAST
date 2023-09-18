@@ -12,12 +12,19 @@
             </div>
         </div>
     {% endif %}
+    {% if craft.app.request.getQueryParam("errorCard") %}
+        <div class="container">
+            <div class="alert alert-warning">
+                Please setup a card to be able to use Mast
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block after_content_matrix %}
     <div class="container container-small text-center">
         <h2 class="mb-3">{{ 'My Subscription'|t }}</h2>
-        {% if currentUser.stripeSessionId %}
+        {% if currentUser.subscriptionStatus %}
             <p>{{ 'Subscription status: {status}'|t('site', {
                 status: currentUser.subscriptionStatus|capitalize
             }) }}</p>
@@ -37,25 +44,41 @@
                 }) }}</p>
             {% endif %}
             <form method="post">
-                {{ actionInput('plugin-stripe/stripe/create-portal-session') }}
+                {{ actionInput('plugin-stripe/stripe/retrieve-portal-session') }}
                 {{ csrfInput() }}
-                <button class="btn btn-primary" type="submit">{{ 'Manage my subscription'|t }}</button>
+                <button class="btn btn-primary" type="submit">{{ 'Manage subscription'|t }}</button>
             </form>
         {% else %}
             <form method="post">
                 {{ actionInput('plugin-stripe/stripe/create-checkout-session') }}
+                {{ hiddenInput('mode', 'subscription') }}
                 {{ csrfInput() }}
                 <button class="btn btn-primary" type="submit">{{ 'Pay for subscription'|t }}</button>
             </form>
         {% endif %}
-        {% if method and method.card is defined %}
-            <h2 class="my-3">{{ 'Payment method'|t }}</h2>
-            <p>{{ '{type} ending in {ends}'|t('site', {
-                type: method.card.brand|ucfirst,
-                ends: method.card.last4
-                }) }}{% if method.card.exp_year %}{{ ', expiring in {date}'|t('site', {
-                    date: method.card.exp_month ~ '/' ~ method.card.exp_year
-                }) }}{% endif %}</p>
+        <h2 class="my-3">{{ 'Payment method'|t }}</h2>
+        {% if method %}
+            {% if method.card is defined %}
+                <p>{{ '{type} ending in {ends}'|t('site', {
+                    type: method.card.brand|ucfirst,
+                    ends: method.card.last4
+                    }) }}{% if method.card.exp_year %}{{ ', expiring in {date}'|t('site', {
+                        date: method.card.exp_month ~ '/' ~ method.card.exp_year
+                    }) }}{% endif %}
+                </p>
+            {% endif %}
+            <form method="post">
+                {{ actionInput('plugin-stripe/stripe/retrieve-portal-session') }}
+                {{ csrfInput() }}
+                <button class="btn btn-primary" type="submit">{{ 'Manage payment method'|t }}</button>
+            </form>
+        {% else %}
+            <form method="post">
+                {{ actionInput('plugin-stripe/stripe/create-checkout-session') }}
+                {{ hiddenInput('mode', 'setup') }}
+                {{ csrfInput() }}
+                <button class="btn btn-primary" type="submit">{{ 'Setup card'|t }}</button>
+            </form>
         {% endif %}
         <h2 class="my-3">{{ 'Update details'|t }}</h2>
         <div class="d-flex justify-content-center">

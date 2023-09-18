@@ -46,17 +46,17 @@ class StripeService extends Component
     /**
      * Create a checkout session in subscription mode
      *
-     * @param  User   $user
      * @return Session
      */
-    public function createCheckoutSession(User $user): Session
+    public function createSubscriptionSession(): Session
     {
+        $user = \Craft::$app->user->identity;
         return $this->getClient()->checkout->sessions->create([
             'line_items' => [[
                 'price' => getenv('STRIPE_PRICE_ID'),
                 'quantity' => 1,
             ]],
-            'customer_email' => $user->email,
+            'customer' => $this->getCustomerId($user),
             "payment_method_types" => ["card", "link"],
             'mode' => 'subscription',
             'success_url' => UrlHelper::siteUrl('stripe-subscription-success?session_id={CHECKOUT_SESSION_ID}'),
@@ -65,18 +65,71 @@ class StripeService extends Component
     }
 
     /**
-     * Create a portal session
+     * Create a checkout session in setup mode
+     *
+     * @return Session
+     */
+    public function createSetupSession(): Session
+    {
+        $user = \Craft::$app->user->identity;
+        return $this->getClient()->checkout->sessions->create([
+            'customer' => $this->getCustomerId($user),
+            "payment_method_types" => ["card", "link"],
+            'mode' => 'setup',
+            'success_url' => UrlHelper::siteUrl('stripe-setup-success?session_id={CHECKOUT_SESSION_ID}'),
+            'cancel_url' => UrlHelper::siteUrl('save-card'),
+        ]);
+    }
+
+    /**
+     * Create a portal session for a subscription
      *
      * @param  User   $user
      * @return PortalSession
      */
-    public function createPortalSession(User $user): PortalSession
+    public function retrievePortalSession(): PortalSession
     {
+        $user = \Craft::$app->user->identity;
         $session = $this->getClient()->checkout->sessions->retrieve($user->stripeSessionId);
         return $this->getClient()->billingPortal->sessions->create([
             'customer' => $session->customer,
             'return_url' => UrlHelper::siteUrl('my-account'),
         ]);
+    }
+
+    /**
+     * Retrieve a setup session and save the payment method associated
+     *
+     * @param  string $sessionId
+     */
+    public function saveSetupFromSession(string $sessionId)
+    {
+        $session = $this->getClient()->checkout->sessions->retrieve($sessionId, [
+            'expand' => ['setup_intent']
+        ]);
+        $user = \Craft::$app->user->identity;
+        $user->setFieldValues([
+            'paymentMethod' => $session->setup_intent->payment_method,
+            'stripeSessionId' => $sessionId
+        ]);
+        \Craft::$app->elements->saveElement($user, false);
+    }
+
+    /**
+     * Retrieve a subscription session and save the subscription status
+     *
+     * @param  string $sessionId
+     */
+    public function saveSubscriptionFromSession(string $sessionId)
+    {
+        $session = $this->getClient()->checkout->sessions->retrieve($sessionId, [
+            'expand' => ['subscription']
+        ]);
+        $user = \Craft::$app->user->identity;
+        $user->setFieldValues([
+            'stripeSessionId' => $sessionId
+        ]);
+        $this->updateUserSubscription($user, $session->subscription);
     }
 
     /**
@@ -214,20 +267,14 @@ class StripeService extends Component
         $values = [
             'subscriptionStatus' => null,
             'subscriptionExpires' => null,
-            'paymentMethod' => null,
-            'stripeSessionId' => null,
             'cancelAtPeriodEnd' => false
         ];
         if ($subscription) {
             $values = [
-                'stripeCustomer' => $subscription->customer,
                 'subscriptionStatus' => $subscription->status,
                 'cancelAtPeriodEnd' => $subscription->cancel_at_period_end,
                 'subscriptionExpires' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
             ];
-            if ($subscription->default_payment_method ?? '') {
-                $values['paymentMethod'] = $subscription->default_payment_method;
-            }
         }
         $user->setFieldValues($values);
         \Craft::$app->elements->saveElement($user, false);
@@ -248,5 +295,25 @@ class StripeService extends Component
             $user = User::find()->email($customer->email)->anyStatus()->one();
         }
         return $user;
+    }
+
+    /**
+     * Get (or create) a stripe customer id for a user
+     *
+     * @param  User   $user
+     * @return string
+     */
+    protected function getCustomerId(User $user): string
+    {
+        if ($user->stripeCustomer) {
+            return $user->stripeCustomer;
+        }
+        $customer = $this->getClient()->customers->create([
+            'email' => $user->email,
+            'name' => $user->fullName
+        ]);
+        $user->setFieldValue('stripeCustomer', $customer->id);
+        \Craft::$app->elements->saveElement($user, false);
+        return $customer->id;
     }
 }
