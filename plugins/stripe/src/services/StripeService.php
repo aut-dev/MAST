@@ -99,7 +99,7 @@ class StripeService extends Component
     public function updateCustomer(Customer $customer)
     {
         $user = User::find()->stripeCustomer($customer->id)->anyStatus()->one();
-        if ($user) {
+        if ($user and $customer->invoice_settings['default_payment_method']) {
             $user->setFieldValue('paymentMethod', $customer->invoice_settings['default_payment_method']);
             \Craft::$app->elements->saveElement($user, false);
             $this->clearPaymentMethodCache($user);
@@ -162,11 +162,12 @@ class StripeService extends Component
      */
     public function chargeForDerail(Entry $task): bool
     {
+        $amount = MoneyHelper::toNumber($task->committed) * 100;
         if (!$task->author->stripeCustomer or !$task->author->paymentMethod) {
+            $this->sendChargeFailAdminEmail($task, $amount, "User " . $task->author->email . " cannot be charged, it's missing a stripe customer id or a payment method id.");
             return false;
         }
         try {
-            $amount = MoneyHelper::toNumber($task->committed) * 100;
             $this->getClient()->paymentIntents->create([
                 'amount' => $amount,
                 'currency' => 'usd',
@@ -180,15 +181,26 @@ class StripeService extends Component
             return true;
         } catch (Exception $e) {
             \Craft::$app->errorHandler->logException($e);
-            $email = \Craft::$app->mailer->composeFromKey('admin_derail_charge_failed', [
-                'task' => $task,
-                'amount' => $amount / 100,
-                'user' => $task->author,
-                'error' => $e->getMessage()
-            ]);
-            $email->setTo(Tasks::getAdminEmails())->send();
+            $this->sendChargeFailAdminEmail($task, $amount, $e->getMessage());
         }
         return false;
+    }
+
+    /**
+     * Send an error to the admins of the site
+     *
+     * @param  Entry  $task
+     * @param  float  $amount
+     * @param  string $message
+     */
+    protected function sendChargeFailAdminEmail(Entry $task, float $amount, string $message): bool
+    {
+        return \Craft::$app->mailer->composeFromKey('admin_derail_charge_failed', [
+            'task' => $task,
+            'amount' => $amount / 100,
+            'user' => $task->author,
+            'error' => $message
+        ])->setTo(Tasks::getAdminEmails())->send();
     }
 
     /**
