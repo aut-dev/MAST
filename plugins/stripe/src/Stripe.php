@@ -33,6 +33,7 @@ class Stripe extends Plugin
     {
         Event::on(UrlManager::class, UrlManager::EVENT_REGISTER_SITE_URL_RULES, function (Event $event) {
             $event->rules = array_merge($event->rules, [
+                'stripe-setup-success' => 'plugin-stripe/stripe/setup-success',
                 'stripe-subscription-success' => 'plugin-stripe/stripe/subscription-success',
                 'stripe-subscription-changed' => 'plugin-stripe/webhooks/subscription-changed'
             ]);

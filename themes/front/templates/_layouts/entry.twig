@@ -2,7 +2,12 @@
 {% import "_helpers/images" as images %}
 
 {% set requires_valid_subscription = requires_valid_subscription ?? false %}
+{% set requires_valid_paymentmethod = requires_valid_paymentmethod ?? false %}
 {% set max_tasks_inactive_subscription = max_tasks_inactive_subscription ?? 4 %}
+
+{% if requires_valid_paymentmethod and not currentUser.paymentMethod %}
+    {% redirect '/my-account?errorCard=1' %}
+{% endif %}
 
 {% if requires_valid_subscription and currentUser.subscriptionStatus != 'active' %}
     {% set tasks = craft.entries.section('task').authorId(currentUser.id).count() %}

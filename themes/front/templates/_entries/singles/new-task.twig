@@ -2,6 +2,7 @@
 {% requireLogin %}
 
 {% set requires_valid_subscription = true %}
+{% set requires_valid_paymentmethod = true %}
 {% set max_tasks_inactive_subscription = 3 %}
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\AddTaskPage') %}

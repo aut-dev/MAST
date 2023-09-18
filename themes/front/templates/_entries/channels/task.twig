@@ -2,6 +2,7 @@
 {% requireLogin %}
 
 {% set requires_valid_subscription = true %}
+{% set requires_valid_paymentmethod = true %}
 
 {% if currentUser.id != entry.author.id %}
     {% exit 403 %}
