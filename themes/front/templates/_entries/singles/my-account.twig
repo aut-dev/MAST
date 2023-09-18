@@ -1,4 +1,4 @@
-{% extends "_layouts/matrix-content" %}
+{% extends "_layouts/entry" %}
 {% requireLogin %}
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\MyAccountPage') %}
@@ -21,8 +21,9 @@
     {% endif %}
 {% endblock %}
 
-{% block after_content_matrix %}
+{% block content %}
     <div class="container container-small text-center">
+        <h1 class="mb-4">{{ entry.title }}</h1>
         <h2 class="mb-3">{{ 'My Subscription'|t }}</h2>
         {% if currentUser.subscriptionStatus %}
             <p>{{ 'Subscription status: {status}'|t('site', {
