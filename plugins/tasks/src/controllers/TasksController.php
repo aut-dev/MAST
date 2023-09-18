@@ -77,8 +77,8 @@ class TasksController extends Controller
         $daily = $task->getDailyTask();
         $date = ($task->author->today)->sub(new DateInterval('P3D'));
         $pastTasks = $futureTasks = [];
-        $i = 3;
-        while ($i > 0) {
+        $count = 3;
+        while ($count > 0) {
             $pdaily = Tasks::$plugin->tasks->getDailyTask($task, $date);
             $pastTask = [
                 'day' => substr($date->format('l'), 0, 1),
@@ -92,17 +92,17 @@ class TasksController extends Controller
             }
             $pastTasks[] = $pastTask;
             $date->add(new DateInterval('P1D'));
-            $i--;
+            $count--;
         }
-        $i = 3;
+        $count = 3;
         $date = $task->author->today;
-        while ($i > 0) {
+        while ($count > 0) {
             $date->add(new DateInterval('P1D'));
             $futureTasks[] = [
                 'day' => substr($date->format('l'), 0, 1),
                 'active' => Tasks::$plugin->tasks->dayHasDailyTask($task, $date)
             ];
-            $i--;
+            $count--;
         }
         $started = Timer::$plugin->timer->timerStarted($task);
         $length = $daily ? $daily->length : 0;
