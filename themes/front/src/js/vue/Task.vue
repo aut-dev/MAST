@@ -18,6 +18,7 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" :href="'/edit-task?id=' + task.id">Edit</a></li>
                         <li><a class="dropdown-item" :href="task.url">View</a></li>
+                        <li><a class="dropdown-item" href="#" @click.prevent="store.setTaskPaused(task.id, !task.paused)">{{ task.paused ? 'Unpause' : 'Pause' }}</a></li>
                     </ul>
                 </div>
             </div>

@@ -12,6 +12,7 @@ export const useTasksStore = defineStore('tasks', {
         disableFetchingTasks: false,
         hideInactiveTasks: false,
         doning: false,
+        pausing: false,
         reordering: false,
         tasks: []
     }),
@@ -84,6 +85,34 @@ export const useTasksStore = defineStore('tasks', {
                 }
             }).then(() => {
                 this.doning = false;
+                this.disableFetchingTasks = false;
+            });
+        },
+        setTaskPaused(id, paused)
+        {
+            if (this.pausing) {
+                return;
+            }
+            this.pausing = true;
+            this.disableFetchingTasks = true;
+            let index = findIndex(this.tasks, (task) => {
+                return task.id == id;
+            });
+            let task = this.tasks[index];
+            task.paused = paused;
+            axios.post('/', {
+                action: 'entries/save-entry',
+                entryId: id,
+                fields: {
+                    paused: paused ? 1 : 0
+                }
+            }, {
+                headers: {
+                    "X-CSRF-Token": Craft.csrfToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then(() => {
+                this.pausing = false;
                 this.disableFetchingTasks = false;
             });
         },
