@@ -62,7 +62,7 @@ class TasksController extends Controller
             $daily = $service->createDailyTask($task, $task->author->today, false);
         }
         return $this->asJson([
-            'derailed' => $daily ? $daily->hasDerailed() : false
+            'derailed' => $daily ? (!$daily->isPaused() and $daily->hasDerailed()) : false
         ]);
     }
 
