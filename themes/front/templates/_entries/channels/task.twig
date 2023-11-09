@@ -42,6 +42,8 @@
             {% endif %}
             <div class="col-6">{{ 'Committed'|t }}</div>
             <div class="col-6">{{ entry.committed|money }}</div>
+            <div class="col-6">{{ 'Recurring'|t }}</div>
+            <div class="col-6">{{ entry.recurring ? 'Yes'|t : 'No'|t }}</div>
             <div class="col-6">{{ 'Paused'|t }}</div>
             <div class="col-6">{{ entry.paused ? 'Yes'|t : 'No'|t }}</div>
             {% if entry.backgroundColor %}
