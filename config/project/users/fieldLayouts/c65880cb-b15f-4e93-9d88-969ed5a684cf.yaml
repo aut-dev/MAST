@@ -98,6 +98,18 @@ tabs:
         userCondition: null
         warning: null
         width: 50
+      -
+        elementCondition: null
+        fieldUid: f8cdae36-af2a-4da3-a8b6-170b7dd97716 # Last charge failed
+        instructions: null
+        label: null
+        required: false
+        tip: null
+        type: craft\fieldlayoutelements\CustomField
+        uid: 877a1667-f42a-4f54-be9c-c033bb2613a7
+        userCondition: null
+        warning: null
+        width: 50
     name: Stripe
     uid: 45ce7292-c287-440e-8ada-e73520920ffd
     userCondition: null

@@ -93,14 +93,23 @@
             </div>
         </div>
     {% endif %}
-    {% if currentUser and currentUser.paymentMethodHasExpired %}
+    {% if currentUser and currentUser.paymentMethodHasExpired and not currentUser.lastChargeFailed %}
         <div class="container">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div class="alert alert-danger show" role="alert">
                 {{ 'Your payment method has expired, make sure you add a new one {link}here{endlink}'|t('site', {
                     link: '<a href="/my-account">',
                     endlink: '</a>'
                 })|raw }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    {% endif %}
+    {% if currentUser and currentUser.lastChargeFailed %}
+        <div class="container">
+            <div class="alert alert-danger show" role="alert">
+                {{ "We're unable to charge you for derails, please update your payment details {link}here{endlink}"|t('site', {
+                    link: '<a href="/my-account">',
+                    endlink: '</a>'
+                })|raw }}
             </div>
         </div>
     {% endif %}

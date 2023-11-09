@@ -1,0 +1,14 @@
+columnSuffix: vtsnmpfn
+contentColumnType: boolean
+fieldGroup: 2e3e24ad-d20e-48fc-ba6a-453f1ac66748 # User
+handle: lastChargeFailed
+instructions: null
+name: 'Last charge failed'
+searchable: false
+settings:
+  default: false
+  offLabel: null
+  onLabel: null
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Lightswitch

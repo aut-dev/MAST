@@ -5,6 +5,7 @@
 {% set method = currentUser.getPaymentMethod() %}
 
 {% block before_content %}
+    {{ parent() }}
     {% if craft.app.request.getQueryParam("errorCard") %}
         <div class="container">
             <div class="alert alert-warning">

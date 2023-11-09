@@ -103,6 +103,7 @@ class StripeService extends Component
         $user = User::find()->stripeCustomer($customer->id)->anyStatus()->one();
         if ($user and $customer->invoice_settings['default_payment_method']) {
             $user->setFieldValue('paymentMethod', $customer->invoice_settings['default_payment_method']);
+            $user->setFieldValue('lastChargeFailed', false);
             \Craft::$app->elements->saveElement($user, false);
             $this->clearPaymentMethodCache($user);
         }
@@ -168,10 +169,14 @@ class StripeService extends Component
                 'confirm' => true,
                 'description' => 'Derail for task ' . $task->title
             ]);
+            $task->author->setFieldValue('lastChargeFailed', false);
+            \Craft::$app->elements->saveElement($task->author, false);
             return [true, $intent];
         } catch (Exception $e) {
             \Craft::$app->errorHandler->logException($e);
             $this->sendChargeFailAdminEmail($task, $amount, $e->getMessage());
+            $task->author->setFieldValue('lastChargeFailed', true);
+            \Craft::$app->elements->saveElement($task->author, false);
         }
         return [false, null];
     }
