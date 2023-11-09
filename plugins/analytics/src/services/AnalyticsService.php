@@ -44,7 +44,7 @@ class AnalyticsService extends Component
             }
             $data[$task->id][$index] += ($endDate->getTimeStamp() - $startDate->getTimeStamp());
         }
-        $datasets = [];
+        $datasets = $labels = [];
         $next = $dateFrom;
         while (1) {
             switch ($groupBy) {
@@ -98,7 +98,7 @@ class AnalyticsService extends Component
             }
             $data[$task->id][$index]++;
         }
-        $datasets = [];
+        $datasets = $labels = [];
         $next = $dateFrom;
         while (1) {
             switch ($groupBy) {
@@ -152,7 +152,7 @@ class AnalyticsService extends Component
             }
             $data[$task->id][$index] += MoneyHelper::toNumber($daily->committed);
         }
-        $datasets = [];
+        $datasets = $labels = [];
         $next = $dateFrom;
         while (1) {
             switch ($groupBy) {
