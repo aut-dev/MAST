@@ -3,6 +3,7 @@
 namespace Plugins\Users\behaviors;
 
 use DateTime;
+use DateInterval;
 use DateTimeZone;
 use Plugins\Users\Users;
 use craft\helpers\DateTimeHelper;
@@ -43,6 +44,16 @@ class UserBehavior extends Behavior
     public function getToday(): DateTime
     {
         return $this->getNow()->setTime(0, 0, 0);
+    }
+
+    /**
+     * Get the beggining of yesterday DateTime
+     *
+     * @return DateTime
+     */
+    public function getYesterday(): DateTime
+    {
+        return $this->getToday()->sub(new DateInterval('P1D'));
     }
 
     /**

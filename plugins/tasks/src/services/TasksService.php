@@ -198,9 +198,10 @@ class TasksService extends Component
             $dailyTask->hasDerailed()
         ) {
             $chargeSucceeded = false;
+            $intent = null;
             $amount = MoneyHelper::toNumber($dailyTask->committed);
             if ($amount > 0) {
-                $chargeSucceeded = Stripe::$plugin->stripe->chargeForDerail($dailyTask);
+                list($chargeSucceeded, $intent) = Stripe::$plugin->stripe->chargeForDerail($dailyTask);
             }
             $email = \Craft::$app->mailer->composeFromKey('charged_for_derail', [
                 'date' => $date->format('d/m/Y'),
@@ -211,7 +212,8 @@ class TasksService extends Component
             $email->setTo($dailyTask->author->email)->send();
             $dailyTask->setFieldValues([
                 'chargeSucceeded' => $chargeSucceeded,
-                'hasDerailed' => true
+                'hasDerailed' => true,
+                'chargeId' => $intent ? $intent->latest_charge : ''
             ]);
         }
         $dailyTask->setFieldValues([

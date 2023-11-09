@@ -8,7 +8,6 @@ use Plugins\Timer\Timer;
 use craft\elements\Entry;
 use craft\helpers\DateTimeHelper;
 use craft\web\Controller;
-use yii\web\ForbiddenHttpException;
 use DateInterval;
 
 class TasksController extends Controller

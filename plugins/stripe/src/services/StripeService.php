@@ -16,7 +16,6 @@ use Stripe\PaymentMethod;
 use Stripe\SetupIntent;
 use Stripe\Stripe;
 use Stripe\StripeClient;
-use Stripe\Subscription;
 use craft\base\Component;
 use craft\elements\Entry;
 use craft\elements\User;
@@ -44,27 +43,6 @@ class StripeService extends Component
     }
 
     /**
-     * Create a checkout session in subscription mode
-     *
-     * @return Session
-     */
-    public function createSubscriptionSession(): Session
-    {
-        $user = \Craft::$app->user->identity;
-        return $this->getClient()->checkout->sessions->create([
-            'line_items' => [[
-                'price' => getenv('STRIPE_PRICE_ID'),
-                'quantity' => 1,
-            ]],
-            'customer' => $this->getCustomerId($user),
-            "payment_method_types" => ["card", "link"],
-            'mode' => 'subscription',
-            'success_url' => UrlHelper::siteUrl('stripe-subscription-success?session_id={CHECKOUT_SESSION_ID}'),
-            'cancel_url' => UrlHelper::siteUrl('my-account'),
-        ]);
-    }
-
-    /**
      * Create a checkout session in setup mode
      *
      * @return Session
@@ -82,7 +60,7 @@ class StripeService extends Component
     }
 
     /**
-     * Create a portal session for a subscription
+     * Retrieve a portal session
      *
      * @param  User   $user
      * @return PortalSession
@@ -116,36 +94,6 @@ class StripeService extends Component
     }
 
     /**
-     * Retrieve a subscription session and save the subscription status
-     *
-     * @param  string $sessionId
-     */
-    public function saveSubscriptionFromSession(string $sessionId)
-    {
-        $session = $this->getClient()->checkout->sessions->retrieve($sessionId, [
-            'expand' => ['subscription']
-        ]);
-        $user = \Craft::$app->user->identity;
-        $user->setFieldValue('stripeSessionId', $sessionId);
-        if (!$user->paymentMethod) {
-            $user->setFieldValue('paymentMethod', $session->subscription->default_payment_method);
-        }
-        $this->updateUserSubscription($user, $session->subscription);
-    }
-
-    /**
-     * Update/Create the subscription
-     *
-     * @param  Subscription $subscription
-     */
-    public function updateSubscription(Subscription $subscription)
-    {
-        if ($user = $this->findUser($subscription)) {
-            $this->updateUserSubscription($user, $subscription);
-        }
-    }
-
-    /**
      * Update the customer
      *
      * @param  Customer $customer
@@ -157,18 +105,6 @@ class StripeService extends Component
             $user->setFieldValue('paymentMethod', $customer->invoice_settings['default_payment_method']);
             \Craft::$app->elements->saveElement($user, false);
             $this->clearPaymentMethodCache($user);
-        }
-    }
-
-    /**
-     * Delete the subscription
-     *
-     * @param  Subscription $subscription
-     */
-    public function deleteSubscription(Subscription $subscription)
-    {
-        if ($user = $this->findUser($subscription)) {
-            $this->updateUserSubscription($user, null);
         }
     }
 
@@ -212,17 +148,17 @@ class StripeService extends Component
      * Charge for a daily task derail
      *
      * @param  Entry  $task
-     * @return bool
+     * @return array
      */
-    public function chargeForDerail(Entry $task): bool
+    public function chargeForDerail(Entry $task): array
     {
         $amount = MoneyHelper::toNumber($task->committed) * 100;
         if (!$task->author->stripeCustomer or !$task->author->paymentMethod) {
             $this->sendChargeFailAdminEmail($task, $amount, "User " . $task->author->email . " cannot be charged, it's missing a stripe customer id or a payment method id.");
-            return false;
+            return [false, null];
         }
         try {
-            $this->getClient()->paymentIntents->create([
+            $intent = $this->getClient()->paymentIntents->create([
                 'amount' => $amount,
                 'currency' => 'usd',
                 'customer' => $task->author->stripeCustomer,
@@ -232,70 +168,34 @@ class StripeService extends Component
                 'confirm' => true,
                 'description' => 'Derail for task ' . $task->title
             ]);
-            return true;
+            return [true, $intent];
         } catch (Exception $e) {
             \Craft::$app->errorHandler->logException($e);
             $this->sendChargeFailAdminEmail($task, $amount, $e->getMessage());
         }
-        return false;
+        return [false, null];
     }
 
     /**
-     * Send an error to the admins of the site
+     * Refund for a daily task
      *
-     * @param  Entry  $task
-     * @param  float  $amount
-     * @param  string $message
+     * @param  Entry  $daily
+     * @return bool
      */
-    protected function sendChargeFailAdminEmail(Entry $task, float $amount, string $message): bool
+    public function refund(Entry $daily): bool
     {
-        return \Craft::$app->mailer->composeFromKey('admin_derail_charge_failed', [
-            'task' => $task,
-            'amount' => $amount / 100,
-            'user' => $task->author,
-            'error' => $message
-        ])->setTo(Tasks::getAdminEmails())->send();
-    }
-
-    /**
-     * Update a user subscription internal values
-     *
-     * @param  User         $user
-     * @param  ?Subscription $subscription
-     */
-    protected function updateUserSubscription(User $user, ?Subscription $subscription)
-    {
-        $values = [
-            'subscriptionStatus' => null,
-            'subscriptionExpires' => null,
-            'cancelAtPeriodEnd' => false
-        ];
-        if ($subscription) {
-            $values = [
-                'subscriptionStatus' => $subscription->status,
-                'cancelAtPeriodEnd' => $subscription->cancel_at_period_end,
-                'subscriptionExpires' => $subscription->current_period_end ? (new DateTime())->setTimestamp($subscription->current_period_end) : null
-            ];
+        try {
+            $this->getClient()->refunds->create([
+                'reason' => 'requested_by_customer',
+                'charge' => $daily->chargeId
+            ]);
+        } catch (Exception $e) {
+            \Craft::$app->errorHandler->logException($e);
+            return false;
         }
-        $user->setFieldValues($values);
-        \Craft::$app->elements->saveElement($user, false);
-        $this->clearPaymentMethodCache($user);
-    }
-
-    /**
-     * Find a user from a subscription, first by stripe id, then by email
-     *
-     * @param  Subscription $subscription
-     * @return ?User
-     */
-    protected function findUser(Subscription $subscription): ?User
-    {
-        $user = User::find()->stripeCustomer($subscription->customer)->anyStatus()->one();
-        if (!$user) {
-            $customer = $this->getClient()->customers->retrieve($subscription->customer);
-            $user = User::find()->email($customer->email)->anyStatus()->one();
-        }
-        return $user;
+        $daily->setFieldValue('refunded', true);
+        \Craft::$app->elements->saveElement($daily, false);
+        return true;
     }
 
     /**
