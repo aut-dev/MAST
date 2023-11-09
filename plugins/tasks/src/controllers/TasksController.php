@@ -75,35 +75,6 @@ class TasksController extends Controller
     protected function getTaskData(Entry $task): array
     {
         $daily = $task->getDailyTask();
-        $date = ($task->author->today)->sub(new DateInterval('P3D'));
-        $pastTasks = $futureTasks = [];
-        $count = 3;
-        while ($count > 0) {
-            $pdaily = Tasks::$plugin->tasks->getDailyTask($task, $date);
-            $pastTask = [
-                'day' => substr($date->format('l'), 0, 1),
-                'active' => false
-            ];
-            if ($pdaily) {
-                $pastTask['active'] = true;
-                $pastTask['complete'] = $pdaily->isComplete();
-                $pastTask['derailed'] = $pdaily->hasDerailed();
-                $pastTask['progress'] = $pdaily->getProgress();
-            }
-            $pastTasks[] = $pastTask;
-            $date->add(new DateInterval('P1D'));
-            $count--;
-        }
-        $count = 3;
-        $date = $task->author->today;
-        while ($count > 0) {
-            $date->add(new DateInterval('P1D'));
-            $futureTasks[] = [
-                'day' => substr($date->format('l'), 0, 1),
-                'active' => Tasks::$plugin->tasks->dayHasDailyTask($task, $date)
-            ];
-            $count--;
-        }
         $started = Timer::$plugin->timer->timerStarted($task);
         $length = $daily ? $daily->length : 0;
         return [
@@ -125,13 +96,12 @@ class TasksController extends Controller
                 'derailed' => $daily->hasDerailed(),
                 'progress' => $daily->getProgress(),
                 'day' => substr($task->author->today->format('l'), 0, 1),
-                'deadline' => $daily->deadlineInstance->getTimestamp()
+                'deadline' => $daily->deadlineInstance->getTimestamp(),
+                'countdown' => $daily ? TimeHelper::minutesToNow($daily->deadlineInstance) : null,
             ] : [
                 'active' => false,
                 'day' => substr($task->author->today->format('l'), 0, 1)
-            ],
-            'past' => $pastTasks,
-            'future' => $futureTasks
+            ]
         ];
     }
 }
