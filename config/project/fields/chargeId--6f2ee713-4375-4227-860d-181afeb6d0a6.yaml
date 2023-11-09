@@ -1,0 +1,19 @@
+columnSuffix: rrzauusd
+contentColumnType: text
+fieldGroup: fb9eba24-cb32-4bf5-8a07-ba003842b35f # Tasks
+handle: chargeId
+instructions: null
+name: 'Charge id'
+searchable: false
+settings:
+  byteLimit: null
+  charLimit: null
+  code: false
+  columnType: null
+  initialRows: 4
+  multiline: false
+  placeholder: null
+  uiMode: normal
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\PlainText

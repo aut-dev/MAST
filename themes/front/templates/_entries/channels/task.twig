@@ -1,7 +1,6 @@
 {% extends "_layouts/entry" %}
 {% requireLogin %}
 
-{% set requires_valid_subscription = true %}
 {% set requires_valid_paymentmethod = true %}
 
 {% if currentUser.id != entry.author.id %}
@@ -43,6 +42,8 @@
             {% endif %}
             <div class="col-6">{{ 'Committed'|t }}</div>
             <div class="col-6">{{ entry.committed|money }}</div>
+            <div class="col-6">{{ 'Recurring'|t }}</div>
+            <div class="col-6">{{ entry.recurring ? 'Yes'|t : 'No'|t }}</div>
             <div class="col-6">{{ 'Paused'|t }}</div>
             <div class="col-6">{{ entry.paused ? 'Yes'|t : 'No'|t }}</div>
             {% if entry.backgroundColor %}
@@ -62,4 +63,17 @@
         {% set section = craft.app.sections.getSectionByHandle('timesheet') %}
         <timesheet-list :task-id="{{ entry.id }}" :section-id="{{ section.id }}"></timesheet-list>
     </div>
+    {% set daily = entry.yesterdayDailyTask %}
+    {% if daily and not daily.refunded and daily.chargeId %}
+        <div class="container">
+            <h2 class="mt-3">{{ 'Refund'|t }}</h2>
+            <p>{{ "Get a refund for yesterday's derail ({amount})"|t('site', {amount: daily.committed|money}) }}</p>
+            <form method="post">
+                {{ csrfInput() }}
+                {{ actionInput('plugin-stripe/stripe/refund') }}
+                {{ hiddenInput('id', daily.id) }}
+                <input type="submit" class="btn btn-primary" value="{{ 'Get a refund'|t }}">
+            </form>
+        </div>
+    {% endif %}
 {% endblock %}

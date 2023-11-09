@@ -1,7 +1,6 @@
 {% extends "_layouts/entry" %}
 {% requireLogin %}
 
-{% set requires_valid_subscription = true %}
 {% set requires_valid_paymentmethod = true %}
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\BreaksPage') %}

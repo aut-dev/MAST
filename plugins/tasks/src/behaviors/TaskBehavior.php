@@ -14,6 +14,7 @@ class TaskBehavior extends Behavior
 {
     public $owner;
     protected $daily;
+    protected $yesterday;
     protected $dailys;
 
     /**
@@ -94,6 +95,22 @@ class TaskBehavior extends Behavior
             }
         }
         return $this->daily ?: null;
+    }
+
+    /**
+     * Get the yesterday daily task
+     *
+     * @return Entry
+     */
+    public function getYesterdayDailyTask(): ?Entry
+    {
+        if ($this->yesterday === null) {
+            $this->yesterday = false;
+            if ($daily = Tasks::$plugin->tasks->getDailyTask($this->owner, $this->owner->author->yesterday)) {
+                $this->yesterday = $daily;
+            }
+        }
+        return $this->yesterday ?: null;
     }
 
     /**

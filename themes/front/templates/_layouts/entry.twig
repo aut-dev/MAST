@@ -1,19 +1,10 @@
 {% extends "_layouts/base" %}
 {% import "_helpers/images" as images %}
 
-{% set requires_valid_subscription = requires_valid_subscription ?? false %}
 {% set requires_valid_paymentmethod = requires_valid_paymentmethod ?? false %}
-{% set max_tasks_inactive_subscription = max_tasks_inactive_subscription ?? 4 %}
 
 {% if requires_valid_paymentmethod and not currentUser.paymentMethod %}
     {% redirect '/my-account?errorCard=1' %}
-{% endif %}
-
-{% if requires_valid_subscription and currentUser.subscriptionStatus != 'active' %}
-    {% set tasks = craft.entries.section('task').authorId(currentUser.id).count() %}
-    {% if tasks >= max_tasks_inactive_subscription %}
-        {% redirect '/my-account?errorSubscription=1' %}
-    {% endif %}
 {% endif %}
 
 {% if currentUser %}
@@ -95,10 +86,30 @@
         <div class="container">
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 {{ 'Your payment method is expiring soon, make sure you add a new one {link}here{endlink}'|t('site', {
-                    link: '<a href="/save-card">',
+                    link: '<a href="/my-account">',
                     endlink: '</a>'
                 })|raw }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    {% endif %}
+    {% if currentUser and currentUser.paymentMethodHasExpired and not currentUser.lastChargeFailed %}
+        <div class="container">
+            <div class="alert alert-danger show" role="alert">
+                {{ 'Your payment method has expired, make sure you add a new one {link}here{endlink}'|t('site', {
+                    link: '<a href="/my-account">',
+                    endlink: '</a>'
+                })|raw }}
+            </div>
+        </div>
+    {% endif %}
+    {% if currentUser and currentUser.lastChargeFailed %}
+        <div class="container">
+            <div class="alert alert-danger show" role="alert">
+                {{ "We're unable to charge you for derails, please update your payment details {link}here{endlink}"|t('site', {
+                    link: '<a href="/my-account">',
+                    endlink: '</a>'
+                })|raw }}
             </div>
         </div>
     {% endif %}

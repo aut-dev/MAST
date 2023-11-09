@@ -5,13 +5,7 @@
 {% set method = currentUser.getPaymentMethod() %}
 
 {% block before_content %}
-    {% if craft.app.request.getQueryParam("errorSubscription") %}
-        <div class="container">
-            <div class="alert alert-warning">
-                You've reached your free 3 tasks trial, subscribe to be able to create more tasks
-            </div>
-        </div>
-    {% endif %}
+    {{ parent() }}
     {% if craft.app.request.getQueryParam("errorCard") %}
         <div class="container">
             <div class="alert alert-warning">
@@ -24,39 +18,6 @@
 {% block content %}
     <div class="container container-small text-center">
         <h1 class="mb-4">{{ entry.title }}</h1>
-        <h2 class="mb-3">{{ 'My Subscription'|t }}</h2>
-        {% if currentUser.subscriptionStatus %}
-            <p>{{ 'Subscription status: {status}'|t('site', {
-                status: currentUser.subscriptionStatus|capitalize
-            }) }}</p>
-            {% if currentUser.subscriptionExpires > now %}
-                {% if currentUser.cancelAtPeriodEnd %}
-                    <p>{{ 'Your subscription will be cancelled the {date}.'|t('site', {
-                        date: currentUser.subscriptionExpires|date('d/m/Y', currentUser.timezone)
-                    }) }}</p>
-                {% else %}
-                    <p>{{ 'Your subscription renews the {date}.'|t('site', {
-                        date: currentUser.subscriptionExpires|date('d/m/Y', currentUser.timezone)
-                    }) }}</p>
-                {% endif %}
-            {% else %}
-                <p>{{ 'Your subscription has expired the {date}.'|t('site', {
-                    date: currentUser.subscriptionExpires|date('d/m/Y', currentUser.timezone)
-                }) }}</p>
-            {% endif %}
-            <form method="post">
-                {{ actionInput('plugin-stripe/stripe/retrieve-portal-session') }}
-                {{ csrfInput() }}
-                <button class="btn btn-primary" type="submit">{{ 'Manage subscription'|t }}</button>
-            </form>
-        {% else %}
-            <form method="post">
-                {{ actionInput('plugin-stripe/stripe/create-checkout-session') }}
-                {{ hiddenInput('mode', 'subscription') }}
-                {{ csrfInput() }}
-                <button class="btn btn-primary" type="submit">{{ 'Pay for subscription'|t }}</button>
-            </form>
-        {% endif %}
         <h2 class="my-3">{{ 'Payment method'|t }}</h2>
         {% if method %}
             {% if method.card is defined %}

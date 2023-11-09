@@ -7,7 +7,7 @@
             {{ t("All your tasks are paused as you're on a scheduled break today") }}
         </div>
         <div class="d-flex justify-content-between text-light">
-            <span>Tasks</span>
+            <span>{{ t('Tasks') }}</span>
             <div>
                 <a href="#unlimited-break-modal" data-bs-toggle="modal" :class="{'me-2': true, 'text-light': !store.onUnlimitedBreak}" :title="t('Unlimited break')">
                     <i class="fa-solid fa-pause fs-3"></i>
@@ -20,7 +20,6 @@
                 </a>
             </div>
         </div>
-        <h1 class="border-bottom border-light pb-2 mb-3">{{ today }}</h1>
     </div>
 </template>
 
