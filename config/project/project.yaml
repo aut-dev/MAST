@@ -1,4 +1,4 @@
-dateModified: 1699507243
+dateModified: 1699508844
 elementSources:
   craft\elements\Entry:
     -
@@ -214,6 +214,7 @@ meta:
     710a7eff-aa51-42fe-886c-51590f147dd7: Wed # Wed
     720dc906-57fd-4848-92a1-447acf4703f3: Task # Task
     754e6619-64f1-4d4d-8a61-6df6f90e5a9b: Tasks # Tasks
+    787d0a00-f053-4ce0-ae70-820f3a68179c: Analytics # Analytics
     837fa2c1-2e58-4efa-860b-7c22abbaf240: Imagery # Imagery
     877c3423-006e-4942-bfdb-c44bac344c97: Timesheet # Timesheet
     927c248e-ecc9-43bd-a42c-f3149acdaed6: Big # Big
@@ -262,6 +263,7 @@ meta:
     c23328f2-0994-4997-be38-0ea95701ed16: Image # Image
     cb5a68ab-f470-4387-8531-bea8103c221b: Sunday # Sunday
     cd77c662-a80d-447b-9ca0-dd1aa44d6e6f: 'Login form' # Login form
+    ce4bf83f-a97c-4255-8d1f-f9bab90ec924: Analytics # Analytics
     ce94cb33-2051-4b81-9e4f-4e2c7d3c0cb3: Default # Default
     ce461ea7-466c-4a18-ab4f-dddeb94af716: Weeks # Weeks
     d0cf64d0-59b8-4a50-80de-0e5df63ec975: Tue # Tue
@@ -276,6 +278,7 @@ meta:
     eca48186-ef8a-40ab-bb78-26a70ea56bb0: Text # Text
     ef036cf0-f8e0-43c2-8865-3706cbae1c3c: Tue # Tue
     f7edb11b-5202-431b-b3c7-0c227fe1ebed: week # week
+    f8cdae36-af2a-4da3-a8b6-170b7dd97716: 'Last charge failed' # Last charge failed
     f65685af-7097-4049-9d06-65a2c9435fe2: Insights # Insights
     f95157d7-1eac-4192-855e-c8bdb66fba9b: Monday # Monday
     fa53f651-84c9-437f-9bed-edaead3bf8ed: Home # Home
@@ -342,6 +345,10 @@ plugins:
     edition: standard
     enabled: true
     schemaVersion: 2.0.0
+  plugin-analytics:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
   plugin-stripe:
     edition: standard
     enabled: true

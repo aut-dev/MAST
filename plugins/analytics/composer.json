@@ -1,0 +1,31 @@
+{
+    "name": "plugins/analytics",
+    "description": "Analytics plugin",
+    "type": "craft-plugin",
+    "version": "1.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin"
+    ],
+    "authors": [
+        {
+            "name": "Web Puzzlers",
+            "homepage": "https://puzzlers.run"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "Plugins\\Analytics\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Analytics",
+        "handle": "plugin-analytics",
+        "class": "Plugins\\Analytics\\Analytics"
+    }
+}

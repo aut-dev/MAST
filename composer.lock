@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7689dc541e2de9a5a93f8e53ebbfa142",
+    "content-hash": "8ebed5aeeeb259dc99b15540e42bc593",
     "packages": [
         {
             "name": "adigital/cookie-consent-banner",
@@ -6564,6 +6564,46 @@
                 "source": "https://github.com/pixelandtonic/Imagine/tree/1.3.3.1"
             },
             "time": "2023-01-03T19:18:06+00:00"
+        },
+        {
+            "name": "plugins/analytics",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "plugins/analytics",
+                "reference": "2e110af286e43a99ffca8a2df890ed16f75e2ec6"
+            },
+            "require": {
+                "craftcms/cms": "^4.0"
+            },
+            "type": "craft-plugin",
+            "extra": {
+                "name": "Analytics",
+                "handle": "plugin-analytics",
+                "class": "Plugins\\Analytics\\Analytics"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Plugins\\Analytics\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Web Puzzlers",
+                    "homepage": "https://puzzlers.run"
+                }
+            ],
+            "description": "Analytics plugin",
+            "keywords": [
+                "cms",
+                "craft",
+                "craft-plugin",
+                "craftcms"
+            ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "plugins/stripe",
@@ -14094,5 +14134,5 @@
     "platform-overrides": {
         "php": "8.1"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
