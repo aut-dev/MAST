@@ -51,9 +51,13 @@ class AnalyticsService extends Component
             $datasets[$task->id] = [
                 'label' => $task->title,
                 'tension' => 0.2,
-                'borderColor' => (string)$task->backgroundColor,
                 'data' => []
             ];
+            $color = (string)$task->backgroundColor;
+            if (strtolower($color) == '#ffffff') {
+                $color = '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
+            }
+            $datasets[$task->id]['borderColor'] = $color;
         }
         $next = $dateFrom;
         while (1) {
@@ -113,9 +117,13 @@ class AnalyticsService extends Component
             $datasets[$task->id] = [
                 'label' => $task->title,
                 'tension' => 0.2,
-                'borderColor' => (string)$task->backgroundColor,
                 'data' => []
             ];
+            $color = (string)$task->backgroundColor;
+            if (strtolower($color) == '#ffffff') {
+                $color = '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
+            }
+            $datasets[$task->id]['borderColor'] = $color;
         }
         $next = $dateFrom;
         while (1) {
@@ -175,9 +183,13 @@ class AnalyticsService extends Component
             $datasets[$task->id] = [
                 'label' => $task->title,
                 'tension' => 0.2,
-                'borderColor' => (string)$task->backgroundColor,
                 'data' => []
             ];
+            $color = (string)$task->backgroundColor;
+            if (strtolower($color) == '#ffffff') {
+                $color = '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
+            }
+            $datasets[$task->id]['borderColor'] = $color;
         }
         $next = $dateFrom;
         while (1) {
