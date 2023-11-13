@@ -1,7 +1,7 @@
 <template>
     <div>
         <h3>{{ t('Money spent per task') }}</h3>
-        <chart-filters :today="today" :filters="filters" @changed="onFiltersChanged"></chart-filters>
+        <chart-filters :filters="filters" @changed="onFiltersChanged"></chart-filters>
         <Line v-if="loaded" :data="data" :options="options"></Line>
     </div>
 </template>
@@ -12,8 +12,13 @@ import axios from 'axios';
 
 import { Line } from 'vue-chartjs';
 import ChartFilters from '../ChartFilters.vue';
+import { useAnalyticsStore } from '../stores/AnalyticsStore';
 
 export default {
+    setup() {
+        const store = useAnalyticsStore();
+        return { store };
+    },
     components: {
         Line,
         ChartFilters
@@ -25,7 +30,8 @@ export default {
             filters: {
                 groupBy: 'months',
                 dateFrom: null,
-                dateTo: null
+                dateTo: null,
+                tasks: Object.keys(this.store.tasks)
             },
             options: {
                 scales: {
@@ -38,20 +44,16 @@ export default {
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            label: (item) => `$${item.dataset.label}: ${item.formattedValue}`
+                            label: (item) => `${item.dataset.label}: $${item.formattedValue}`
                         }
                     }
                 }
             }
         }
     },
-    props: {
-        today: String,
-        lastYear: String
-    },
     created() {
-        this.filters.dateFrom = this.lastYear;
-        this.filters.dateTo = this.today
+        this.filters.dateFrom = this.store.lastYear;
+        this.filters.dateTo = this.store.today
         this.loadData(this.filters);
     },
     methods: {

@@ -13,12 +13,14 @@ use craft\helpers\MoneyHelper;
 
 class AnalyticsService extends Component
 {
-    public function timePerTaskData(User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
+    public function timePerTaskData(?array $tasks, User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
     {
         if (!in_array($groupBy, ['days', 'months'])) {
             throw new Exception("groupBy parameter can only be one of : days or months");
         }
-        $tasks = Entry::find()->authorId($user->id)->section('task')->all();
+        if ($tasks === null) {
+            $tasks = Entry::find()->authorId($user->id)->section('task')->all();
+        }
         $sheets = Entry::find()->section('timesheet')->with('task')->relatedTo($tasks);
         DateHelper::add2DatesParamsBetween($sheets, $dateFrom, $dateTo);
         $data = [];
@@ -45,6 +47,14 @@ class AnalyticsService extends Component
             $data[$task->id][$index] += ($endDate->getTimeStamp() - $startDate->getTimeStamp());
         }
         $datasets = $labels = [];
+        foreach ($tasks as $task) {
+            $datasets[$task->id] = [
+                'label' => $task->title,
+                'tension' => 0.2,
+                'borderColor' => (string)$task->backgroundColor,
+                'data' => []
+            ];
+        }
         $next = $dateFrom;
         while (1) {
             switch ($groupBy) {
@@ -60,8 +70,6 @@ class AnalyticsService extends Component
             }
             $labels[] = $label;
             foreach ($tasks as $task) {
-                $datasets[$task->id]['label'] = $task->title;
-                $datasets[$task->id]['tension'] = 0.2;
                 $datasets[$task->id]['data'][] = round(($data[$task->id][$index] ?? 0) / 60);
             }
             if ($next > $dateTo) {
@@ -74,12 +82,14 @@ class AnalyticsService extends Component
         ];
     }
 
-    public function derailsPerTaskData(User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
+    public function derailsPerTaskData(?array $tasks, User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
     {
         if (!in_array($groupBy, ['days', 'months'])) {
             throw new Exception("groupBy parameter can only be one of : days or months");
         }
-        $tasks = Entry::find()->authorId($user->id)->section('task')->all();
+        if ($tasks === null) {
+            $tasks = Entry::find()->authorId($user->id)->section('task')->all();
+        }
         $dailys = Entry::find()->section('dailyTask')->hasDerailed(true)->with('task')->relatedTo($tasks);
         DateHelper::addDateParamsBetween($dailys, $dateFrom, $dateTo);
         $data = [];
@@ -99,6 +109,14 @@ class AnalyticsService extends Component
             $data[$task->id][$index]++;
         }
         $datasets = $labels = [];
+        foreach ($tasks as $task) {
+            $datasets[$task->id] = [
+                'label' => $task->title,
+                'tension' => 0.2,
+                'borderColor' => (string)$task->backgroundColor,
+                'data' => []
+            ];
+        }
         $next = $dateFrom;
         while (1) {
             switch ($groupBy) {
@@ -114,8 +132,6 @@ class AnalyticsService extends Component
             }
             $labels[] = $label;
             foreach ($tasks as $task) {
-                $datasets[$task->id]['label'] = $task->title;
-                $datasets[$task->id]['tension'] = 0.2;
                 $datasets[$task->id]['data'][] = $data[$task->id][$index] ?? 0;
             }
             if ($next > $dateTo) {
@@ -128,12 +144,14 @@ class AnalyticsService extends Component
         ];
     }
 
-    public function moneyPerTaskData(User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
+    public function moneyPerTaskData(?array $tasks, User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
     {
         if (!in_array($groupBy, ['days', 'months'])) {
             throw new Exception("groupBy parameter can only be one of : days or months");
         }
-        $tasks = Entry::find()->authorId($user->id)->section('task')->all();
+        if ($tasks === null) {
+            $tasks = Entry::find()->authorId($user->id)->section('task')->all();
+        }
         $dailys = Entry::find()->section('dailyTask')->chargeSucceeded(true)->with('task')->relatedTo($tasks);
         DateHelper::addDateParamsBetween($dailys, $dateFrom, $dateTo);
         $data = [];
@@ -153,6 +171,14 @@ class AnalyticsService extends Component
             $data[$task->id][$index] += MoneyHelper::toNumber($daily->committed);
         }
         $datasets = $labels = [];
+        foreach ($tasks as $task) {
+            $datasets[$task->id] = [
+                'label' => $task->title,
+                'tension' => 0.2,
+                'borderColor' => (string)$task->backgroundColor,
+                'data' => []
+            ];
+        }
         $next = $dateFrom;
         while (1) {
             switch ($groupBy) {
@@ -168,8 +194,6 @@ class AnalyticsService extends Component
             }
             $labels[] = $label;
             foreach ($tasks as $task) {
-                $datasets[$task->id]['label'] = $task->title;
-                $datasets[$task->id]['tension'] = 0.2;
                 $datasets[$task->id]['data'][] = $data[$task->id][$index] ?? 0;
             }
             if ($next > $dateTo) {

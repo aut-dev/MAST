@@ -3,6 +3,7 @@
 namespace Plugins\Analytics\controllers;
 
 use Plugins\Analytics\Analytics;
+use craft\elements\Entry;
 use craft\web\Controller;
 
 class AnalyticsController extends Controller
@@ -16,7 +17,9 @@ class AnalyticsController extends Controller
         $dateFrom = $user->getNow()->setDate($elems[0], $elems[1], $elems[2])->setTime(0, 0, 0);
         $elems = explode('-', $this->request->getRequiredParam('dateTo'));
         $dateTo = $user->getNow()->setDate($elems[0], $elems[1], $elems[2])->setTime(23, 59, 59);
-        return $this->asJson(Analytics::$plugin->analytics->timePerTaskData($user, $groupBy, $dateFrom, $dateTo));
+        $ids = $this->request->getRequiredParam('tasks');
+        $tasks = Entry::find()->section('task')->authorId($user->id)->id($ids)->all();
+        return $this->asJson(Analytics::$plugin->analytics->timePerTaskData($tasks, $user, $groupBy, $dateFrom, $dateTo));
     }
 
     public function actionDerailsPerTask()
@@ -28,7 +31,11 @@ class AnalyticsController extends Controller
         $dateFrom = $user->getNow()->setDate($elems[0], $elems[1], $elems[2])->setTime(0, 0, 0);
         $elems = explode('-', $this->request->getRequiredParam('dateTo'));
         $dateTo = $user->getNow()->setDate($elems[0], $elems[1], $elems[2])->setTime(23, 59, 59);
-        return $this->asJson(Analytics::$plugin->analytics->derailsPerTaskData($user, $groupBy, $dateFrom, $dateTo));
+        $tasks = null;
+        if ($ids = $this->request->getRequiredParam('tasks')) {
+            $tasks = Entry::find()->section('task')->authorId($user->id)->id($ids)->all();
+        }
+        return $this->asJson(Analytics::$plugin->analytics->derailsPerTaskData($tasks, $user, $groupBy, $dateFrom, $dateTo));
     }
 
     public function actionMoneyPerTask()
@@ -40,6 +47,10 @@ class AnalyticsController extends Controller
         $dateFrom = $user->getNow()->setDate($elems[0], $elems[1], $elems[2])->setTime(0, 0, 0);
         $elems = explode('-', $this->request->getRequiredParam('dateTo'));
         $dateTo = $user->getNow()->setDate($elems[0], $elems[1], $elems[2])->setTime(23, 59, 59);
-        return $this->asJson(Analytics::$plugin->analytics->moneyPerTaskData($user, $groupBy, $dateFrom, $dateTo));
+        $tasks = null;
+        if ($ids = $this->request->getRequiredParam('tasks')) {
+            $tasks = Entry::find()->section('task')->authorId($user->id)->id($ids)->all();
+        }
+        return $this->asJson(Analytics::$plugin->analytics->moneyPerTaskData($tasks, $user, $groupBy, $dateFrom, $dateTo));
     }
 }

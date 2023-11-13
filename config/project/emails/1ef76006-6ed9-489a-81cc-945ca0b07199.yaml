@@ -1,0 +1,11 @@
+bcc: ''
+cc: ''
+from: ''
+fromName: ''
+heading: '[Admin] Error'
+instructions: ''
+key: admin_error
+redactorConfig: ''
+replyTo: ''
+saveLogs: ''
+system: 0
