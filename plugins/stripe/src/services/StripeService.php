@@ -155,7 +155,12 @@ class StripeService extends Component
     {
         $amount = MoneyHelper::toNumber($task->committed) * 100;
         if (!$task->author->stripeCustomer or !$task->author->paymentMethod) {
-            $this->sendChargeFailAdminEmail($task, $amount, "User " . $task->author->email . " cannot be charged, it's missing a stripe customer id or a payment method id.");
+            if (!$task->author->paymentMethod) {
+                $message = "User doesn't have a payment method";
+            } else {
+                $message = "User doesn't have a stripe id";
+            }
+            $this->sendAdminErrorEmail($task->author, $message);
             return [false, null];
         }
         try {
@@ -174,7 +179,6 @@ class StripeService extends Component
             return [true, $intent];
         } catch (Exception $e) {
             \Craft::$app->errorHandler->logException($e);
-            $this->sendChargeFailAdminEmail($task, $amount, $e->getMessage());
             $task->author->setFieldValue('lastChargeFailed', true);
             \Craft::$app->elements->saveElement($task->author, false);
         }
@@ -221,5 +225,19 @@ class StripeService extends Component
         $user->setFieldValue('stripeCustomer', $customer->id);
         \Craft::$app->elements->saveElement($user, false);
         return $customer->id;
+    }
+
+    /**
+     * Send an error to the admins of the site
+     *
+     * @param  User $user
+     * @param  string $message
+     */
+    protected function sendAdminErrorEmail(User $user, string $message): bool
+    {
+        return \Craft::$app->mailer->composeFromKey('admin_error', [
+            'user' => $user,
+            'error' => $message
+        ])->setTo(Tasks::getAdminEmails())->send();
     }
 }

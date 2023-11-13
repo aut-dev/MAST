@@ -7,12 +7,14 @@ use Plugins\Tasks\behaviors\TaskBehavior;
 use Plugins\Tasks\behaviors\UserBehavior;
 use Plugins\Tasks\services\TasksService;
 use Plugins\Tasks\twig\TasksExtension;
+use Plugins\Tasks\variables\TasksVariable;
 use craft\base\Plugin;
 use craft\elements\Entry;
 use craft\elements\User;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\ElementHelper;
 use craft\services\Elements;
+use craft\web\twig\variables\CraftVariable;
 use yii\base\Event;
 
 class Tasks extends Plugin
@@ -33,11 +35,23 @@ class Tasks extends Plugin
         $this->registerBehaviors();
         $this->registerTasksEvents();
         $this->registerTwig();
+        $this->registerVariables();
     }
 
     public static function getAdminEmails(): array
     {
         return explode(',', getenv('ADMIN_EMAILS'));
+    }
+
+    /**
+     * Registers twig variables
+     */
+    protected function registerVariables()
+    {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $event) {
+            $variable = $event->sender;
+            $variable->set('tasks', TasksVariable::class);
+        });
     }
 
     protected function registerTwig()

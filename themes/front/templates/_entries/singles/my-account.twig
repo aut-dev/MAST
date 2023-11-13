@@ -9,7 +9,7 @@
     {% if craft.app.request.getQueryParam("errorCard") %}
         <div class="container">
             <div class="alert alert-warning">
-                Please setup a card to be able to use Mast
+                {{ 'Please setup a card to be able to use Mast'|t }}
             </div>
         </div>
     {% endif %}
