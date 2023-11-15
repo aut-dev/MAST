@@ -1,4 +1,4 @@
-dateModified: 1699861789
+dateModified: 1700021813
 elementSources:
   craft\elements\Entry:
     -
@@ -208,6 +208,7 @@ meta:
     75f26b47-fb20-47e9-9ad1-bab31babae60: 'Time based' # Time based
     79cfda90-52f0-4348-b604-fdb241c209cf: Task # Task
     86c4c449-df54-4c68-a16a-68793a118c14: Done # Done
+    104f68b7-c452-4218-bd37-a9eb6c520ebf: Color # Color
     123c86c3-404e-49c2-8fb1-8666da333b2d: 'Sign up form' # Sign up form
     285c99c4-fa78-44f1-afd3-6eed1b0d5121: 'End date' # End date
     646a52b6-154e-4e2e-846b-72c6d35feadf: Timer # Timer

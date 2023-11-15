@@ -6,6 +6,7 @@ use DateInterval;
 use DateTime;
 use Exception;
 use Plugins\Tasks\helpers\DateHelper;
+use Plugins\Tasks\helpers\TimeHelper;
 use craft\base\Component;
 use craft\elements\Entry;
 use craft\elements\User;
@@ -13,6 +14,44 @@ use craft\helpers\MoneyHelper;
 
 class AnalyticsService extends Component
 {
+    /**
+     * Get some all time metrics
+     *
+     * @return array
+     */
+    public function getMetrics(User $user): array
+    {
+        $metrics = [
+            'tasks' => [],
+            'totals' => [
+                'spent' => 0,
+                'time' => 0,
+                'derails' => 0,
+                'completed' => 0,
+            ]
+        ];
+        foreach (Entry::find()->section('task')->authorId($user->id)->all() as $task) {
+            $spent = $task->getTotalSpent();
+            $time = $task->getTotalWorked();
+            $derails = $task->getTotalDerailed();
+            $completed = $task->getTotalCompleted();
+            $metrics['tasks'][] = [
+                'task' => $task,
+                'spent' => $spent,
+                'time' => TimeHelper::friendlySpentTime($time),
+                'derails' => $derails,
+                'completed' => $completed,
+            ];
+            $metrics['totals']['spent'] += $spent;
+            $metrics['totals']['time'] += $time;
+            $metrics['totals']['derails'] += $derails;
+            $metrics['totals']['completed'] += $completed;
+        }
+        $metrics['totals']['time'] = TimeHelper::friendlySpentTime($metrics['totals']['time']);
+        $metrics['totals']['spent'] = number_format($metrics['totals']['spent'], 2);
+        return $metrics;
+    }
+
     public function timePerTaskData(?array $tasks, User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
     {
         if (!in_array($groupBy, ['days', 'months'])) {
@@ -51,13 +90,9 @@ class AnalyticsService extends Component
             $datasets[$task->id] = [
                 'label' => $task->title,
                 'tension' => 0.2,
-                'data' => []
+                'data' => [],
+                'borderColor' => (string)$task->color
             ];
-            $color = (string)$task->backgroundColor;
-            if (strtolower($color) == '#ffffff') {
-                $color = '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
-            }
-            $datasets[$task->id]['borderColor'] = $color;
         }
         $next = $dateFrom;
         while (1) {
@@ -117,13 +152,9 @@ class AnalyticsService extends Component
             $datasets[$task->id] = [
                 'label' => $task->title,
                 'tension' => 0.2,
-                'data' => []
+                'data' => [],
+                'borderColor' => (string)$task->color
             ];
-            $color = (string)$task->backgroundColor;
-            if (strtolower($color) == '#ffffff') {
-                $color = '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
-            }
-            $datasets[$task->id]['borderColor'] = $color;
         }
         $next = $dateFrom;
         while (1) {
@@ -183,13 +214,9 @@ class AnalyticsService extends Component
             $datasets[$task->id] = [
                 'label' => $task->title,
                 'tension' => 0.2,
-                'data' => []
+                'data' => [],
+                'borderColor' => (string)$task->color
             ];
-            $color = (string)$task->backgroundColor;
-            if (strtolower($color) == '#ffffff') {
-                $color = '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
-            }
-            $datasets[$task->id]['borderColor'] = $color;
         }
         $next = $dateFrom;
         while (1) {

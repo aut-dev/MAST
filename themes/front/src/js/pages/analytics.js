@@ -10,4 +10,4 @@ createApp({
 })
     .use(createPinia())
     .use(Translate)
-    .mount('#analytics');
+    .mount('#analytics-charts');

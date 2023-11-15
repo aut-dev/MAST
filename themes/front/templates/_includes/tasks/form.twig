@@ -226,6 +226,13 @@
         {% endif %}
     </div>
 
+    <div class="form-group mb-3 field-color">
+        <label class="form-label">
+            {{ 'Color'|t }}
+        </label>
+        <input type="color" name="fields[color]" class="form-control form-control-color" value="{% if task %}{{ task.color ?: '#000000' }}{% else %}#000000{% endif %}" title="{{ 'Choose your color'|t }}">
+    </div>
+
     <div class="form-group mb-3 field-backgroundColor">
         <label class="form-label">
             {{ 'Background color'|t }}

@@ -18,7 +18,7 @@ class TaskBehavior extends Behavior
     protected $dailys;
 
     /**
-     * Get the total amount of derailed
+     * Get the total amount of derailed daily tasks
      *
      * @return int
      */
@@ -27,6 +27,22 @@ class TaskBehavior extends Behavior
         $total = 0;
         foreach ($this->getDailyTasks() as $daily) {
             if ($daily->hasDerailed) {
+                $total += 1;
+            }
+        }
+        return $total;
+    }
+
+    /**
+     * Get the total amount of completed daily tasks
+     *
+     * @return int
+     */
+    public function getTotalCompleted(): int
+    {
+        $total = 0;
+        foreach ($this->getDailyTasks() as $daily) {
+            if (!$daily->hasDerailed) {
                 $total += 1;
             }
         }
