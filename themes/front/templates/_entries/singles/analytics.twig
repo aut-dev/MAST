@@ -18,7 +18,7 @@
                     <div class="col-2">{{ 'Money spent'|t }}</div>
                     <div class="col-2">{{ 'Completed'|t }}</div>
                     <div class="col-2">{{ 'Derails'|t }}</div>
-                </div>  
+                </div>
             </li>
             {% for task in metrics.tasks %}
                 <li class="list-group-item">
@@ -28,7 +28,7 @@
                         <div class="col-2">US${{ task.spent }}</div>
                         <div class="col-2">{{ task.completed }}</div>
                         <div class="col-2">{{ task.derails }}</div>
-                    </div>  
+                    </div>
                 </li>
             {% endfor %}
             <li class="list-group-item fw-bold">
@@ -38,7 +38,7 @@
                     <div class="col-2">US${{ metrics.totals.spent }}</div>
                     <div class="col-2">{{ metrics.totals.completed }}</div>
                     <div class="col-2">{{ metrics.totals.derails }}</div>
-                </div>  
+                </div>
             </li>
         </ul>
         <h2>{{ 'Charts'|t }}</h2>
