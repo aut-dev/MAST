@@ -231,6 +231,9 @@
             {{ 'Color'|t }}
         </label>
         <input type="color" name="fields[color]" class="form-control form-control-color" value="{% if task %}{{ task.color ?: '#000000' }}{% else %}#000000{% endif %}" title="{{ 'Choose your color'|t }}">
+        {% if task %}
+            {{ errorList(task.getErrors('color')) }}
+        {% endif %}
     </div>
 
     <div class="form-group mb-3 field-backgroundColor">
@@ -238,6 +241,9 @@
             {{ 'Background color'|t }}
         </label>
         <input type="color" name="fields[backgroundColor]" class="form-control form-control-color" value="{% if task %}{{ task.backgroundColor ?: '#ffffff' }}{% else %}#ffffff{% endif %}" title="{{ 'Choose your color'|t }}">
+        {% if task %}
+            {{ errorList(task.getErrors('backgroundColor')) }}
+        {% endif %}
     </div>
 
     {% if task %}

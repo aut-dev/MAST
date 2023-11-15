@@ -81,6 +81,12 @@ class Tasks extends Plugin
                 Tasks::$plugin->tasks->beforeDeletingTask($entry, $event->hardDelete);
             }
         });
+        Event::on(Entry::class, Entry::EVENT_AFTER_VALIDATE, function (Event $event) {
+            $entry = $event->sender;
+            if (!ElementHelper::isDraftOrRevision($entry) and $entry->section->handle == 'task') {
+                Tasks::$plugin->tasks->validateTask($entry);
+            }
+        });
     }
 
     protected function registerComponents()

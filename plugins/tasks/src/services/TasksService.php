@@ -19,6 +19,21 @@ use yii\base\InvalidArgumentException;
 class TasksService extends Component
 {
     /**
+     * Tasks extra validation rules
+     *
+     * @param  Entry  $task
+     */
+    public function validateTask(Entry $task)
+    {
+        if ($task->color->getLightness() > 95) {
+            $task->addError('color', \Craft::t('site', 'This color is too bright'));
+        }
+        if ($task->backgroundColor->getLightness() < 10) {
+            $task->addError('backgroundColor', \Craft::t('site', 'This color is too dark'));
+        }
+    }
+
+    /**
      * Check all tasks for derail, will charge users.
      * Returns the amount of derailed tasks
      *
