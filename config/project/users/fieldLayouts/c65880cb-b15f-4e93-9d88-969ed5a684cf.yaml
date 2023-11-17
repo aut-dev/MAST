@@ -113,3 +113,21 @@ tabs:
     name: Stripe
     uid: 45ce7292-c287-440e-8ada-e73520920ffd
     userCondition: null
+  -
+    elementCondition: null
+    elements:
+      -
+        elementCondition: null
+        fieldUid: c8cf0123-4051-4f22-b94b-bbb5845a0dc8 # Charts
+        instructions: null
+        label: null
+        required: false
+        tip: null
+        type: craft\fieldlayoutelements\CustomField
+        uid: c69ce87b-216e-4bb8-9000-383695367109
+        userCondition: null
+        warning: null
+        width: 100
+    name: Analytics
+    uid: b5439350-6fd0-4251-af0f-63d88f038207
+    userCondition: null

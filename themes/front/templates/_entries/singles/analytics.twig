@@ -8,42 +8,17 @@
 {% block content %}
     <div class="container">
         <h1 class="mb-4">{{ entry.title }}</h1>
-        <h2>{{ 'Metrics'|t }}</h2>
-        {% set metrics = craft.analytics.getMetrics(currentUser) %}
-        <ul class="list-group list-group-flush mb-3">
-            <li class="list-group-item fw-bold">
-                <div class="row">
-                    <div class="col-3">{{ 'Task'|t }}</div>
-                    <div class="col-3">{{ 'Time spent'|t }}</div>
-                    <div class="col-2">{{ 'Money spent'|t }}</div>
-                    <div class="col-2">{{ 'Completed'|t }}</div>
-                    <div class="col-2">{{ 'Derails'|t }}</div>
-                </div>
-            </li>
-            {% for task in metrics.tasks %}
-                <li class="list-group-item">
-                    <div class="row">
-                        <div class="col-3" style="color: {{ task.task.color ?? '#000000' }}">{{ task.task.title }}</div>
-                        <div class="col-3">{{ task.time }}</div>
-                        <div class="col-2">US${{ task.spent }}</div>
-                        <div class="col-2">{{ task.completed }}</div>
-                        <div class="col-2">{{ task.derails }}</div>
-                    </div>
-                </li>
-            {% endfor %}
-            <li class="list-group-item fw-bold">
-                <div class="row">
-                    <div class="col-3">{{ 'Totals'|t }}</div>
-                    <div class="col-3">{{ metrics.totals.time }}</div>
-                    <div class="col-2">US${{ metrics.totals.spent }}</div>
-                    <div class="col-2">{{ metrics.totals.completed }}</div>
-                    <div class="col-2">{{ metrics.totals.derails }}</div>
-                </div>
-            </li>
-        </ul>
-        <h2>{{ 'Charts'|t }}</h2>
-        <div id="analytics-charts">
-            <analytics :today="'{{ currentUser.today|date('Y-m-d') }}'" :last-week="'{{ currentUser.today|date_modify('-1 week')|date('Y-m-d') }}'" :last-year="'{{ currentUser.today|date_modify('-1 year')|date('Y-m-d') }}'" :tasks="{{ craft.tasks.tasks|json_encode }}"></analytics>
+        
+        <div id="analytics">
+            <analytics 
+                :today="'{{ currentUser.today|date('Y-m-d') }}'" 
+                :last-week="'{{ currentUser.today|date_modify('-1 week')|date('Y-m-d') }}'" 
+                :last-year="'{{ currentUser.today|date_modify('-1 year')|date('Y-m-d') }}'" 
+                :tasks="{{ craft.tasks.tasks|json_encode }}"
+                :metrics="{{ craft.analytics.getMetrics(currentUser)|json_encode }}"
+                :charts="{{ currentUser.charts|map(c => craft.analytics.getJsonChart(c))|json_encode }}"
+            >
+            </analytics>
         </div>
     </div>
 {% endblock %}

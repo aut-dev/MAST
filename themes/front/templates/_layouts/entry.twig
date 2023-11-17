@@ -9,7 +9,8 @@
 
 {% if currentUser %}
     {% do eagerLoadElements(currentUser, [
-        'timer.timer:task'
+        'timer.timer:task',
+        'charts'
     ]) %}
 {% endif %}
 

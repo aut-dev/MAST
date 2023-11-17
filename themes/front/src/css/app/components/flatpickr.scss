@@ -3,3 +3,7 @@
         background-color: $primary;
     }
 }
+
+input.datepicker[readonly] {
+    background-color: unset;
+}

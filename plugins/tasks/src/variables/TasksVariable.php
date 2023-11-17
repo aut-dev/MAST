@@ -10,7 +10,10 @@ class TasksVariable
     {
         $tasks = [];
         foreach (Entry::find()->section('task')->authorId(\Craft::$app->user->identity->id)->all() as $task) {
-            $tasks[$task->id] = $task->title;
+            $tasks[$task->id] = [
+                'title' => $task->title,
+                'color' => (string)$task->color
+            ];
         }
         return $tasks;
     }

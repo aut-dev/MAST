@@ -1,0 +1,10 @@
+.chart-size {
+    height: 15px;
+    .item {
+        width: 15px;
+        cursor: pointer;
+        &.filled {
+            background: $gray-200;
+        }
+    }
+}

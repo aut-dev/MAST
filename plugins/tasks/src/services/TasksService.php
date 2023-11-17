@@ -25,10 +25,10 @@ class TasksService extends Component
      */
     public function validateTask(Entry $task)
     {
-        if ($task->color->getLightness() > 95) {
+        if ($task->color and $task->color->getLightness() > 95) {
             $task->addError('color', \Craft::t('site', 'This color is too bright'));
         }
-        if ($task->backgroundColor->getLightness() < 10) {
+        if ($task->backgroundColor and $task->backgroundColor->getLightness() < 10) {
             $task->addError('backgroundColor', \Craft::t('site', 'This color is too dark'));
         }
     }

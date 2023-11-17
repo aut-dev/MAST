@@ -1,0 +1,16 @@
+columnSuffix: null
+contentColumnType: string
+fieldGroup: 2e3e24ad-d20e-48fc-ba6a-453f1ac66748 # User
+handle: charts
+instructions: null
+name: Charts
+searchable: false
+settings:
+  contentTable: '{{%matrixcontent_charts}}'
+  maxBlocks: null
+  minBlocks: null
+  propagationKeyFormat: null
+  propagationMethod: all
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Matrix

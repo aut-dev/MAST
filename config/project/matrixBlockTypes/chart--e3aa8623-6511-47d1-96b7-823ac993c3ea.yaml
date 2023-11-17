@@ -1,0 +1,207 @@
+field: c8cf0123-4051-4f22-b94b-bbb5845a0dc8 # Charts
+fieldLayouts:
+  c84f1ed8-5bb7-4323-aad7-542a29a160a1:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: e556dd16-7cf0-41d8-b35b-dff5f83625ae # Title
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 8b336a6d-74c6-4e93-8caa-f86ecad0df92
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: c4e129b5-b63a-4685-b066-ee309244b610 # Type
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 2cf670f0-cca5-4045-868c-dda8f36bc306
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: ac93f88b-19f1-4f21-bbf2-6f3ffef2189a # Size
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 25cbc3e2-ee39-4310-a059-6dbe89a68972
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: b829ac8f-6e22-4887-8df9-9a32971182b7 # Filters
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 96758881-fb35-4c9a-9e33-e35c901634db
+            userCondition: null
+            warning: null
+            width: 50
+        name: Content
+        uid: 5c3da43d-4c1b-4991-b376-0486efcf3755
+        userCondition: null
+fields:
+  ac93f88b-19f1-4f21-bbf2-6f3ffef2189a: # Size
+    columnSuffix: picmoilh
+    contentColumnType: string(2)
+    fieldGroup: null
+    handle: size
+    instructions: null
+    name: Size
+    searchable: false
+    settings:
+      columnType: null
+      options:
+        -
+          __assoc__:
+            -
+              - label
+              - 100%
+            -
+              - value
+              - '12'
+            -
+              - default
+              - '1'
+        -
+          __assoc__:
+            -
+              - label
+              - 75%
+            -
+              - value
+              - '9'
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 50%
+            -
+              - value
+              - '6'
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 25%
+            -
+              - value
+              - '3'
+            -
+              - default
+              - ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Dropdown
+  b829ac8f-6e22-4887-8df9-9a32971182b7: # Filters
+    columnSuffix: qeqzffwr
+    contentColumnType: text
+    fieldGroup: null
+    handle: filters
+    instructions: null
+    name: Filters
+    searchable: false
+    settings:
+      byteLimit: null
+      charLimit: null
+      code: false
+      columnType: null
+      initialRows: 4
+      multiline: true
+      placeholder: null
+      uiMode: normal
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\PlainText
+  c4e129b5-b63a-4685-b066-ee309244b610: # Type
+    columnSuffix: fwouwbke
+    contentColumnType: string(10)
+    fieldGroup: null
+    handle: chartType
+    instructions: null
+    name: Type
+    searchable: false
+    settings:
+      columnType: null
+      options:
+        -
+          __assoc__:
+            -
+              - label
+              - Derails
+            -
+              - value
+              - derails
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 'Money spent'
+            -
+              - value
+              - moneySpent
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 'Time spent'
+            -
+              - value
+              - timeSpent
+            -
+              - default
+              - ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Dropdown
+  e556dd16-7cf0-41d8-b35b-dff5f83625ae: # Title
+    columnSuffix: mxpnfmsa
+    contentColumnType: text
+    fieldGroup: null
+    handle: chartTitle
+    instructions: null
+    name: Title
+    searchable: false
+    settings:
+      byteLimit: null
+      charLimit: null
+      code: false
+      columnType: null
+      initialRows: 4
+      multiline: false
+      placeholder: null
+      uiMode: normal
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\PlainText
+handle: chart
+name: Chart
+sortOrder: 1

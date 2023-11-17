@@ -9,11 +9,31 @@ use Plugins\Tasks\helpers\DateHelper;
 use Plugins\Tasks\helpers\TimeHelper;
 use craft\base\Component;
 use craft\elements\Entry;
+use craft\elements\MatrixBlock;
 use craft\elements\User;
+use craft\helpers\Json;
 use craft\helpers\MoneyHelper;
 
 class AnalyticsService extends Component
 {
+    /**
+     * Get a chart as json
+     *
+     * @param  MatrixBlock $chart
+     * @return array
+     */
+    public function getJsonChart(MatrixBlock $chart): array
+    {
+        return [
+            'type' => $chart->chartType->value,
+            'title' => $chart->chartType->label,
+            'size' => $chart->size->value,
+            'id' => $chart->id,
+            'title' => $chart->chartTitle,
+            'filters' => Json::decode($chart->filters)
+        ];
+    }
+
     /**
      * Get some all time metrics
      *
@@ -52,7 +72,7 @@ class AnalyticsService extends Component
         return $metrics;
     }
 
-    public function timePerTaskData(?array $tasks, User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
+    public function timeSpentData(?array $tasks, User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
     {
         if (!in_array($groupBy, ['days', 'months'])) {
             throw new Exception("groupBy parameter can only be one of : days or months");
@@ -121,7 +141,7 @@ class AnalyticsService extends Component
         ];
     }
 
-    public function derailsPerTaskData(?array $tasks, User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
+    public function derailsData(?array $tasks, User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
     {
         if (!in_array($groupBy, ['days', 'months'])) {
             throw new Exception("groupBy parameter can only be one of : days or months");
@@ -183,7 +203,7 @@ class AnalyticsService extends Component
         ];
     }
 
-    public function moneyPerTaskData(?array $tasks, User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
+    public function moneySpentData(?array $tasks, User $user, string $groupBy, DateTime $dateFrom, DateTime $dateTo): array
     {
         if (!in_array($groupBy, ['days', 'months'])) {
             throw new Exception("groupBy parameter can only be one of : days or months");
