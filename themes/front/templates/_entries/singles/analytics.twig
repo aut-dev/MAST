@@ -8,12 +8,11 @@
 {% block content %}
     <div class="container">
         <h1 class="mb-4">{{ entry.title }}</h1>
-        
         <div id="analytics">
-            <analytics 
-                :today="'{{ currentUser.today|date('Y-m-d') }}'" 
-                :last-week="'{{ currentUser.today|date_modify('-1 week')|date('Y-m-d') }}'" 
-                :last-year="'{{ currentUser.today|date_modify('-1 year')|date('Y-m-d') }}'" 
+            <analytics
+                :today="'{{ currentUser.today|date('Y-m-d') }}'"
+                :last-week="'{{ currentUser.today|date_modify('-1 week')|date('Y-m-d') }}'"
+                :last-year="'{{ currentUser.today|date_modify('-1 year')|date('Y-m-d') }}'"
                 :tasks="{{ craft.tasks.tasks|json_encode }}"
                 :metrics="{{ craft.analytics.getMetrics(currentUser)|json_encode }}"
                 :charts="{{ currentUser.charts|map(c => craft.analytics.getJsonChart(c))|json_encode }}"

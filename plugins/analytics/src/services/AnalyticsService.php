@@ -26,7 +26,6 @@ class AnalyticsService extends Component
     {
         return [
             'type' => $chart->chartType->value,
-            'title' => $chart->chartType->label,
             'size' => $chart->size->value,
             'id' => $chart->id,
             'title' => $chart->chartTitle,
