@@ -18,14 +18,14 @@ export default {
         const store = useAnalyticsStore();
         return { store };
     },
+    components: {
+        Line,
+        ChartSettings
+    },
     computed: {
         chart() {
             return this.store.charts.filter(c => c.id == this.chartId)[0];
         }
-    },
-    components: {
-        Line,
-        ChartSettings
     },
     data() {
         return {

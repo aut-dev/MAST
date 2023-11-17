@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>{{ chart.title }}</h4>
+            <h4 class="mb-0">{{ chart.title }}</h4>
             <div class="d-flex align-items-center">
                 <div class="border border-primary rounded me-2 d-flex chart-size">
                     <div :class="'item border-primary border-end' + (chart.size >= 3 ? ' filled' : '')" @click="saveSize(3)"></div>

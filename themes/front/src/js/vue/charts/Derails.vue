@@ -1,6 +1,6 @@
 <template>
     <div class="d-relative">
-        <chart-settings :chart-id="chartId"></chart-settings>
+        <chart-settings :chart-id="chartId" :group-bys="{months: 'Months'}"></chart-settings>
         <Line v-if="loaded" :data="data" :options="options" ref="chartInstance"></Line>
     </div>
 </template>

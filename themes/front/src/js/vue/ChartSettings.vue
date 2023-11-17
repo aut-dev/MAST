@@ -21,11 +21,10 @@
                             <div class="invalid-feedback d-block" v-if="errors.tasks">{{ errors.tasks }}</div>
                         </div>
                     </div>
-                    <div v-if="groupBy" class="mb-3">
+                    <div v-if="groupBys" class="mb-3">
                         <label>{{ t('Group by') }}</label>
                         <select v-model="filters.groupBy" class="form-select">
-                            <option value="days">{{ t('Days') }}</option>
-                            <option value="months">{{ t('Months') }}</option>
+                            <option v-for="label, value in groupBys" :value="value">{{ label }}</option>
                         </select>
                     </div>
                     <div v-if="dates">
@@ -80,9 +79,12 @@ export default {
     props: {
         chartId: [String, Number],
         today: String,
-        groupBy: {
-            type: Boolean,
-            default: true
+        groupBys: {
+            type: [Boolean, Object],
+            default: {
+                days: 'Days',
+                months: 'Months',
+            }
         },
         dates: {
             type: Boolean,
