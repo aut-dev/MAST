@@ -1,15 +1,15 @@
 <template>
     <div>
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">{{ chart.title }}</h4>
+            <h4 class="mb-0">{{ chart.chartTitle }}</h4>
             <div class="d-flex align-items-center">
-                <div class="border border-primary rounded me-2 d-flex chart-size">
+                <div class="border border-primary rounded me-2 d-none d-md-flex chart-size">
                     <div :class="'item border-primary border-end' + (chart.size >= 3 ? ' filled' : '')" @click="saveSize(3)"></div>
                     <div :class="'item border-primary border-end' + (chart.size >= 6 ? ' filled' : '')" @click="saveSize(6)"></div>
                     <div :class="'item border-primary border-end' + (chart.size >= 9 ? ' filled' : '')" @click="saveSize(9)"></div>
                     <div :class="'item border-primary' + (chart.size == 12 ? ' filled' : '')" @click="saveSize(12)"></div>
                 </div>
-                <a href="#" class="me-2" @click.prevent="chart.openSettings = !chart.openSettings"><i class="fa-solid fa-gear"></i></a>
+                <a href="#" class="me-2" @click.prevent="store.openSettings[chartId] = !store.openSettings[chartId]"><i class="fa-solid fa-gear"></i></a>
                 <a href="#" @click.prevent="store.deleteChart(this.chart.id)"><i class="fa-solid fa-trash-can"></i></a>
             </div>
         </div>
@@ -29,6 +29,7 @@ import MoneySpentLine from './charts/MoneySpentLine.vue';
 import ChartSettings from './ChartSettings.vue';
 import { useAnalyticsStore } from './stores/AnalyticsStore';
 import axios from 'axios';
+import {isEqual} from 'lodash';
 
 export default {
     components: {
@@ -65,21 +66,20 @@ export default {
         'store.forceChartRedraw'() {
             this.loadData();
         },
-        'chart.filters': {
-            handler() {
-                this.loadData();
+        chart: {
+            handler(chart, oldChart) {
+                if (!isEqual(chart, oldChart)) {
+                    this.loadData();
+                }
             },
-            immediate: true
+            immediate: true,
+            deep: true
         }
     },
     methods: {
         loadData() {
             if (this.chart) {
-                axios.post('/?action=plugin-analytics/charts-data', {
-                    chartType: this.chart.chartType,
-                    dataTracked: this.chart.dataTracked,
-                    filters: this.chart.filters
-                }, {
+                axios.post('/?action=plugin-analytics/charts-data', this.chart, {
                     headers: {"X-CSRF-Token": Craft.csrfToken}
                 }).then((response) => {
                     this.data = response.data;
@@ -88,7 +88,6 @@ export default {
             }
         },
         saveSize(size) {
-            this.chart.size = size;
             this.store.saveChart(this.chart.id, {
                 size: size
             });

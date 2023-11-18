@@ -6,14 +6,14 @@
                     <slot name="title">
                         <div class="mb-3">
                             <label>{{ t('Title') }}</label>
-                            <input type="text" v-model="title" class="form-control">
-                            <div class="invalid-feedback d-block" v-if="errors.title">{{ errors.title }}</div>
+                            <input type="text" v-model="chartClone.chartTitle" class="form-control">
+                            <div class="invalid-feedback d-block" v-if="errors.chartTitle">{{ errors.chartTitle }}</div>
                         </div>
                     </slot>
                     <slot name="chartType">
                         <div class="mb-3">
                             <label>{{ t('Type') }}</label>
-                            <select v-model="chartType" class="form-select">
+                            <select v-model="chartClone.chartType" class="form-select">
                                 <option value="pie">{{ t('Pie') }}</option>
                                 <option value="line">{{ t('Line') }}</option>
                             </select>
@@ -23,13 +23,13 @@
                         <div class="mb-3">
                             <label for="allTasks">{{ t(' All tasks') }}</label>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="allTasks" v-model="filters.allTasks">
+                                <input class="form-check-input" type="checkbox" role="switch" id="allTasks" v-model="chartClone.allTasks">
                             </div>
                         </div>
                         <div class="mb-3">
-                            <div v-show="!filters.allTasks">
+                            <div v-show="!chartClone.allTasks">
                                 <label>{{ t('Tasks') }}</label>
-                                <select v-model="filters.tasks" multiple ref="tasksSelect" :placeholder="t('Tasks')" class="w-100">
+                                <select v-model="chartClone.tasks" multiple ref="tasksSelect" :placeholder="t('Tasks')" class="w-100">
                                     <option v-for="task, id in store.tasks" :key="id" :value="id">{{ task.title }}</option>
                                 </select>
                                 <div class="invalid-feedback d-block" v-if="errors.tasks">{{ errors.tasks }}</div>
@@ -37,17 +37,17 @@
                         </div>
                     </slot>
                     <slot name="cumulative">
-                        <div v-if="chartType == 'line'" class="mb-3">
+                        <div v-if="chartClone.chartType == 'line'" class="mb-3">
                             <label for="cumulative">{{ t('Cumulative') }}</label>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="cumulative" v-model="filters.cumulative">
+                                <input class="form-check-input" type="checkbox" role="switch" id="cumulative" v-model="chartClone.cumulative">
                             </div>
                         </div>
                     </slot>
                     <slot name="groupBy">
-                        <div v-if="chartType == 'line' && groupBys" class="mb-3">
+                        <div v-if="chartClone.chartType == 'line'" class="mb-3">
                             <label>{{ t('Group by') }}</label>
-                            <select v-model="filters.groupBy" class="form-select">
+                            <select v-model="chartClone.groupBy" class="form-select">
                                 <option v-for="label, value in groupBys" :value="value">{{ label }}</option>
                             </select>
                             <div class="invalid-feedback d-block" v-if="errors.groupBy">{{ errors.groupBy }}</div>
@@ -56,7 +56,7 @@
                     <slot name="dates">
                         <div class="mb-3">
                             <label>{{ t('Date') }}</label>
-                            <select v-model="filters.dateRange" class="form-select" ref="dateSelect">
+                            <select v-model="chartClone.dateRange" class="form-select" ref="dateSelect">
                                 <option value="thisWeek">{{ t('This week') }}</option>
                                 <option value="lastWeek">{{ t('Last week') }}</option>
                                 <option value="thisMonth">{{ t('This month') }}</option>
@@ -66,17 +66,17 @@
                                 <option value="custom">{{ t('Custom') }}</option>
                             </select>
                         </div>
-                        <div class="mb-3" v-show="filters.dateRange == 'custom'">
+                        <div class="mb-3" v-show="chartClone.dateRange == 'custom'">
                             <label>{{ t('From') }}</label>
                             <div>
-                                <input type="text" class="form-control datepicker" v-model="filters.dateFrom" ref="dateFrom">
+                                <input type="text" class="form-control datepicker" v-model="chartClone.dateFrom" ref="dateFrom">
                             </div>
                             <div class="invalid-feedback d-block" v-if="errors.dateFrom">{{ errors.dateFrom }}</div>
                         </div>
-                        <div v-show="filters.dateRange == 'custom'">
+                        <div v-show="chartClone.dateRange == 'custom'">
                             <label>{{ t('To') }}</label>
                             <div>
-                                <input type="text" class="form-control datepicker" v-model="filters.dateTo" ref="dateTo">
+                                <input type="text" class="form-control datepicker" v-model="chartClone.dateTo" ref="dateTo">
                             </div>
                             <div class="invalid-feedback d-block" v-if="errors.dateTo">{{ errors.dateTo }}</div>
                         </div>
@@ -97,6 +97,7 @@
 import { useAnalyticsStore } from './stores/AnalyticsStore';
 import 'multiple-select';
 import moment from 'moment';
+import {isEqual} from 'lodash';
 
 export default {
     setup() {
@@ -105,13 +106,6 @@ export default {
     },
     props: {
         chartId: [String, Number],
-        groupBys: {
-            type: [Boolean, Object],
-            default: {
-                days: 'Days',
-                months: 'Months',
-            }
-        }
     },
     computed: {
         chart() {
@@ -121,43 +115,28 @@ export default {
     data() {
         return {
             modal: null,
-            title: null,
-            chartType: null,
-            filters: {},
+            chartClone: {},
             errors: {},
+            groupBys: {
+                days: 'Days',
+                months: 'Months',
+            }
         }
     },
     watch: {
-        chartType(type) {
-            $(this.$refs.tasksSelect).multipleSelect('setSelects', this.filters.tasks);
-        },
-        'chart.openSettings': {
+        'store.openSettings': {
             handler() {
                 this.updateModal();
             },
-            immediate: true
+            deep: true
         },
-        'chart.title': {
+        chart: {
             handler() {
-                this.title = this.chart.title ?? '';
+                this.chartClone = {...this.chart};
             },
-            immediate: true
-        },
-        'chart.chartType': {
-            handler() {
-                this.chartType = this.chart.chartType ?? '';
-            },
-            immediate: true
-        },
-        'chart.filters': {
-            handler() {
-                this.filters = this.chart ? {...this.chart.filters} : {};
-            },
-            immediate: true
+            immediate: true,
+            deep: true
         }
-    },
-    created() {
-        this.chart.openSettings = false;
     },
     unmounted() {
         this.modal.dispose();
@@ -189,11 +168,11 @@ export default {
     },
     methods: {
         updateTasks() {
-            this.filters.tasks = $(this.$refs.tasksSelect).multipleSelect('getSelects')
+            this.chartClone.tasks = $(this.$refs.tasksSelect).multipleSelect('getSelects')
         },
         updateModal() {
             if (this.modal && this.chart) {
-                if (this.chart.openSettings) {
+                if (this.store.openSettings[this.chartId]) {
                     this.modal.show();
                 } else {
                     this.modal.hide();
@@ -203,48 +182,43 @@ export default {
         saveSettings() {
             this.validate();
             if (Object.keys(this.errors).length == 0) {
-                this.chart.openSettings = false;
-                this.chart.title = this.title;
-                this.chart.chartType = this.chartType;
-                this.chart.filters = {...this.filters};
-                this.store.saveChart(this.chart.id, {
-                    chartTitle: this.title,
-                    chartType: this.chartType,
-                    filters: JSON.stringify(this.filters)
-                });
+                this.store.openSettings[this.chart.id] = false;
+                if (!isEqual(this.chart, this.chartClone)) {
+                    let fields = {...this.chartClone};
+                    delete fields.id;
+                    this.store.saveChart(this.chart.id, fields);
+                }
             }
         },
         closeModal() {
-            this.title = this.chart.title;
-            this.chartType = this.chart.chartType;
-            this.filters = {...this.chart.filters}
-            this.chart.openSettings = false;
+            this.chartClone = {...this.chart};
+            this.store.openSettings[this.chart.id] = false;
             this.errors = {};
         },
         validate() {
             this.errors = {};
-            if (this.filters.dateRange == 'custom') {
-                if (!this.filters.dateFrom) {
+            if (this.chartClone.dateRange == 'custom') {
+                if (!this.chartClone.dateFrom) {
                     this.errors.dateFrom = 'Date from is required';
                 }
-                if (!this.filters.dateTo) {
+                if (!this.chartClone.dateTo) {
                     this.errors.dateTo = 'Date to is required';
                 }
-                if (this.filters.dateFrom && this.filters.dateTo) {
-                    let dateFrom = moment(this.filters.dateFrom, 'YYYY-MM-DD');
-                    let dateTo = moment(this.filters.dateTo, 'YYYY-MM-DD');
+                if (this.chartClone.dateFrom && this.chartClone.dateTo) {
+                    let dateFrom = moment(this.chartClone.dateFrom, 'YYYY-MM-DD');
+                    let dateTo = moment(this.chartClone.dateTo, 'YYYY-MM-DD');
                     if (dateFrom.isAfter(dateTo)) {
                         this.errors.dateFrom = 'Date from must be before date to';
                     }
                 }
             }
-            if (!this.filters.allTasks && $(this.$refs.tasksSelect).multipleSelect('getSelects').length == 0) {
+            if (!this.chartClone.allTasks && $(this.$refs.tasksSelect).multipleSelect('getSelects').length == 0) {
                 this.errors.tasks = 'Tasks are required';
             }
-            if (!this.title) {
-                this.errors.title = 'Title is required';
+            if (!this.chartClone.chartTitle) {
+                this.errors.chartTitle = 'Title is required';
             }
-            if (this.chartType == 'line' && !this.filters.groupBy) {
+            if (this.chartClone.chartType == 'line' && !this.chartClone.groupBy) {
                 this.errors.groupBy = 'Group by is required';
             }
         }

@@ -100,6 +100,11 @@ export default {
         this.store.lastYear = this.lastYear;
         this.store.tasks = this.tasks;
         this.store.charts = this.charts;
+        let settings = {};
+        this.charts.forEach(c => {
+            settings[c.id] = false;
+        });
+        this.store.openSettings = settings;
     }
 };
 

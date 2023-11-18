@@ -1,4 +1,4 @@
-dateModified: 1700287730
+dateModified: 1700295148
 elementSources:
   craft\elements\Entry:
     -
@@ -164,6 +164,7 @@ meta:
     1a74b697-1724-49fa-bed7-7a43a4833e2d: Image # Image
     1b238269-1e74-4eb1-aca9-256f0fca08b9: 'Task type' # Task type
     1c3fe166-77a3-4dd4-8da6-f031611bb725: Sat # Sat
+    01d5d262-2c5b-481d-aa40-7044ec73584f: 'Group by' # Group by
     2bc6ab98-71ce-4ae7-88f6-958e82e6ce7c: Breaks # Breaks
     2e3e24ad-d20e-48fc-ba6a-453f1ac66748: User # User
     2e6b3d96-afd5-4f91-b04b-28c8111df017: Favicon # Favicon
@@ -179,6 +180,7 @@ meta:
     5d9bfa29-8f27-45dd-b445-818b98020132: Saturday # Saturday
     5eb652c6-c88b-4627-8ff1-847e25a82cb9: Insights # Insights
     6a9e4f78-0e55-4b7b-9e55-4fc31c721794: Mast # Mast
+    6cc778d4-d855-4eff-b82e-d8d91c76fb1d: Tasks # Tasks
     6d8a0ee5-61b5-4e2e-a5aa-4942e529a165: 'Contact us' # Contact us
     6d707569-67a4-4a4e-868e-31a9a6eef835: 'Set password form' # Set password form
     6df6f10a-5ece-4a68-8fb6-68c2af85721f: 'Page error' # Page error
@@ -199,11 +201,13 @@ meta:
     18cdb983-638e-488a-8e8f-1df5244e2d03: Sat # Sat
     19e44a57-1ccd-4059-9775-2414120a25d6: 'Cancel at period end' # Cancel at period end
     28fc98a3-e1d4-4d4c-a78c-d92903e760cc: Sun # Sun
+    36c91347-2111-4a37-9dd1-35cced1e5bef: 'Date range' # Date range
     37e79b05-ad6f-49e5-a1eb-28f46e70f0fc: Default # Default
     38ab7a04-2df5-4c32-bcd3-2866a3e65e02: Timer # Timer
     39ee89b6-a1c3-43e0-90c8-f24db4a11f9a: Member # Member
     45cd30bb-d856-4e04-9e66-cda6b52a0238: 'Has derailed' # Has derailed
     51e58384-83d6-4c87-966f-ba12d10e9076: Image # Image
+    57c4de4f-19b0-4d55-a932-261083710ef8: Cumulative # Cumulative
     70c0d997-a64e-47f3-956a-11deff9be426: 'New task' # New task
     75dda2af-19e9-48e0-aed1-116af08373a5: Icon # Icon
     75f26b47-fb20-47e9-9ad1-bab31babae60: 'Time based' # Time based
@@ -228,6 +232,7 @@ meta:
     9806b1c0-5f4e-476f-8f76-3301b70e9415: Tasks # Tasks
     9950af26-8378-4f58-a7ae-f7717f8870d7: 'Payment method' # Payment method
     34016fb2-d922-4483-809c-f30801615184: 'Background color' # Background color
+    63464ed4-3cec-4b3e-b213-f80800f3dc39: 'Date to' # Date to
     88153a03-a6b7-41a0-8649-8331ae28fe84: 'Redactor (full)' # Redactor (full)
     91581a4a-1722-498e-9e1c-bb245bbe8b3e: Default # Default
     786514c8-8adf-4d05-a1ce-0b054ab04b67: Craft # Craft
@@ -254,7 +259,6 @@ meta:
     af8b97a9-5da5-416b-8c43-7222862e0d19: Thu # Thu
     b0685fcd-4b89-4f1f-b2fa-c95dbf8f5691: 'Hide inactive tasks' # Hide inactive tasks
     b39f1bdf-5ce7-4286-9e4f-3162f9c70830: Full # Full
-    b829ac8f-6e22-4887-8df9-9a32971182b7: Filters # Filters
     b4520f72-9c23-445d-84c9-ed6bb056271f: 'Edit task' # Edit task
     b6662c40-1d50-47d9-bc6d-45c902bbca73: 'Reset password form' # Reset password form
     ba37f536-8bbb-41cb-830c-574792b2c653: Refunded # Refunded
@@ -273,8 +277,10 @@ meta:
     ce94cb33-2051-4b81-9e4f-4e2c7d3c0cb3: Default # Default
     ce461ea7-466c-4a18-ab4f-dddeb94af716: Weeks # Weeks
     d0cf64d0-59b8-4a50-80de-0e5df63ec975: Tue # Tue
+    d8a00adf-0ab4-47da-b765-3c7efe18d9e6: 'Date from' # Date from
     d8e6583d-cac2-4e43-b492-687232234955: Mon # Mon
     d22f9b6b-afc7-49f4-af07-d03a17f0a2af: 'Page Maintenance' # Page Maintenance
+    d570c574-05bc-4f06-9f77-a24859b75bd4: 'All tasks' # All tasks
     d647773f-b5fa-4abf-93a9-e181c4d9d5d4: Breaks # Breaks
     d998792d-65c7-42c6-83f1-1f53db6dc772: Tuesday # Tuesday
     d9996114-81a4-47b8-82f7-9f4f219d67f9: 'Success message' # Success message

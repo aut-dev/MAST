@@ -42,10 +42,7 @@ class DerailsDataService extends DataService
 
     public function forLine(User $user, array $filters): array
     {
-        $groupBy = $filters['groupBy'] ?? 'months';
-        if (!in_array($groupBy, ['days', 'months'])) {
-            throw new Exception("groupBy parameter can only be one of : days or months");
-        }
+        $groupBy = $this->getGroupBy($filters);
         $tasks = $this->getTasks($user, $filters);
         list($dateFrom, $dateTo) = $this->getDates($user, $filters);
         $query = $this->_query($tasks, $dateFrom, $dateTo);

@@ -29,8 +29,14 @@ class AnalyticsService extends Component
             'dataTracked' => $chart->dataTracked->value,
             'size' => $chart->size->value,
             'id' => $chart->id,
-            'title' => $chart->chartTitle,
-            'filters' => Json::decode($chart->filters)
+            'chartTitle' => $chart->chartTitle,
+            'allTasks' => $chart->allTasks,
+            'tasks' => $chart->allTasks ? [] : $chart->tasks->ids(),
+            'groupBy' => $chart->groupBy->value,
+            'dateRange' => $chart->dateRange->value,
+            'dateFrom' => $chart->dateRange->value == 'custom' ? $chart->dateFrom->format('Y-m-d') : '',
+            'dateTo' => $chart->dateRange->value == 'custom' ? $chart->dateTo->format('Y-m-d') : '',
+            'cumulative' => $chart->cumulative
         ];
     }
 
@@ -57,7 +63,7 @@ class AnalyticsService extends Component
             $completed = $task->getTotalCompleted();
             $metrics['tasks'][] = [
                 'task' => $task,
-                'spent' => $spent,
+                'spent' => number_format($spent, 2),
                 'time' => TimeHelper::friendlySpentTime($time),
                 'derails' => $derails,
                 'completed' => $completed,

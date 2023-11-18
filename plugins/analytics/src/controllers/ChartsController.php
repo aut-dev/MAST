@@ -61,37 +61,25 @@ class ChartsController extends Controller
         return $this->asJson([]);
     }
 
-    public function getChartFieldValues(string $type, string $dataTracked): array
+    protected function getChartFieldValues(string $type, string $dataTracked): array
     {
         $data = [
-            'size' => 12,
             'chartType' => $type,
             'dataTracked' => $dataTracked,
-            'filters' => [
-                'dateRange' => 'thisYear',
-                'allTasks' => true,
-                'tasks' => []
-            ]
         ];
         if ($dataTracked == 'derails') {
-            $data['chartTitle'] = 'Derails';
+            $data['chartTitle'] = 'Derails this year';
+            $data['dateRange'] = 'thisYear';
             if ($type == 'line') {
-                $data['filters']['groupBy'] = 'months';
+                $data['groupBy'] = 'months';
             }
         } elseif ($dataTracked == 'moneySpent') {
-            if ($type == 'line') {
-                $data['filters']['groupBy'] = 'days';
-            }
-            $data['filters']['dateRange'] = 'thisMonth';
-            $data['chartTitle'] = 'Money spent';
+            $data['dateRange'] = 'thisMonth';
+            $data['chartTitle'] = 'Money spent this month';
         } elseif ($dataTracked == 'timeSpent') {
-            if ($type == 'line') {
-                $data['filters']['groupBy'] = 'days';
-            }
-            $data['filters']['dateRange'] = 'thisMonth';
-            $data['chartTitle'] = 'Time spent';
+            $data['dateRange'] = 'thisMonth';
+            $data['chartTitle'] = 'Time spent this month';
         }
-        $data['filters'] = Json::encode($data['filters']);
         return $data;
     }
 }
