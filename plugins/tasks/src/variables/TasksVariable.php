@@ -12,6 +12,7 @@ class TasksVariable
         foreach (Entry::find()->section('task')->authorId(\Craft::$app->user->identity->id)->all() as $task) {
             $tasks[$task->id] = [
                 'title' => $task->title,
+                'id' => $task->id,
                 'color' => (string)$task->color
             ];
         }

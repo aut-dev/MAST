@@ -1,22 +1,17 @@
 <template>
     <div class="d-relative">
-        <chart-settings :chart-id="chartId"></chart-settings>
-        <Line v-if="loaded" :data="data" :options="options" ref="chartInstance"></Line>
+        <Pie v-if="loaded" :data="data" :options="options" ref="chartInstance"></Pie>
     </div>
 </template>
 
 <script>
 
-import axios from 'axios';
-
-import { Line } from 'vue-chartjs';
-import ChartSettings from '../ChartSettings.vue';
+import { Pie } from 'vue-chartjs';
 import { useAnalyticsStore } from '../stores/AnalyticsStore';
 
 export default {
     components: {
-        Line,
-        ChartSettings
+        Pie
     },
     setup() {
         const store = useAnalyticsStore();
@@ -30,7 +25,14 @@ export default {
     data() {
         return {
             options: {
-                responsive: true
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: (item) => `${item.dataset.label}: $${item.formattedValue}`
+                        }
+                    }
+                }
             }
         }
     },
@@ -38,7 +40,12 @@ export default {
         chartId: [String, Number],
         loaded: Boolean,
         data: Object
-    }
+    },
+    watch: {
+        'chart.size'() {
+            this.$refs.chartInstance.chart.resize();
+        }
+    },
 };
 
 </script>

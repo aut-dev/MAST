@@ -3,31 +3,57 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body filters">
-                    <div class="mb-3">
-                        <label>{{ t('Title') }}</label>
-                        <input type="text" v-model="title" class="form-control">
-                        <div class="invalid-feedback d-block" v-if="errors.title">{{ errors.title }}</div>
-                    </div>
-                    <div class="mb-3" v-if="tasks">
-                        <label>{{ t('Tasks') }}</label>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="allTasks" v-model="filters.allTasks">
-                            <label class="form-check-label" for="allTasks">{{ t('All tasks') }}</label>
+                    <slot name="title">
+                        <div class="mb-3">
+                            <label>{{ t('Title') }}</label>
+                            <input type="text" v-model="title" class="form-control">
+                            <div class="invalid-feedback d-block" v-if="errors.title">{{ errors.title }}</div>
                         </div>
-                        <div v-show="!filters.allTasks">
-                            <select v-model="filters.tasks" multiple ref="tasksSelect" :placeholder="t('Tasks')" class="w-100">
-                                <option v-for="task, id in store.tasks" :key="id" :value="id">{{ task.title }}</option>
+                    </slot>
+                    <slot name="chartType">
+                        <div class="mb-3">
+                            <label>{{ t('Type') }}</label>
+                            <select v-model="chartType" class="form-select">
+                                <option value="pie">{{ t('Pie') }}</option>
+                                <option value="line">{{ t('Line') }}</option>
                             </select>
-                            <div class="invalid-feedback d-block" v-if="errors.tasks">{{ errors.tasks }}</div>
                         </div>
-                    </div>
-                    <div v-if="groupBys" class="mb-3">
-                        <label>{{ t('Group by') }}</label>
-                        <select v-model="filters.groupBy" class="form-select">
-                            <option v-for="label, value in groupBys" :value="value">{{ label }}</option>
-                        </select>
-                    </div>
-                    <div v-if="dates">
+                    </slot>
+                    <slot name="tasks">
+                        <div class="mb-3">
+                            <label for="allTasks">{{ t(' All tasks') }}</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="allTasks" v-model="filters.allTasks">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div v-show="!filters.allTasks">
+                                <label>{{ t('Tasks') }}</label>
+                                <select v-model="filters.tasks" multiple ref="tasksSelect" :placeholder="t('Tasks')" class="w-100">
+                                    <option v-for="task, id in store.tasks" :key="id" :value="id">{{ task.title }}</option>
+                                </select>
+                                <div class="invalid-feedback d-block" v-if="errors.tasks">{{ errors.tasks }}</div>
+                            </div>
+                        </div>
+                    </slot>
+                    <slot name="cumulative">
+                        <div v-if="chartType == 'line'" class="mb-3">
+                            <label for="cumulative">{{ t('Cumulative') }}</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="cumulative" v-model="filters.cumulative">
+                            </div>
+                        </div>
+                    </slot>
+                    <slot name="groupBy">
+                        <div v-if="chartType == 'line' && groupBys" class="mb-3">
+                            <label>{{ t('Group by') }}</label>
+                            <select v-model="filters.groupBy" class="form-select">
+                                <option v-for="label, value in groupBys" :value="value">{{ label }}</option>
+                            </select>
+                            <div class="invalid-feedback d-block" v-if="errors.groupBy">{{ errors.groupBy }}</div>
+                        </div>
+                    </slot>
+                    <slot name="dates">
                         <div class="mb-3">
                             <label>{{ t('Date') }}</label>
                             <select v-model="filters.dateRange" class="form-select" ref="dateSelect">
@@ -54,7 +80,8 @@
                             </div>
                             <div class="invalid-feedback d-block" v-if="errors.dateTo">{{ errors.dateTo }}</div>
                         </div>
-                    </div>
+                    </slot>
+                    <slot name="afterFilters"></slot>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @click="closeModal()">{{ t('Close') }}</button>
@@ -78,21 +105,12 @@ export default {
     },
     props: {
         chartId: [String, Number],
-        today: String,
         groupBys: {
             type: [Boolean, Object],
             default: {
                 days: 'Days',
                 months: 'Months',
             }
-        },
-        dates: {
-            type: Boolean,
-            default: true
-        },
-        tasks: {
-            type: Boolean,
-            default: true
         }
     },
     computed: {
@@ -104,20 +122,18 @@ export default {
         return {
             modal: null,
             title: null,
+            chartType: null,
             filters: {},
             errors: {},
         }
     },
     watch: {
+        chartType(type) {
+            $(this.$refs.tasksSelect).multipleSelect('setSelects', this.filters.tasks);
+        },
         'chart.openSettings': {
             handler() {
-                if (this.modal && this.chart) {
-                    if (this.chart.openSettings) {
-                        this.modal.show();
-                    } else {
-                        this.modal.hide();
-                    }
-                }
+                this.updateModal();
             },
             immediate: true
         },
@@ -127,15 +143,24 @@ export default {
             },
             immediate: true
         },
+        'chart.chartType': {
+            handler() {
+                this.chartType = this.chart.chartType ?? '';
+            },
+            immediate: true
+        },
         'chart.filters': {
             handler() {
-                this.filters = {...this.chart.filters ?? {}};
+                this.filters = this.chart ? {...this.chart.filters} : {};
             },
             immediate: true
         }
     },
     created() {
         this.chart.openSettings = false;
+    },
+    unmounted() {
+        this.modal.dispose();
     },
     mounted() {
         App.getBootstrap().then(chunk => {
@@ -156,25 +181,42 @@ export default {
         import(/* webpackChunkName: "multiple-select" */ '../components/multiple-select').then((chunk) => {
             $(this.$refs.tasksSelect).multipleSelect({
                 formatSelectAll: () => '(Un)Select all',
-                onClose: () => this.filters.tasks = $(this.$refs.tasksSelect).multipleSelect('getSelects')
+                onClick: () => this.updateTasks(),
+                onCheckAll: () => this.updateTasks(),
+                onUncheckAll: () => this.updateTasks(),
             });
         });
     },
     methods: {
+        updateTasks() {
+            this.filters.tasks = $(this.$refs.tasksSelect).multipleSelect('getSelects')
+        },
+        updateModal() {
+            if (this.modal && this.chart) {
+                if (this.chart.openSettings) {
+                    this.modal.show();
+                } else {
+                    this.modal.hide();
+                }
+            }
+        },
         saveSettings() {
             this.validate();
             if (Object.keys(this.errors).length == 0) {
                 this.chart.openSettings = false;
                 this.chart.title = this.title;
+                this.chart.chartType = this.chartType;
                 this.chart.filters = {...this.filters};
                 this.store.saveChart(this.chart.id, {
                     chartTitle: this.title,
+                    chartType: this.chartType,
                     filters: JSON.stringify(this.filters)
                 });
             }
         },
         closeModal() {
             this.title = this.chart.title;
+            this.chartType = this.chart.chartType;
             this.filters = {...this.chart.filters}
             this.chart.openSettings = false;
             this.errors = {};
@@ -201,6 +243,9 @@ export default {
             }
             if (!this.title) {
                 this.errors.title = 'Title is required';
+            }
+            if (this.chartType == 'line' && !this.filters.groupBy) {
+                this.errors.groupBy = 'Group by is required';
             }
         }
     }

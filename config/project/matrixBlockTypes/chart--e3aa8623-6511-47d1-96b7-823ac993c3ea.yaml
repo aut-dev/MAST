@@ -19,7 +19,19 @@ fieldLayouts:
             width: 50
           -
             elementCondition: null
-            fieldUid: c4e129b5-b63a-4685-b066-ee309244b610 # Type
+            fieldUid: ac93f88b-19f1-4f21-bbf2-6f3ffef2189a # Size
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 25cbc3e2-ee39-4310-a059-6dbe89a68972
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: c4e129b5-b63a-4685-b066-ee309244b610 # Data tracked
             instructions: null
             label: null
             required: true
@@ -31,13 +43,13 @@ fieldLayouts:
             width: 50
           -
             elementCondition: null
-            fieldUid: ac93f88b-19f1-4f21-bbf2-6f3ffef2189a # Size
+            fieldUid: 15d878b0-2a10-49c8-85e1-5e7e4eed21eb # Type
             instructions: null
             label: null
             required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 25cbc3e2-ee39-4310-a059-6dbe89a68972
+            uid: ff5b1269-4b89-4ee9-b7b4-ad2c5ae21924
             userCondition: null
             warning: null
             width: 50
@@ -57,6 +69,42 @@ fieldLayouts:
         uid: 5c3da43d-4c1b-4991-b376-0486efcf3755
         userCondition: null
 fields:
+  15d878b0-2a10-49c8-85e1-5e7e4eed21eb: # Type
+    columnSuffix: cmyykalm
+    contentColumnType: string(4)
+    fieldGroup: null
+    handle: chartType
+    instructions: null
+    name: Type
+    searchable: false
+    settings:
+      columnType: null
+      options:
+        -
+          __assoc__:
+            -
+              - label
+              - Line
+            -
+              - value
+              - line
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - Pie
+            -
+              - value
+              - pie
+            -
+              - default
+              - ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Dropdown
   ac93f88b-19f1-4f21-bbf2-6f3ffef2189a: # Size
     columnSuffix: picmoilh
     contentColumnType: string(2)
@@ -135,13 +183,13 @@ fields:
     translationKeyFormat: null
     translationMethod: none
     type: craft\fields\PlainText
-  c4e129b5-b63a-4685-b066-ee309244b610: # Type
+  c4e129b5-b63a-4685-b066-ee309244b610: # Data tracked
     columnSuffix: fwouwbke
     contentColumnType: string(10)
     fieldGroup: null
-    handle: chartType
+    handle: dataTracked
     instructions: null
-    name: Type
+    name: 'Data tracked'
     searchable: false
     settings:
       columnType: null

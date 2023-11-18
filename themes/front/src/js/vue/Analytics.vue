@@ -37,10 +37,24 @@
                     {{ t('New chart') }}
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a @click.prevent="store.createChart('derails')" class="dropdown-item" href="#">{{ t('Derails') }}</a></li>
-                    <li><a @click.prevent="store.createChart('moneySpent')" class="dropdown-item" href="#">{{ t('Money spent') }}</a></li>
-                    <li><a @click.prevent="store.createChart('timeSpent')" class="dropdown-item" href="#">{{ t('Time spent') }}</a></li>
+                    <li><a @click.prevent="store.createChart('derails', 'pie')" class="dropdown-item" href="#">{{ t('Derails (Pie)') }}</a></li>
+                    <li><a @click.prevent="store.createChart('derails', 'line')" class="dropdown-item" href="#">{{ t('Derails (Line)') }}</a></li>
+                    <li><a @click.prevent="store.createChart('moneySpent', 'pie')" class="dropdown-item" href="#">{{ t('Money spent (Pie)') }}</a></li>
+                    <li><a @click.prevent="store.createChart('moneySpent', 'line')" class="dropdown-item" href="#">{{ t('Money spent (Line)') }}</a></li>
+                    <li><a @click.prevent="store.createChart('timeSpent', 'pie')" class="dropdown-item" href="#">{{ t('Time spent (Pie)') }}</a></li>
+                    <li><a @click.prevent="store.createChart('timeSpent', 'line')" class="dropdown-item" href="#">{{ t('Time spent (Line)') }}</a></li>
                 </ul>
+            </div>
+        </div>
+        <div class="mb-3">
+            <h4>{{ t('Colors') }}</h4>
+            <div class="d-flex flex-wrap">
+                <div class="me-2 mb-2 d-flex align-items-center" v-for="task, index in store.tasks" :key="index">
+                    <label class="me-2">
+                        {{ task.title }}
+                    </label>
+                    <input type="color" class="form-control form-control-color" :value="task.color ? task.color : '#000000'" title="{{ t('Choose a color') }}" @change="(event) => store.saveColor(task.id, event.target.value)">
+                </div>
             </div>
         </div>
         <div class="row">

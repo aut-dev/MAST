@@ -9,7 +9,8 @@ export const useAnalyticsStore = defineStore('tasks', {
         charts: [],
         today: null,
         lastWeek: null,
-        lastYear: null
+        lastYear: null,
+        forceChartRedraw: 1
     }),
     actions: {
         saveChart(id, fields) {
@@ -22,9 +23,10 @@ export const useAnalyticsStore = defineStore('tasks', {
                 }
             });
         },
-        createChart(type) {
+        createChart(dataTracked, chartType) {
             axios.post('/?action=plugin-analytics/charts/create-chart', {
-                type: type
+                chartType: chartType,
+                dataTracked: dataTracked
             }, {
                 headers: {
                     "X-CSRF-Token": Craft.csrfToken,
@@ -41,6 +43,23 @@ export const useAnalyticsStore = defineStore('tasks', {
                 headers: {
                     "X-CSRF-Token": Craft.csrfToken,
                 }
+            });
+        },
+        saveColor(id, color) {
+            this.tasks[id].color = color;
+            axios.post('/', {
+                action: 'entries/save-entry',
+                entryId: id,
+                fields: {
+                    color: color
+                }
+            }, {
+                headers: {
+                    "X-CSRF-Token": Craft.csrfToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then(() => {
+                this.forceChartRedraw++;
             });
         }
     }

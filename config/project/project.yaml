@@ -1,4 +1,4 @@
-dateModified: 1700206183
+dateModified: 1700287730
 elementSources:
   craft\elements\Entry:
     -
@@ -194,6 +194,7 @@ meta:
     9a578738-c83e-41fc-bbe3-6034ae1835d2: Default # Default
     9ed0591a-e479-4c5e-bd6a-f1bcb15c1c1f: Sun # Sun
     15bf8716-9770-426b-859b-3251b11fd49e: 'Edit task' # Edit task
+    15d878b0-2a10-49c8-85e1-5e7e4eed21eb: Type # Type
     18ad884e-ff55-4513-8822-fb6222c76f60: Imagery # Imagery
     18cdb983-638e-488a-8e8f-1df5244e2d03: Sat # Sat
     19e44a57-1ccd-4059-9775-2414120a25d6: 'Cancel at period end' # Cancel at period end
@@ -261,7 +262,7 @@ meta:
     beb8aabf-7970-4442-9f8b-f70568d8757a: 'Start date' # Start date
     bf477c2a-b2b3-4dde-a0e0-0978de99ab77: 'New task' # New task
     c02d8ea3-fd26-4084-890d-83260c7fc0dd: 'Banner Images' # Banner Images
-    c4e129b5-b63a-4685-b066-ee309244b610: Type # Type
+    c4e129b5-b63a-4685-b066-ee309244b610: 'Data tracked' # Data tracked
     c8cf0123-4051-4f22-b94b-bbb5845a0dc8: Charts # Charts
     c95e7ea6-ef14-4d2b-af3e-da848760500f: 'Page not found' # Page not found
     c9082cbb-9b75-4045-9758-066e0c93d453: 'Subscription status' # Subscription status

@@ -13,20 +13,33 @@
                 <a href="#" @click.prevent="store.deleteChart(this.chart.id)"><i class="fa-solid fa-trash-can"></i></a>
             </div>
         </div>
-        <time-spent v-if="chart.type == 'timeSpent'" :chart-id="chart.id"></time-spent>
-        <derails v-if="chart.type == 'derails'" :chart-id="chart.id"></derails>
-        <money-spent v-if="chart.type == 'moneySpent'" :chart-id="chart.id"></money-spent>
+        <chart-settings :chart-id="chartId"></chart-settings>
+        <component :is="chartComponent(chart)" :chart-id="chart.id" :loaded="loaded" :data="data"></component>
     </div>
 </template>
 
 <script>
 
-import TimeSpent from './charts/TimeSpent.vue';
-import Derails from './charts/Derails.vue';
-import MoneySpent from './charts/MoneySpent.vue';
+import TimeSpentLine from './charts/TimeSpentLine.vue';
+import TimeSpentPie from './charts/TimeSpentPie.vue';
+import DerailsPie from './charts/DerailsPie.vue';
+import DerailsLine from './charts/DerailsLine.vue';
+import MoneySpentPie from './charts/MoneySpentPie.vue';
+import MoneySpentLine from './charts/MoneySpentLine.vue';
+import ChartSettings from './ChartSettings.vue';
 import { useAnalyticsStore } from './stores/AnalyticsStore';
+import axios from 'axios';
 
 export default {
+    components: {
+        ChartSettings,
+        TimeSpentLine,
+        TimeSpentPie,
+        DerailsPie,
+        DerailsLine,
+        MoneySpentPie,
+        MoneySpentLine,
+    },
     setup() {
         const store = useAnalyticsStore();
         return { store };
@@ -36,20 +49,52 @@ export default {
             return this.store.charts.filter(c => c.id == this.chartId)[0];
         }
     },
-    components: {
-        TimeSpent,
-        Derails,
-        MoneySpent
-    },
     props: {
         chartId: [String, Number]
     },
+    data() {
+        return {
+            loaded: false,
+            data: {},
+            options: {
+                responsive: true
+            }
+        }
+    },
+    watch: {
+        'store.forceChartRedraw'() {
+            this.loadData();
+        },
+        'chart.filters': {
+            handler() {
+                this.loadData();
+            },
+            immediate: true
+        }
+    },
     methods: {
+        loadData() {
+            if (this.chart) {
+                axios.post('/?action=plugin-analytics/charts-data', {
+                    chartType: this.chart.chartType,
+                    dataTracked: this.chart.dataTracked,
+                    filters: this.chart.filters
+                }, {
+                    headers: {"X-CSRF-Token": Craft.csrfToken}
+                }).then((response) => {
+                    this.data = response.data;
+                    this.loaded = true;
+                });
+            }
+        },
         saveSize(size) {
             this.chart.size = size;
             this.store.saveChart(this.chart.id, {
                 size: size
             });
+        },
+        chartComponent(chart) {
+            return chart.dataTracked + '-' + chart.chartType;
         }
     }
 };

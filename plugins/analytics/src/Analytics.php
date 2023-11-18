@@ -3,6 +3,9 @@
 namespace Plugins\Analytics;
 
 use Plugins\Analytics\services\AnalyticsService;
+use Plugins\Analytics\services\DerailsDataService;
+use Plugins\Analytics\services\MoneySpentDataService;
+use Plugins\Analytics\services\TimeSpentDataService;
 use Plugins\Analytics\variables\AnalyticsVariable;
 use craft\base\Plugin;
 use craft\web\twig\variables\CraftVariable;
@@ -40,7 +43,10 @@ class Analytics extends Plugin
     protected function registerComponents()
     {
         $this->setComponents([
-            'analytics' => AnalyticsService::class
+            'analytics' => AnalyticsService::class,
+            'derailsData' => DerailsDataService::class,
+            'timeSpentData' => TimeSpentDataService::class,
+            'moneySpentData' => MoneySpentDataService::class,
         ]);
     }
 }

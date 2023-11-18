@@ -29,11 +29,12 @@ class ChartsController extends Controller
         $this->requireLogin();
         $this->requirePostRequest();
         $user = \Craft::$app->user->identity;
-        $type = $this->request->getRequiredParam('type');
+        $type = $this->request->getRequiredParam('chartType');
+        $dataTracked = $this->request->getRequiredParam('dataTracked');
         $blocks = \Craft::$app->fields->createField(['type' => Matrix::class])->serializeValue($user->charts);
         $blocks['new:1'] = [
             'type' => 'chart',
-            'fields' => $this->getChartFieldValues($type)
+            'fields' => $this->getChartFieldValues($type, $dataTracked)
         ];
         $user->setFieldValue('charts', [
             'sortOrder' => array_keys($blocks),
@@ -60,28 +61,35 @@ class ChartsController extends Controller
         return $this->asJson([]);
     }
 
-    public function getChartFieldValues(string $type)
+    public function getChartFieldValues(string $type, string $dataTracked): array
     {
         $data = [
             'size' => 12,
             'chartType' => $type,
+            'dataTracked' => $dataTracked,
             'filters' => [
                 'dateRange' => 'thisYear',
-                'groupBy' => 'months',
                 'allTasks' => true,
                 'tasks' => []
             ]
         ];
-        if ($type == 'derails') {
-            $data['chartTitle'] = 'Derails per task';
-        } elseif ($type == 'moneySpent') {
+        if ($dataTracked == 'derails') {
+            $data['chartTitle'] = 'Derails';
+            if ($type == 'line') {
+                $data['filters']['groupBy'] = 'months';
+            }
+        } elseif ($dataTracked == 'moneySpent') {
+            if ($type == 'line') {
+                $data['filters']['groupBy'] = 'days';
+            }
             $data['filters']['dateRange'] = 'thisMonth';
-            $data['filters']['groupBy'] = 'days';
-            $data['chartTitle'] = 'Money spent per task';
-        } elseif ($type == 'timeSpent') {
+            $data['chartTitle'] = 'Money spent';
+        } elseif ($dataTracked == 'timeSpent') {
+            if ($type == 'line') {
+                $data['filters']['groupBy'] = 'days';
+            }
             $data['filters']['dateRange'] = 'thisMonth';
-            $data['filters']['groupBy'] = 'days';
-            $data['chartTitle'] = 'Time spent per task';
+            $data['chartTitle'] = 'Time spent';
         }
         $data['filters'] = Json::encode($data['filters']);
         return $data;

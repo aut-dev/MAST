@@ -1,22 +1,17 @@
 <template>
     <div class="d-relative">
-        <chart-settings :chart-id="chartId"></chart-settings>
         <Line v-if="loaded" :data="data" :options="options" ref="chartInstance"></Line>
     </div>
 </template>
 
 <script>
 
-import axios from 'axios';
-
 import { Line } from 'vue-chartjs';
-import ChartSettings from '../ChartSettings.vue';
 import { useAnalyticsStore } from '../stores/AnalyticsStore';
 
 export default {
     components: {
-        Line,
-        ChartSettings
+        Line
     },
     setup() {
         const store = useAnalyticsStore();
@@ -33,6 +28,11 @@ export default {
                 responsive: true
             }
         }
+    },
+    watch: {
+        'chart.size'() {
+            this.$refs.chartInstance.chart.resize();
+        },
     },
     props: {
         chartId: [String, Number],
