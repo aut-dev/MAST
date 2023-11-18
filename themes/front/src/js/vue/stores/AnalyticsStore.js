@@ -10,7 +10,8 @@ export const useAnalyticsStore = defineStore('tasks', {
         today: null,
         lastWeek: null,
         lastYear: null,
-        forceChartRedraw: 1
+        forceChartRedraw: 1,
+        colorError: {}
     }),
     actions: {
         saveChart(id, fields) {
@@ -46,7 +47,7 @@ export const useAnalyticsStore = defineStore('tasks', {
             });
         },
         saveColor(id, color) {
-            this.tasks[id].color = color;
+            this.colorError[id] = null;
             axios.post('/', {
                 action: 'entries/save-entry',
                 entryId: id,
@@ -59,7 +60,10 @@ export const useAnalyticsStore = defineStore('tasks', {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }).then(() => {
+                this.tasks[id].color = color;
                 this.forceChartRedraw++;
+            }).catch(err => {
+                this.colorError[id] = err.response.data.errors.color[0];
             });
         }
     }

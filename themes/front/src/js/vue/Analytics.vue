@@ -49,11 +49,14 @@
         <div class="mb-3">
             <h4>{{ t('Colors') }}</h4>
             <div class="d-flex flex-wrap">
-                <div class="me-2 mb-2 d-flex align-items-center" v-for="task, index in store.tasks" :key="index">
-                    <label class="me-2">
-                        {{ task.title }}
-                    </label>
-                    <input type="color" class="form-control form-control-color" :value="task.color ? task.color : '#000000'" title="{{ t('Choose a color') }}" @change="(event) => store.saveColor(task.id, event.target.value)">
+                <div class="d-flex flex-column" v-for="task, index in store.tasks" :key="index">
+                    <div class="me-2 mb-2 d-flex align-items-center">
+                        <label class="me-2">
+                            {{ task.title }}
+                        </label>
+                        <input type="color" class="form-control form-control-color" :value="task.color ? task.color : '#000000'" title="{{ t('Choose a color') }}" @change="(event) => store.saveColor(task.id, event.target.value)">
+                    </div>
+                    <div class="invalid-feedback d-block" v-if="store.colorError[task.id]">{{ store.colorError[task.id] }}</div>
                 </div>
             </div>
         </div>

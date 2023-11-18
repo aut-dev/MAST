@@ -46,10 +46,6 @@
             <div class="col-6">{{ entry.recurring ? 'Yes'|t : 'No'|t }}</div>
             <div class="col-6">{{ 'Paused'|t }}</div>
             <div class="col-6">{{ entry.paused ? 'Yes'|t : 'No'|t }}</div>
-            <div class="col-6">{{ 'Color'|t }}</div>
-            <div class="col-6">
-                <div class="background-color rounded" style="background-color: {{ entry.color ?? '#000' }};"></div>
-            </div>
             {% if entry.backgroundColor %}
                 <div class="col-6">{{ 'Background color'|t }}</div>
                 <div class="col-6">
