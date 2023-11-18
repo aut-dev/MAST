@@ -15,6 +15,10 @@
                 :last-year="'{{ currentUser.today|date_modify('-1 year')|date('Y-m-d') }}'"
                 :tasks="{{ craft.tasks.tasks|json_encode }}"
                 :metrics="{{ craft.analytics.getMetrics(currentUser)|json_encode }}"
+                :group-bys="{{ craft.analytics.getGroupBys()|json_encode }}"
+                :date-ranges="{{ craft.analytics.getDateRanges()|json_encode }}"
+                :chart-types="{{ craft.analytics.getChartTypes()|json_encode }}"
+                :data-tracked="{{ craft.analytics.getChartDataTracked()|json_encode }}"
                 :charts="{{ currentUser.charts|map(c => craft.analytics.getJsonChart(c))|json_encode }}"
             >
             </analytics>

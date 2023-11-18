@@ -29,12 +29,11 @@ class ChartsController extends Controller
         $this->requireLogin();
         $this->requirePostRequest();
         $user = \Craft::$app->user->identity;
-        $type = $this->request->getRequiredParam('chartType');
-        $dataTracked = $this->request->getRequiredParam('dataTracked');
+        $fields = $this->request->getRequiredParam('fields');
         $blocks = \Craft::$app->fields->createField(['type' => Matrix::class])->serializeValue($user->charts);
         $blocks['new:1'] = [
             'type' => 'chart',
-            'fields' => $this->getChartFieldValues($type, $dataTracked)
+            'fields' => $fields
         ];
         $user->setFieldValue('charts', [
             'sortOrder' => array_keys($blocks),

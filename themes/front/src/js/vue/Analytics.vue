@@ -37,12 +37,9 @@
                     {{ t('New chart') }}
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a @click.prevent="store.createChart('derails', 'pie')" class="dropdown-item" href="#">{{ t('Derails (Pie)') }}</a></li>
-                    <li><a @click.prevent="store.createChart('derails', 'line')" class="dropdown-item" href="#">{{ t('Derails (Line)') }}</a></li>
-                    <li><a @click.prevent="store.createChart('moneySpent', 'pie')" class="dropdown-item" href="#">{{ t('Money spent (Pie)') }}</a></li>
-                    <li><a @click.prevent="store.createChart('moneySpent', 'line')" class="dropdown-item" href="#">{{ t('Money spent (Line)') }}</a></li>
-                    <li><a @click.prevent="store.createChart('timeSpent', 'pie')" class="dropdown-item" href="#">{{ t('Time spent (Pie)') }}</a></li>
-                    <li><a @click.prevent="store.createChart('timeSpent', 'line')" class="dropdown-item" href="#">{{ t('Time spent (Line)') }}</a></li>
+                    <li v-for="label, value in dataTracked">
+                        <a @click.prevent="createChart(value)" :key="value" class="dropdown-item" href="#">{{ label }}</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -68,6 +65,7 @@
                 {{ t('No charts found') }}
             </div>
         </div>
+        <chart-settings :chart="newChart" :open="modalOpen" @save="(event) => store.createChart(event)" @close="modalOpen = false"/>
     </div>
 </template>
 
@@ -75,6 +73,7 @@
 
 import Chart from './Chart.vue';
 import { useAnalyticsStore } from './stores/AnalyticsStore';
+import ChartSettings from './ChartSettings.vue';
 
 import 'chart.js/auto';
 
@@ -84,7 +83,14 @@ export default {
         return { store };
     },
     components: {
-        Chart
+        Chart,
+        ChartSettings
+    },
+    data() {
+        return {
+            modalOpen: false,
+            newChart: {}
+        }
     },
     props: {
         tasks: Object,
@@ -92,6 +98,10 @@ export default {
         lastWeek: String,
         lastYear: String,
         metrics: Object,
+        groupBys: Object,
+        dateRanges: Object,
+        chartTypes: Object,
+        dataTracked: Object,
         charts: Array
     },
     created() {
@@ -100,11 +110,41 @@ export default {
         this.store.lastYear = this.lastYear;
         this.store.tasks = this.tasks;
         this.store.charts = this.charts;
+        this.store.groupBys = this.groupBys;
+        this.store.dateRanges = this.dateRanges;
+        this.store.chartTypes = this.chartTypes;
         let settings = {};
         this.charts.forEach(c => {
             settings[c.id] = false;
         });
         this.store.openSettings = settings;
+    },
+    methods: {
+        createChart(dataTracked) {
+            let title;
+            let range;
+            if (dataTracked == 'timeSpent') {
+                title = 'Time spent';
+                range = 'thisMonth';
+            } else if (dataTracked == 'moneySpent') {
+                title = 'Money spent';
+                range = 'thisMonth';
+            } else {
+                title = 'Derails';
+                range = 'thisYear';
+            }
+            this.newChart = {
+                dataTracked: dataTracked,
+                chartTitle: title,
+                allTasks: true,
+                chartType: 'pie',
+                dateRange: range,
+                tasks: [],
+                cumulative: false,
+                groupBy: 'days'
+            };
+            this.modalOpen = true;
+        }
     }
 };
 

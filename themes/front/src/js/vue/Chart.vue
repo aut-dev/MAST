@@ -13,8 +13,8 @@
                 <a href="#" @click.prevent="store.deleteChart(this.chart.id)"><i class="fa-solid fa-trash-can"></i></a>
             </div>
         </div>
-        <chart-settings :chart-id="chartId"></chart-settings>
-        <component :is="chartComponent(chart)" :chart-id="chart.id" :loaded="loaded" :data="data"></component>
+        <chart-settings :chart="chart" :open="store.openSettings[chartId]" @save="(event) => store.saveChart(chart.id, event)" @close="store.openSettings[chart.id] = false"/>
+        <component :is="chartComponent(chart)" :chart="chart" :loaded="loaded" :data="data"/>
     </div>
 </template>
 

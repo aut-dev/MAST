@@ -16,7 +16,7 @@ fieldLayouts:
             uid: 8b336a6d-74c6-4e93-8caa-f86ecad0df92
             userCondition: null
             warning: null
-            width: 50
+            width: 25
           -
             elementCondition: null
             fieldUid: ac93f88b-19f1-4f21-bbf2-6f3ffef2189a # Size
@@ -28,7 +28,7 @@ fieldLayouts:
             uid: 25cbc3e2-ee39-4310-a059-6dbe89a68972
             userCondition: null
             warning: null
-            width: 50
+            width: 25
           -
             elementCondition: null
             fieldUid: c4e129b5-b63a-4685-b066-ee309244b610 # Data tracked
@@ -40,7 +40,7 @@ fieldLayouts:
             uid: 2cf670f0-cca5-4045-868c-dda8f36bc306
             userCondition: null
             warning: null
-            width: 50
+            width: 25
           -
             elementCondition: null
             fieldUid: 15d878b0-2a10-49c8-85e1-5e7e4eed21eb # Type
@@ -52,7 +52,7 @@ fieldLayouts:
             uid: ff5b1269-4b89-4ee9-b7b4-ad2c5ae21924
             userCondition: null
             warning: null
-            width: 50
+            width: 25
           -
             elementCondition: null
             fieldUid: d570c574-05bc-4f06-9f77-a24859b75bd4 # All tasks
@@ -64,7 +64,7 @@ fieldLayouts:
             uid: 65e5f22e-9819-4bb5-baa2-9b2f9235eb9d
             userCondition: null
             warning: null
-            width: 50
+            width: 25
           -
             elementCondition: null
             fieldUid: 6cc778d4-d855-4eff-b82e-d8d91c76fb1d # Tasks
@@ -76,7 +76,7 @@ fieldLayouts:
             uid: ff19d84a-ffc5-403f-a7fb-37d688471741
             userCondition: null
             warning: null
-            width: 50
+            width: 25
           -
             elementCondition: null
             fieldUid: 01d5d262-2c5b-481d-aa40-7044ec73584f # Group by
@@ -88,7 +88,7 @@ fieldLayouts:
             uid: bd03db66-f010-4f5d-a6b2-a2a0ec2092be
             userCondition: null
             warning: null
-            width: 50
+            width: 25
           -
             elementCondition: null
             fieldUid: 36c91347-2111-4a37-9dd1-35cced1e5bef # Date range
@@ -100,7 +100,7 @@ fieldLayouts:
             uid: 26025fc0-b46b-41e4-8367-4c8b2425e9b4
             userCondition: null
             warning: null
-            width: 50
+            width: 25
           -
             elementCondition: null
             fieldUid: d8a00adf-0ab4-47da-b765-3c7efe18d9e6 # Date from
@@ -112,7 +112,7 @@ fieldLayouts:
             uid: 7c19575a-5dc6-48ca-b131-65f65b094499
             userCondition: null
             warning: null
-            width: 50
+            width: 25
           -
             elementCondition: null
             fieldUid: 63464ed4-3cec-4b3e-b213-f80800f3dc39 # Date to
@@ -124,7 +124,7 @@ fieldLayouts:
             uid: 1994b414-64d2-4b77-8401-7da15335cdbc
             userCondition: null
             warning: null
-            width: 50
+            width: 25
           -
             elementCondition: null
             fieldUid: 57c4de4f-19b0-4d55-a932-261083710ef8 # Cumulative
@@ -136,7 +136,7 @@ fieldLayouts:
             uid: 8c894a86-7044-4f87-b45c-f005e82aea4a
             userCondition: null
             warning: null
-            width: 50
+            width: 25
         name: Content
         uid: 5c3da43d-4c1b-4991-b376-0486efcf3755
         userCondition: null
@@ -264,17 +264,6 @@ fields:
           __assoc__:
             -
               - label
-              - Custom
-            -
-              - value
-              - custom
-            -
-              - default
-              - ''
-        -
-          __assoc__:
-            -
-              - label
               - 'This week'
             -
               - value
@@ -334,6 +323,17 @@ fields:
             -
               - value
               - lastYear
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - Custom
+            -
+              - value
+              - custom
             -
               - default
               - ''

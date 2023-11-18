@@ -17,6 +17,46 @@ use craft\helpers\MoneyHelper;
 class AnalyticsService extends Component
 {
     /**
+     * Get all group bys options
+     *
+     * @return array
+     */
+    public function getGroupBys(): array
+    {
+        return $this->getChartFieldOptions('groupBy');
+    }
+
+    /**
+     * Get all date range options
+     *
+     * @return array
+     */
+    public function getDateRanges(): array
+    {
+        return $this->getChartFieldOptions('dateRange');
+    }
+
+    /**
+     * Get all date range options
+     *
+     * @return array
+     */
+    public function getChartTypes(): array
+    {
+        return $this->getChartFieldOptions('chartType');
+    }
+
+    /**
+     * Get all date range options
+     *
+     * @return array
+     */
+    public function getChartDataTracked(): array
+    {
+        return $this->getChartFieldOptions('dataTracked');
+    }
+
+    /**
      * Get a chart as json
      *
      * @param  MatrixBlock $chart
@@ -76,5 +116,21 @@ class AnalyticsService extends Component
         $metrics['totals']['time'] = TimeHelper::friendlySpentTime($metrics['totals']['time']);
         $metrics['totals']['spent'] = number_format($metrics['totals']['spent'], 2);
         return $metrics;
+    }
+
+    /**
+     * Get a chart field dropdown options
+     *
+     * @param  string $handle
+     * @return array
+     */
+    protected function getChartFieldOptions(string $handle): array
+    {
+        $out = [];
+        $field = \Craft::$app->fields->getFieldByHandle('charts')->getBlockTypes()[0]->getFieldLayout()->getFieldByHandle($handle);
+        foreach ($field->options as $option) {
+            $out[$option['value']] = $option['label'];
+        }
+        return $out;
     }
 }

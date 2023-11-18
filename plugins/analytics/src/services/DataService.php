@@ -2,18 +2,16 @@
 
 namespace Plugins\Analytics\services;
 
-use craft\base\Component;
-use craft\elements\Entry;
-use craft\elements\User;
 use DateInterval;
 use DateTime;
 use Exception;
+use Plugins\Analytics\Analytics;
+use craft\base\Component;
+use craft\elements\Entry;
+use craft\elements\User;
 
 class DataService extends Component
 {
-    protected array $groupBys = ['days', 'months'];
-    protected array $dateRanges = ['custom', 'thisWeek', 'lastWeek', 'thisMonth', 'lastMonth', 'thisYear', 'lastYear'];
-
     protected function getTasks(User $user, array $filters): array
     {
         $query = Entry::find()->authorId($user->id)->section('task');
@@ -25,8 +23,9 @@ class DataService extends Component
 
     protected function getGroupBy(array $filters): string
     {
-        if (!in_array($filters['groupBy'] ?? '', $this->groupBys)) {
-            throw new Exception("groupBy filter can only be one of : " . implode(', ', $this->groupBys));
+        $groupBys = array_keys(Analytics::$plugin->analytics->getGroupBys());
+        if (!in_array($filters['groupBy'] ?? '', $groupBys)) {
+            throw new Exception("groupBy filter can only be one of : " . implode(', ', $groupBys));
         }
         return $filters['groupBy'];
     }
@@ -39,6 +38,7 @@ class DataService extends Component
             case 'months':
                 return $date->format('Y/m');
         }
+        throw new Exception("Group by $groupBy has not been implemented yet");
     }
 
     protected function getGroupByLabel(DateTime $date, string $groupBy): string
@@ -49,13 +49,15 @@ class DataService extends Component
             case 'months':
                 return $date->format('M Y');
         }
+        throw new Exception("Group by $groupBy has not been implemented yet");
     }
 
     protected function getDates(User $user, array $filters): array
     {
         $range = $filters['dateRange'] ?? '';
-        if (!in_array($range, $this->dateRanges)) {
-            throw new Exception("groupBy filter can only be one of : " . implode(', ', $this->dateRanges));
+        $dateRanges = array_keys(Analytics::$plugin->analytics->getDateRanges());
+        if (!in_array($range, $dateRanges)) {
+            throw new Exception("groupBy filter can only be one of : " . implode(', ', $dateRanges));
         }
         if ($range == 'custom') {
             $dateFrom = $filters['dateFrom'] ?? null;
@@ -126,6 +128,8 @@ class DataService extends Component
             }
             $dateFrom->setTime(0, 0, 0);
             $dateTo->setTime(23, 59, 59);
+        } else {
+            throw new Exception("Date range $range has not been implemented yet");
         }
         return [$dateFrom, $dateTo];
     }

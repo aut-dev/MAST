@@ -14,8 +14,7 @@
                         <div class="mb-3">
                             <label>{{ t('Type') }}</label>
                             <select v-model="chartClone.chartType" class="form-select">
-                                <option value="pie">{{ t('Pie') }}</option>
-                                <option value="line">{{ t('Line') }}</option>
+                                <option v-for="label, value in store.chartTypes" :key="value" :value="value">{{ label }}</option>
                             </select>
                         </div>
                     </slot>
@@ -48,7 +47,7 @@
                         <div v-if="chartClone.chartType == 'line'" class="mb-3">
                             <label>{{ t('Group by') }}</label>
                             <select v-model="chartClone.groupBy" class="form-select">
-                                <option v-for="label, value in groupBys" :value="value">{{ label }}</option>
+                                <option v-for="label, value in store.groupBys" :key="value" :value="value">{{ label }}</option>
                             </select>
                             <div class="invalid-feedback d-block" v-if="errors.groupBy">{{ errors.groupBy }}</div>
                         </div>
@@ -57,13 +56,7 @@
                         <div class="mb-3">
                             <label>{{ t('Date') }}</label>
                             <select v-model="chartClone.dateRange" class="form-select" ref="dateSelect">
-                                <option value="thisWeek">{{ t('This week') }}</option>
-                                <option value="lastWeek">{{ t('Last week') }}</option>
-                                <option value="thisMonth">{{ t('This month') }}</option>
-                                <option value="lastMonth">{{ t('Last month') }}</option>
-                                <option value="thisYear">{{ t('This year') }}</option>
-                                <option value="lastYear">{{ t('Last year') }}</option>
-                                <option value="custom">{{ t('Custom') }}</option>
+                                <option v-for="label, value in store.dateRanges" :key="value" :value="value">{{ label }}</option>
                             </select>
                         </div>
                         <div class="mb-3" v-show="chartClone.dateRange == 'custom'">
@@ -105,30 +98,23 @@ export default {
         return { store };
     },
     props: {
-        chartId: [String, Number],
-    },
-    computed: {
-        chart() {
-            return this.store.charts.filter(c => c.id == this.chartId)[0];
-        }
+        chart: Object,
+        open: Boolean
     },
     data() {
         return {
             modal: null,
             chartClone: {},
-            errors: {},
-            groupBys: {
-                days: 'Days',
-                months: 'Months',
-            }
+            errors: {}
         }
     },
     watch: {
-        'store.openSettings': {
-            handler() {
-                this.updateModal();
-            },
-            deep: true
+        open(open) {
+            if (open) {
+                this.modal.show();
+            } else {
+                this.modal.hide();
+            }
         },
         chart: {
             handler() {
@@ -170,30 +156,21 @@ export default {
         updateTasks() {
             this.chartClone.tasks = $(this.$refs.tasksSelect).multipleSelect('getSelects')
         },
-        updateModal() {
-            if (this.modal && this.chart) {
-                if (this.store.openSettings[this.chartId]) {
-                    this.modal.show();
-                } else {
-                    this.modal.hide();
-                }
-            }
-        },
         saveSettings() {
             this.validate();
             if (Object.keys(this.errors).length == 0) {
-                this.store.openSettings[this.chart.id] = false;
-                if (!isEqual(this.chart, this.chartClone)) {
+                this.$emit('close');
+                if (!this.chart.id || !isEqual(this.chart, this.chartClone)) {
                     let fields = {...this.chartClone};
                     delete fields.id;
-                    this.store.saveChart(this.chart.id, fields);
+                    this.$emit('save', fields);
                 }
             }
         },
         closeModal() {
             this.chartClone = {...this.chart};
-            this.store.openSettings[this.chart.id] = false;
             this.errors = {};
+            this.$emit('close');
         },
         validate() {
             this.errors = {};

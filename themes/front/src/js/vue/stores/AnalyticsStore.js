@@ -12,7 +12,10 @@ export const useAnalyticsStore = defineStore('tasks', {
         lastYear: null,
         forceChartRedraw: 1,
         colorError: {},
-        openSettings: {}
+        openSettings: {},
+        groupBys: {},
+        dateRanges: {},
+        chartTypes: {},
     }),
     actions: {
         saveChart(id, fields) {
@@ -27,10 +30,9 @@ export const useAnalyticsStore = defineStore('tasks', {
                 }
             });
         },
-        createChart(dataTracked, chartType) {
+        createChart(fields) {
             axios.post('/?action=plugin-analytics/charts/create-chart', {
-                chartType: chartType,
-                dataTracked: dataTracked
+                fields: fields
             }, {
                 headers: {
                     "X-CSRF-Token": Craft.csrfToken,

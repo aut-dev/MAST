@@ -7,20 +7,10 @@
 <script>
 
 import { Pie } from 'vue-chartjs';
-import { useAnalyticsStore } from '../stores/AnalyticsStore';
 
 export default {
     components: {
         Pie
-    },
-    setup() {
-        const store = useAnalyticsStore();
-        return { store };
-    },
-    computed: {
-        chart() {
-            return this.store.charts.filter(c => c.id == this.chartId)[0];
-        }
     },
     data() {
         return {
@@ -37,7 +27,7 @@ export default {
         }
     },
     props: {
-        chartId: [String, Number],
+        chart: Object,
         loaded: Boolean,
         data: Object
     },
