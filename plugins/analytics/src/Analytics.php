@@ -3,6 +3,7 @@
 namespace Plugins\Analytics;
 
 use Plugins\Analytics\services\AnalyticsService;
+use Plugins\Analytics\services\CompletedDataService;
 use Plugins\Analytics\services\DerailsDataService;
 use Plugins\Analytics\services\MoneySpentDataService;
 use Plugins\Analytics\services\TimeSpentDataService;
@@ -47,6 +48,7 @@ class Analytics extends Plugin
             'derailsData' => DerailsDataService::class,
             'timeSpentData' => TimeSpentDataService::class,
             'moneySpentData' => MoneySpentDataService::class,
+            'completedData' => CompletedDataService::class,
         ]);
     }
 }

@@ -59,13 +59,13 @@
         </div>
         <div class="row">
             <div v-for="chart in store.charts" :class="'mb-5 col-12 col-md-' + chart.size">
-                <chart :chart-id="'' + chart.id"/>
+                <chart :chart="chart"/>
             </div>
             <div class="col-12" v-if="store.charts.length == 0">
                 {{ t('No charts found') }}
             </div>
         </div>
-        <chart-settings :chart="newChart" :open="modalOpen" @save="(event) => store.createChart(event)" @close="modalOpen = false"/>
+        <chart-settings/>
     </div>
 </template>
 
@@ -102,6 +102,7 @@ export default {
         dateRanges: Object,
         chartTypes: Object,
         dataTracked: Object,
+        sizes: Object,
         charts: Array
     },
     created() {
@@ -113,11 +114,8 @@ export default {
         this.store.groupBys = this.groupBys;
         this.store.dateRanges = this.dateRanges;
         this.store.chartTypes = this.chartTypes;
-        let settings = {};
-        this.charts.forEach(c => {
-            settings[c.id] = false;
-        });
-        this.store.openSettings = settings;
+        this.store.dataTracked = this.dataTracked;
+        this.store.sizes = this.sizes;
     },
     methods: {
         createChart(dataTracked) {
@@ -133,17 +131,20 @@ export default {
                 title = 'Derails';
                 range = 'thisYear';
             }
-            this.newChart = {
-                dataTracked: dataTracked,
+            this.store.editedChart = {
                 chartTitle: title,
-                allTasks: true,
-                chartType: 'pie',
-                dateRange: range,
-                tasks: [],
-                cumulative: false,
-                groupBy: 'days'
+                size: 12,
+                settings: {
+                    dataTracked: dataTracked,
+                    allTasks: true,
+                    chartType: 'pie',
+                    dateRange: range,
+                    tasks: [],
+                    cumulative: false,
+                    groupBy: 'days'
+                }
             };
-            this.modalOpen = true;
+            this.store.openSettings = true;
         }
     }
 };

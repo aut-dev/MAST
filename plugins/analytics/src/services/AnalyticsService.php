@@ -17,46 +17,6 @@ use craft\helpers\MoneyHelper;
 class AnalyticsService extends Component
 {
     /**
-     * Get all group bys options
-     *
-     * @return array
-     */
-    public function getGroupBys(): array
-    {
-        return $this->getChartFieldOptions('groupBy');
-    }
-
-    /**
-     * Get all date range options
-     *
-     * @return array
-     */
-    public function getDateRanges(): array
-    {
-        return $this->getChartFieldOptions('dateRange');
-    }
-
-    /**
-     * Get all date range options
-     *
-     * @return array
-     */
-    public function getChartTypes(): array
-    {
-        return $this->getChartFieldOptions('chartType');
-    }
-
-    /**
-     * Get all date range options
-     *
-     * @return array
-     */
-    public function getChartDataTracked(): array
-    {
-        return $this->getChartFieldOptions('dataTracked');
-    }
-
-    /**
      * Get a chart as json
      *
      * @param  MatrixBlock $chart
@@ -65,18 +25,21 @@ class AnalyticsService extends Component
     public function getJsonChart(MatrixBlock $chart): array
     {
         return [
-            'chartType' => $chart->chartType->value,
-            'dataTracked' => $chart->dataTracked->value,
             'size' => $chart->size->value,
             'id' => $chart->id,
             'chartTitle' => $chart->chartTitle,
-            'allTasks' => $chart->allTasks,
-            'tasks' => $chart->allTasks ? [] : $chart->tasks->ids(),
-            'groupBy' => $chart->groupBy->value,
-            'dateRange' => $chart->dateRange->value,
-            'dateFrom' => $chart->dateRange->value == 'custom' ? $chart->dateFrom->format('Y-m-d') : '',
-            'dateTo' => $chart->dateRange->value == 'custom' ? $chart->dateTo->format('Y-m-d') : '',
-            'cumulative' => $chart->cumulative
+            'stacked' => $chart->stacked,
+            'settings' => [
+                'chartType' => $chart->chartType->value,
+                'dataTracked' => $chart->dataTracked->value,
+                'allTasks' => $chart->allTasks,
+                'tasks' => $chart->allTasks ? [] : $chart->tasks->ids(),
+                'groupBy' => $chart->groupBy->value,
+                'dateRange' => $chart->dateRange->value,
+                'dateFrom' => $chart->dateRange->value == 'custom' ? $chart->dateFrom->format('Y-m-d') : '',
+                'dateTo' => $chart->dateRange->value == 'custom' ? $chart->dateTo->format('Y-m-d') : '',
+                'cumulative' => $chart->cumulative
+            ]
         ];
     }
 
@@ -124,7 +87,7 @@ class AnalyticsService extends Component
      * @param  string $handle
      * @return array
      */
-    protected function getChartFieldOptions(string $handle): array
+    public function getChartFieldOptions(string $handle): array
     {
         $out = [];
         $field = \Craft::$app->fields->getFieldByHandle('charts')->getBlockTypes()[0]->getFieldLayout()->getFieldByHandle($handle);

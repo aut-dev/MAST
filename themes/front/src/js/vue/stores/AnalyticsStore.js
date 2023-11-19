@@ -12,15 +12,16 @@ export const useAnalyticsStore = defineStore('tasks', {
         lastYear: null,
         forceChartRedraw: 1,
         colorError: {},
-        openSettings: {},
+        openSettings: false,
+        editedChart: {},
         groupBys: {},
         dateRanges: {},
         chartTypes: {},
+        dataTracked: {},
+        sizes: {},
     }),
     actions: {
         saveChart(id, fields) {
-            let index = this.charts.findIndex(c => c.id == id);
-            this.charts[index] = {...this.charts[index], ...fields};
             axios.post('/?action=plugin-analytics/charts/save-chart', {
                 id: id,
                 fields: fields

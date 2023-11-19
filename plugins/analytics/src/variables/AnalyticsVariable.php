@@ -18,23 +18,8 @@ class AnalyticsVariable
         return Analytics::$plugin->analytics->getJsonChart($chart);
     }
 
-    public function getGroupBys(): array
+    public function getChartFieldOptions(string $field): array
     {
-        return Analytics::$plugin->analytics->getGroupBys();
-    }
-
-    public function getDateRanges(): array
-    {
-        return Analytics::$plugin->analytics->getDateRanges();
-    }
-
-    public function getChartTypes(): array
-    {
-        return Analytics::$plugin->analytics->getChartTypes();
-    }
-
-    public function getChartDataTracked(): array
-    {
-        return Analytics::$plugin->analytics->getChartDataTracked();
+        return Analytics::$plugin->analytics->getChartFieldOptions($field);
     }
 }

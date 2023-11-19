@@ -11,13 +11,10 @@ use craft\elements\db\EntryQuery;
 
 class TimeSpentDataService extends DataService
 {
-    public function forPie(User $user, array $filters)
+    protected function processData(array $sheets, array &$data)
     {
-        $tasks = $this->getTasks($user, $filters);
-        list($dateFrom, $dateTo) = $this->getDates($user, $filters);
-        $query = $this->_query($tasks, $dateFrom, $dateTo);
-        $data = [];
-        foreach ($query->all() as $sheet) {
+        list($dateFrom, $dateTo) = $this->getDates();
+        foreach ($sheets as $sheet) {
             $task = $sheet->task->first();
             list($startDate, $endDate) = $this->getSheetDates($sheet, $dateFrom, $dateTo);
             if (!isset($data[$task->id])) {
@@ -25,31 +22,12 @@ class TimeSpentDataService extends DataService
             }
             $data[$task->id] += ($endDate->getTimeStamp() - $startDate->getTimeStamp());
         }
-        $colors = $labels = $dataset = [];
-        foreach ($tasks as $task) {
-            $dataset[] = round(($data[$task->id] ?? 0) / 60);
-            $labels[] = $task->title;
-            $colors[] = (string)$task->color;
-        }
-        return [
-            'labels' => $labels,
-            'datasets' => [[
-                'label' => 'Time spent',
-                'data' => $dataset,
-                'backgroundColor' => $colors
-            ]]
-        ];
     }
 
-    public function forLine(User $user, array $filters): array
+    protected function processLineData(array $sheets, array &$data, string $groupBy)
     {
-        $groupBy = $this->getGroupBy($filters);
-        $cumulative = $filters['cumulative'] ?? false;
-        $tasks = $this->getTasks($user, $filters);
-        list($dateFrom, $dateTo) = $this->getDates($user, $filters);
-        $query = $this->_query($tasks, $dateFrom, $dateTo);
-        $data = [];
-        foreach ($query->all() as $sheet) {
+        list($dateFrom, $dateTo) = $this->getDates();
+        foreach ($sheets as $sheet) {
             list($startDate, $endDate) = $this->getSheetDates($sheet, $dateFrom, $dateTo);
             $index = $this->getGroupByIndex($startDate, $groupBy);
             $task = $sheet->task->first();
@@ -58,43 +36,6 @@ class TimeSpentDataService extends DataService
             }
             $data[$task->id][$index] += ($endDate->getTimeStamp() - $startDate->getTimeStamp());
         }
-        $datasets = $labels = [];
-        foreach ($tasks as $task) {
-            $datasets[$task->id] = [
-                'label' => $task->title,
-                'tension' => 0.2,
-                'data' => [],
-                'borderColor' => (string)$task->color
-            ];
-        }
-        $next = $dateFrom;
-        $cumulatives = [];
-        while (1) {
-            $index = $this->getGroupByIndex($next, $groupBy);
-            $labels[] = $this->getGroupByLabel($next, $groupBy);
-            switch ($groupBy) {
-                case 'days':
-                    $next->add(new DateInterval('P1D'));
-                    break;
-                case 'months':
-                    $next->add(new DateInterval('P1M'));
-            }
-            foreach ($tasks as $task) {
-                $value = $data[$task->id][$index] ?? 0;
-                if ($cumulative) {
-                    $cumulatives[$task->id] = ($cumulatives[$task->id] ?? 0) + $value;
-                    $value = $cumulatives[$task->id];
-                }
-                $datasets[$task->id]['data'][] = round($value / 60);
-            }
-            if ($next > $dateTo) {
-                break;
-            }
-        }
-        return [
-            'labels' => $labels,
-            'datasets' => array_values($datasets)
-        ];
     }
 
     protected function getSheetDates(Entry $sheet, DateTime $dateFrom, DateTime $dateTo): array

@@ -2,18 +2,34 @@
     <div class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" ref="modal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-body filters">
+                <div class="modal-body">
                     <slot name="title">
                         <div class="mb-3">
                             <label>{{ t('Title') }}</label>
-                            <input type="text" v-model="chartClone.chartTitle" class="form-control">
+                            <input type="text" v-model="chart.chartTitle" class="form-control">
                             <div class="invalid-feedback d-block" v-if="errors.chartTitle">{{ errors.chartTitle }}</div>
+                        </div>
+                    </slot>
+                    <slot name="size">
+                        <div class="mb-3" v-if="!chart.id">
+                            <label>{{ t('Size') }}</label>
+                            <select v-model="chart.size" class="form-select">
+                                <option v-for="label, value in store.sizes" :key="value" :value="value">{{ label }}</option>
+                            </select>
+                        </div>
+                    </slot>
+                    <slot name="chartType">
+                        <div class="mb-3">
+                            <label>{{ t('Data tracked') }}</label>
+                            <select v-model="chart.settings.dataTracked" class="form-select">
+                                <option v-for="label, value in store.dataTracked" :key="value" :value="value">{{ label }}</option>
+                            </select>
                         </div>
                     </slot>
                     <slot name="chartType">
                         <div class="mb-3">
                             <label>{{ t('Type') }}</label>
-                            <select v-model="chartClone.chartType" class="form-select">
+                            <select v-model="chart.settings.chartType" class="form-select">
                                 <option v-for="label, value in store.chartTypes" :key="value" :value="value">{{ label }}</option>
                             </select>
                         </div>
@@ -22,13 +38,13 @@
                         <div class="mb-3">
                             <label for="allTasks">{{ t(' All tasks') }}</label>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="allTasks" v-model="chartClone.allTasks">
+                                <input class="form-check-input" type="checkbox" role="switch" id="allTasks" v-model="chart.settings.allTasks">
                             </div>
                         </div>
                         <div class="mb-3">
-                            <div v-show="!chartClone.allTasks">
+                            <div v-show="!chart.settings.allTasks">
                                 <label>{{ t('Tasks') }}</label>
-                                <select v-model="chartClone.tasks" multiple ref="tasksSelect" :placeholder="t('Tasks')" class="w-100">
+                                <select v-model="chart.settings.tasks" multiple ref="tasksSelect" :placeholder="t('Tasks')" class="w-100">
                                     <option v-for="task, id in store.tasks" :key="id" :value="id">{{ task.title }}</option>
                                 </select>
                                 <div class="invalid-feedback d-block" v-if="errors.tasks">{{ errors.tasks }}</div>
@@ -36,17 +52,25 @@
                         </div>
                     </slot>
                     <slot name="cumulative">
-                        <div v-if="chartClone.chartType == 'line'" class="mb-3">
+                        <div v-if="isBarOrLine" class="mb-3">
                             <label for="cumulative">{{ t('Cumulative') }}</label>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="cumulative" v-model="chartClone.cumulative">
+                                <input class="form-check-input" type="checkbox" role="switch" id="cumulative" v-model="chart.settings.cumulative">
                             </div>
                         </div>
                     </slot>
-                    <slot name="groupBy">
-                        <div v-if="chartClone.chartType == 'line'" class="mb-3">
-                            <label>{{ t('Group by') }}</label>
-                            <select v-model="chartClone.groupBy" class="form-select">
+                    <slot name="stacked">
+                        <div v-if="showStacked" class="mb-3">
+                            <label for="stacked">{{ t('Stacked') }}</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="stacked" v-model="chart.stacked">
+                            </div>
+                        </div>
+                    </slot>
+                    <slot name="xAxis">
+                        <div v-if="showXaxis" class="mb-3">
+                            <label>{{ t('X Axis') }}</label>
+                            <select v-model="chart.settings.groupBy" class="form-select">
                                 <option v-for="label, value in store.groupBys" :key="value" :value="value">{{ label }}</option>
                             </select>
                             <div class="invalid-feedback d-block" v-if="errors.groupBy">{{ errors.groupBy }}</div>
@@ -55,21 +79,21 @@
                     <slot name="dates">
                         <div class="mb-3">
                             <label>{{ t('Date') }}</label>
-                            <select v-model="chartClone.dateRange" class="form-select" ref="dateSelect">
+                            <select v-model="chart.settings.dateRange" class="form-select" ref="dateSelect">
                                 <option v-for="label, value in store.dateRanges" :key="value" :value="value">{{ label }}</option>
                             </select>
                         </div>
-                        <div class="mb-3" v-show="chartClone.dateRange == 'custom'">
+                        <div class="mb-3" v-show="chart.settings.dateRange == 'custom'">
                             <label>{{ t('From') }}</label>
                             <div>
-                                <input type="text" class="form-control datepicker" v-model="chartClone.dateFrom" ref="dateFrom">
+                                <input type="text" class="form-control datepicker" v-model="chart.settings.dateFrom" ref="dateFrom">
                             </div>
                             <div class="invalid-feedback d-block" v-if="errors.dateFrom">{{ errors.dateFrom }}</div>
                         </div>
-                        <div v-show="chartClone.dateRange == 'custom'">
+                        <div v-show="chart.settings.dateRange == 'custom'">
                             <label>{{ t('To') }}</label>
                             <div>
-                                <input type="text" class="form-control datepicker" v-model="chartClone.dateTo" ref="dateTo">
+                                <input type="text" class="form-control datepicker" v-model="chart.settings.dateTo" ref="dateTo">
                             </div>
                             <div class="invalid-feedback d-block" v-if="errors.dateTo">{{ errors.dateTo }}</div>
                         </div>
@@ -77,7 +101,7 @@
                     <slot name="afterFilters"></slot>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @click="closeModal()">{{ t('Close') }}</button>
+                    <button type="button" class="btn btn-secondary" @click="store.openSettings = false;">{{ t('Close') }}</button>
                     <button type="button" class="btn btn-primary" @click="saveSettings()">{{ t('Save') }}</button>
                 </div>
             </div>
@@ -90,42 +114,53 @@
 import { useAnalyticsStore } from './stores/AnalyticsStore';
 import 'multiple-select';
 import moment from 'moment';
-import {isEqual} from 'lodash';
+import {isEqual, cloneDeep} from 'lodash';
 
 export default {
     setup() {
         const store = useAnalyticsStore();
         return { store };
     },
-    props: {
-        chart: Object,
-        open: Boolean
-    },
     data() {
         return {
             modal: null,
-            chartClone: {},
+            chart: {
+                settings: {
+                    tasks: []
+                }
+            },
             errors: {}
         }
     },
+    computed: {
+        showXaxis() {
+            if (this.chart.settings.chartType == 'bar' && this.chart.settings.cumulative) {
+                return false;
+            }
+            return this.isBarOrLine;
+        },
+        isBarOrLine() {
+            return ['line', 'bar'].includes(this.chart.settings.chartType)
+        },
+        showStacked() {
+            return (this.chart.settings.chartType == 'bar' && !this.chart.settings.cumulative);
+        }
+    },
     watch: {
-        open(open) {
+        'store.openSettings'(open) {
             if (open) {
                 this.modal.show();
             } else {
                 this.modal.hide();
             }
         },
-        chart: {
+        'store.editedChart': {
             handler() {
-                this.chartClone = {...this.chart};
+                this.errors = {};
+                this.chart = cloneDeep(this.store.editedChart);
             },
-            immediate: true,
             deep: true
         }
-    },
-    unmounted() {
-        this.modal.dispose();
     },
     mounted() {
         App.getBootstrap().then(chunk => {
@@ -154,48 +189,53 @@ export default {
     },
     methods: {
         updateTasks() {
-            this.chartClone.tasks = $(this.$refs.tasksSelect).multipleSelect('getSelects')
+            this.chart.settings.tasks = $(this.$refs.tasksSelect).multipleSelect('getSelects');
         },
         saveSettings() {
             this.validate();
             if (Object.keys(this.errors).length == 0) {
-                this.$emit('close');
-                if (!this.chart.id || !isEqual(this.chart, this.chartClone)) {
-                    let fields = {...this.chartClone};
-                    delete fields.id;
-                    this.$emit('save', fields);
+                this.store.openSettings = false;
+                if (!this.chart.id || !isEqual(this.store.editedChart, this.chart)) {
+                    let data = {...this.chart.settings};
+                    data.chartTitle = this.chart.chartTitle;
+                    data.stacked = this.chart.stacked;
+                    if (this.chart.id) {
+                        let chart = this.store.charts.filter(c => c.id == this.chart.id)[0];
+                        chart.chartTitle = this.chart.chartTitle;
+                        chart.stacked = this.chart.stacked;
+                        chart.settings = this.chart.settings;
+                        this.store.saveChart(this.chart.id, data);
+                    } else {
+                        data.size = this.chart.size;
+                        this.store.createChart(data);
+                    }
                 }
             }
         },
-        closeModal() {
-            this.chartClone = {...this.chart};
-            this.errors = {};
-            this.$emit('close');
-        },
         validate() {
             this.errors = {};
-            if (this.chartClone.dateRange == 'custom') {
-                if (!this.chartClone.dateFrom) {
+            if (this.chart.settings.dateRange == 'custom') {
+                if (!this.chart.settings.dateFrom) {
                     this.errors.dateFrom = 'Date from is required';
                 }
-                if (!this.chartClone.dateTo) {
+                if (!this.chart.settings.dateTo) {
                     this.errors.dateTo = 'Date to is required';
                 }
-                if (this.chartClone.dateFrom && this.chartClone.dateTo) {
-                    let dateFrom = moment(this.chartClone.dateFrom, 'YYYY-MM-DD');
-                    let dateTo = moment(this.chartClone.dateTo, 'YYYY-MM-DD');
+                if (this.chart.settings.dateFrom && this.chart.settings.dateTo) {
+                    let dateFrom = moment(this.chart.settings.dateFrom, 'YYYY-MM-DD');
+                    let dateTo = moment(this.chart.settings.dateTo, 'YYYY-MM-DD');
                     if (dateFrom.isAfter(dateTo)) {
                         this.errors.dateFrom = 'Date from must be before date to';
                     }
                 }
             }
-            if (!this.chartClone.allTasks && $(this.$refs.tasksSelect).multipleSelect('getSelects').length == 0) {
+            if (!this.chart.settings.allTasks && this.chart.settings.tasks.length == 0) {
                 this.errors.tasks = 'Tasks are required';
             }
-            if (!this.chartClone.chartTitle) {
+            if (!this.chart.chartTitle) {
                 this.errors.chartTitle = 'Title is required';
             }
-            if (this.chartClone.chartType == 'line' && !this.chartClone.groupBy) {
+            if (this.chart.settings.chartType == 'line' && !this.chart.settings.groupBy) {
                 this.errors.groupBy = 'Group by is required';
             }
         }

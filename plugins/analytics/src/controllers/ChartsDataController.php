@@ -5,6 +5,7 @@ namespace Plugins\Analytics\controllers;
 use DateInterval;
 use Plugins\Analytics\Analytics;
 use craft\elements\Entry;
+use craft\helpers\StringHelper;
 use craft\web\Controller;
 
 class ChartsDataController extends Controller
@@ -19,7 +20,7 @@ class ChartsDataController extends Controller
             $filters[$field] = $this->request->getRequiredParam($field);
         }
         $service = $dataTracked . 'Data';
-        $method = 'for' . ucfirst($chartType);
+        $method = 'for' . ucfirst(StringHelper::toCamelCase($chartType));
         $user = \Craft::$app->user->identity;
         return $this->asJson(Analytics::$plugin->$service->$method($user, $filters));
     }
