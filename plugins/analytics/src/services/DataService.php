@@ -45,7 +45,7 @@ class DataService extends Component
         $tasks = $this->getTasks();
         list($dateFrom, $dateTo) = $this->getDates();
         $query = $this->_query($tasks, $dateFrom, $dateTo);
-        $data = $labels = [];
+        $data = $labels = $datasets = [];
         $this->processData($query->all(), $data);
         $datasets[0] = [
             'data' => [],
@@ -76,7 +76,7 @@ class DataService extends Component
         $tasks = $this->getTasks();
         list($dateFrom, $dateTo) = $this->getDates();
         $query = $this->_query($tasks, $dateFrom, $dateTo);
-        $data = $labels = [];
+        $data = $labels = $datasets = [];
         $this->processData($query->all(), $data);
         $datasets[0] = [
             'data' => [],
