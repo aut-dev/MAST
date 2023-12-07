@@ -23,7 +23,7 @@ return GeneralConfig::create()
     // Enable Dev Mode on the dev/local environment (see https://craftcms.com/guides/what-dev-mode-does)
     ->devMode(!$isProd)
     // Only allow administrative changes on the local/production environment
-    ->allowAdminChanges(!$isDev)
+    ->allowAdminChanges($isLocal)
     // Disallow robots everywhere except the production environment
     ->disallowRobots(!$isProd)
     //Enable template caching on production
