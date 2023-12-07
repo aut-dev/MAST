@@ -14,8 +14,7 @@ class TasksExtension extends AbstractExtension
     {
         return [
             new TwigFilter('friendlyTimeSpent', [$this, 'friendlyTimeSpentFilter']),
-            new TwigFilter('minutesToNow', [$this, 'minutesToNowFilter']),
-            new TwigFilter('serializeTask', [$this, 'serializeTask']),
+            new TwigFilter('minutesToNow', [$this, 'minutesToNowFilter'])
         ];
     }
 

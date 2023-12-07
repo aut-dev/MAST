@@ -1,0 +1,596 @@
+field: c8cf0123-4051-4f22-b94b-bbb5845a0dc8 # Charts
+fieldLayouts:
+  c84f1ed8-5bb7-4323-aad7-542a29a160a1:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: e556dd16-7cf0-41d8-b35b-dff5f83625ae # Title
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 8b336a6d-74c6-4e93-8caa-f86ecad0df92
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: ac93f88b-19f1-4f21-bbf2-6f3ffef2189a # Size
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 25cbc3e2-ee39-4310-a059-6dbe89a68972
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: c4e129b5-b63a-4685-b066-ee309244b610 # Data tracked
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 2cf670f0-cca5-4045-868c-dda8f36bc306
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: 15d878b0-2a10-49c8-85e1-5e7e4eed21eb # Type
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: ff5b1269-4b89-4ee9-b7b4-ad2c5ae21924
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: d570c574-05bc-4f06-9f77-a24859b75bd4 # All tasks
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 65e5f22e-9819-4bb5-baa2-9b2f9235eb9d
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: 6cc778d4-d855-4eff-b82e-d8d91c76fb1d # Tasks
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: ff19d84a-ffc5-403f-a7fb-37d688471741
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: 01d5d262-2c5b-481d-aa40-7044ec73584f # Group by
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: bd03db66-f010-4f5d-a6b2-a2a0ec2092be
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: 36c91347-2111-4a37-9dd1-35cced1e5bef # Date range
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 26025fc0-b46b-41e4-8367-4c8b2425e9b4
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: d8a00adf-0ab4-47da-b765-3c7efe18d9e6 # Date from
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 7c19575a-5dc6-48ca-b131-65f65b094499
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: 63464ed4-3cec-4b3e-b213-f80800f3dc39 # Date to
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 1994b414-64d2-4b77-8401-7da15335cdbc
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: 57c4de4f-19b0-4d55-a932-261083710ef8 # Cumulative
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 8c894a86-7044-4f87-b45c-f005e82aea4a
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: ae8336b2-6dbf-4538-a78c-b4a00409a4e7 # Stacked
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: eff985e8-0816-4e04-b302-0b3aba954aa8
+            userCondition: null
+            warning: null
+            width: 25
+        name: Content
+        uid: 5c3da43d-4c1b-4991-b376-0486efcf3755
+        userCondition: null
+fields:
+  01d5d262-2c5b-481d-aa40-7044ec73584f: # Group by
+    columnSuffix: mqillvyh
+    contentColumnType: string(6)
+    fieldGroup: null
+    handle: groupBy
+    instructions: null
+    name: 'Group by'
+    searchable: false
+    settings:
+      columnType: null
+      options:
+        -
+          __assoc__:
+            -
+              - label
+              - Days
+            -
+              - value
+              - days
+            -
+              - default
+              - '1'
+        -
+          __assoc__:
+            -
+              - label
+              - Months
+            -
+              - value
+              - months
+            -
+              - default
+              - ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Dropdown
+  6cc778d4-d855-4eff-b82e-d8d91c76fb1d: # Tasks
+    columnSuffix: null
+    contentColumnType: string
+    fieldGroup: null
+    handle: tasks
+    instructions: null
+    name: Tasks
+    searchable: false
+    settings:
+      allowSelfRelations: false
+      branchLimit: null
+      localizeRelations: false
+      maintainHierarchy: false
+      maxRelations: null
+      minRelations: null
+      selectionCondition:
+        __assoc__:
+          -
+            - elementType
+            - craft\elements\Entry
+          -
+            - fieldContext
+            - global
+          -
+            - class
+            - craft\elements\conditions\entries\EntryCondition
+      selectionLabel: null
+      showSiteMenu: true
+      sources:
+        - 'section:720dc906-57fd-4848-92a1-447acf4703f3' # Task
+      targetSiteId: null
+      validateRelatedElements: false
+      viewMode: null
+    translationKeyFormat: null
+    translationMethod: site
+    type: craft\fields\Entries
+  15d878b0-2a10-49c8-85e1-5e7e4eed21eb: # Type
+    columnSuffix: cmyykalm
+    contentColumnType: string(10)
+    fieldGroup: null
+    handle: chartType
+    instructions: null
+    name: Type
+    searchable: false
+    settings:
+      columnType: null
+      options:
+        -
+          __assoc__:
+            -
+              - label
+              - Line
+            -
+              - value
+              - line
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - Pie
+            -
+              - value
+              - pie
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - Bar
+            -
+              - value
+              - bar
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 'Polar area'
+            -
+              - value
+              - polar-area
+            -
+              - default
+              - ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Dropdown
+  36c91347-2111-4a37-9dd1-35cced1e5bef: # Date range
+    columnSuffix: ylxuysim
+    contentColumnType: string(9)
+    fieldGroup: null
+    handle: dateRange
+    instructions: null
+    name: 'Date range'
+    searchable: false
+    settings:
+      columnType: null
+      options:
+        -
+          __assoc__:
+            -
+              - label
+              - 'This week'
+            -
+              - value
+              - thisWeek
+            -
+              - default
+              - '1'
+        -
+          __assoc__:
+            -
+              - label
+              - 'Last week'
+            -
+              - value
+              - lastWeek
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 'This month'
+            -
+              - value
+              - thisMonth
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 'Last month'
+            -
+              - value
+              - lastMonth
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 'This year'
+            -
+              - value
+              - thisYear
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 'Last year'
+            -
+              - value
+              - lastYear
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - Custom
+            -
+              - value
+              - custom
+            -
+              - default
+              - ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Dropdown
+  57c4de4f-19b0-4d55-a932-261083710ef8: # Cumulative
+    columnSuffix: atwcmdet
+    contentColumnType: boolean
+    fieldGroup: null
+    handle: cumulative
+    instructions: null
+    name: Cumulative
+    searchable: false
+    settings:
+      default: false
+      offLabel: null
+      onLabel: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Lightswitch
+  63464ed4-3cec-4b3e-b213-f80800f3dc39: # Date to
+    columnSuffix: qctnkqah
+    contentColumnType: datetime
+    fieldGroup: null
+    handle: dateTo
+    instructions: null
+    name: 'Date to'
+    searchable: false
+    settings:
+      max: null
+      min: null
+      minuteIncrement: 30
+      showDate: true
+      showTime: false
+      showTimeZone: false
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Date
+  ac93f88b-19f1-4f21-bbf2-6f3ffef2189a: # Size
+    columnSuffix: picmoilh
+    contentColumnType: string(2)
+    fieldGroup: null
+    handle: size
+    instructions: null
+    name: Size
+    searchable: false
+    settings:
+      columnType: null
+      options:
+        -
+          __assoc__:
+            -
+              - label
+              - 100%
+            -
+              - value
+              - '12'
+            -
+              - default
+              - '1'
+        -
+          __assoc__:
+            -
+              - label
+              - 75%
+            -
+              - value
+              - '9'
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 50%
+            -
+              - value
+              - '6'
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 25%
+            -
+              - value
+              - '3'
+            -
+              - default
+              - ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Dropdown
+  ae8336b2-6dbf-4538-a78c-b4a00409a4e7: # Stacked
+    columnSuffix: odnxeofe
+    contentColumnType: boolean
+    fieldGroup: null
+    handle: stacked
+    instructions: null
+    name: Stacked
+    searchable: false
+    settings:
+      default: false
+      offLabel: null
+      onLabel: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Lightswitch
+  c4e129b5-b63a-4685-b066-ee309244b610: # Data tracked
+    columnSuffix: fwouwbke
+    contentColumnType: string(10)
+    fieldGroup: null
+    handle: dataTracked
+    instructions: null
+    name: 'Data tracked'
+    searchable: false
+    settings:
+      columnType: null
+      options:
+        -
+          __assoc__:
+            -
+              - label
+              - Completed
+            -
+              - value
+              - completed
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - Derails
+            -
+              - value
+              - derails
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 'Money spent'
+            -
+              - value
+              - moneySpent
+            -
+              - default
+              - ''
+        -
+          __assoc__:
+            -
+              - label
+              - 'Time spent'
+            -
+              - value
+              - timeSpent
+            -
+              - default
+              - ''
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Dropdown
+  d8a00adf-0ab4-47da-b765-3c7efe18d9e6: # Date from
+    columnSuffix: zhmzwgch
+    contentColumnType: datetime
+    fieldGroup: null
+    handle: dateFrom
+    instructions: null
+    name: 'Date from'
+    searchable: false
+    settings:
+      max: null
+      min: null
+      minuteIncrement: 30
+      showDate: true
+      showTime: false
+      showTimeZone: false
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Date
+  d570c574-05bc-4f06-9f77-a24859b75bd4: # All tasks
+    columnSuffix: hwouglbi
+    contentColumnType: boolean
+    fieldGroup: null
+    handle: allTasks
+    instructions: null
+    name: 'All tasks'
+    searchable: false
+    settings:
+      default: true
+      offLabel: null
+      onLabel: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\Lightswitch
+  e556dd16-7cf0-41d8-b35b-dff5f83625ae: # Title
+    columnSuffix: mxpnfmsa
+    contentColumnType: text
+    fieldGroup: null
+    handle: chartTitle
+    instructions: null
+    name: Title
+    searchable: false
+    settings:
+      byteLimit: null
+      charLimit: null
+      code: false
+      columnType: null
+      initialRows: 4
+      multiline: false
+      placeholder: null
+      uiMode: normal
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\PlainText
+handle: chart
+name: Chart
+sortOrder: 1

@@ -1,8 +1,7 @@
 {% extends "_layouts/entry" %}
 {% requireLogin %}
 
-{% set requires_valid_subscription = true %}
-{% set max_tasks_inactive_subscription = 3 %}
+{% set requires_valid_paymentmethod = true %}
 
 {% do craft.app.view.registerAssetBundle('themes\\front\\assets\\AddTaskPage') %}
 
@@ -28,10 +27,6 @@
                 {{ entry.title }}
             {% endif %}
         </h1>
-        {% if currentUser.subscriptionStatus != 'active' and count >= 3 %}
-            {{ entry.invalidSubscriptionMessage }}
-        {% else %}
-            {% include "_includes/tasks/form" %}
-        {% endif %}
+        {% include "_includes/tasks/form" %}
     </div>
 {% endblock %}

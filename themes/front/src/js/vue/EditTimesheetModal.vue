@@ -105,10 +105,14 @@ export default {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
             }).then(() => {
-                App.addToast(this.t('Time entry saved'));
-                this.submitting = false;
-                this.$emit('taskSaved');
-                this.modal.hide();
+                if (this.sheet.id) {
+                    App.addToast(this.t('Time entry saved'));
+                    this.submitting = false;
+                    this.$emit('taskSaved');
+                    this.modal.hide();
+                } else {
+                    window.location = '/tasks';
+                }
             }).catch((response) => {
                 response = response.response;
                 let data = response.data;

@@ -13,7 +13,7 @@ class WebhooksController extends Controller
     protected array|bool|int $allowAnonymous = self::ALLOW_ANONYMOUS_LIVE | self::ALLOW_ANONYMOUS_OFFLINE;
     public $enableCsrfValidation = false;
 
-    public function actionSubscriptionChanged()
+    public function actionIndex()
     {
         $payload = $this->request->getRawBody();
         $secret = getenv('STRIPE_SUBSCRIPTION_WEBHOOK_SECRET');
@@ -29,15 +29,6 @@ class WebhooksController extends Controller
         }
 
         switch ($event->type) {
-            case 'customer.subscription.created':
-                Stripe::$plugin->stripe->updateSubscription($event->data->object);
-                break;
-            case 'customer.subscription.deleted':
-                Stripe::$plugin->stripe->deleteSubscription($event->data->object);
-                break;
-            case 'customer.subscription.updated':
-                Stripe::$plugin->stripe->updateSubscription($event->data->object);
-                break;
             case 'customer.updated':
                 Stripe::$plugin->stripe->updateCustomer($event->data->object);
         }

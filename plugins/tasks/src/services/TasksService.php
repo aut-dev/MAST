@@ -19,6 +19,21 @@ use yii\base\InvalidArgumentException;
 class TasksService extends Component
 {
     /**
+     * Tasks extra validation rules
+     *
+     * @param  Entry  $task
+     */
+    public function validateTask(Entry $task)
+    {
+        if ($task->color and $task->color->getLightness() > 95) {
+            $task->addError('color', \Craft::t('site', 'This color is too bright'));
+        }
+        if ($task->backgroundColor and $task->backgroundColor->getLightness() < 10) {
+            $task->addError('backgroundColor', \Craft::t('site', 'This color is too dark'));
+        }
+    }
+
+    /**
      * Check all tasks for derail, will charge users.
      * Returns the amount of derailed tasks
      *
@@ -198,9 +213,10 @@ class TasksService extends Component
             $dailyTask->hasDerailed()
         ) {
             $chargeSucceeded = false;
+            $intent = null;
             $amount = MoneyHelper::toNumber($dailyTask->committed);
             if ($amount > 0) {
-                $chargeSucceeded = Stripe::$plugin->stripe->chargeForDerail($dailyTask);
+                list($chargeSucceeded, $intent) = Stripe::$plugin->stripe->chargeForDerail($dailyTask);
             }
             $email = \Craft::$app->mailer->composeFromKey('charged_for_derail', [
                 'date' => $date->format('d/m/Y'),
@@ -211,7 +227,8 @@ class TasksService extends Component
             $email->setTo($dailyTask->author->email)->send();
             $dailyTask->setFieldValues([
                 'chargeSucceeded' => $chargeSucceeded,
-                'hasDerailed' => true
+                'hasDerailed' => true,
+                'chargeId' => $intent ? $intent->latest_charge : ''
             ]);
         }
         $dailyTask->setFieldValues([

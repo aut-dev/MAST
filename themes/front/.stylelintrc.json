@@ -15,6 +15,7 @@
         "alpha-value-notation": null,
         "color-function-notation": null,
         "max-line-length": null,
-        "number-leading-zero": null
+        "number-leading-zero": null,
+        "no-descending-specificity": null
     }
 }

@@ -44,6 +44,18 @@ fieldLayouts:
             width: 50
           -
             elementCondition: null
+            fieldUid: 104f68b7-c452-4218-bd37-a9eb6c520ebf # Color
+            instructions: null
+            label: 'Analytics color'
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: ef1db984-e9f0-43e9-a332-b548c5d88d75
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
             fieldUid: beb8aabf-7970-4442-9f8b-f70568d8757a # Start date
             instructions: null
             label: null
@@ -227,6 +239,9 @@ handle: default
 hasTitleField: true
 name: Default
 section: 720dc906-57fd-4848-92a1-447acf4703f3 # Task
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
 sortOrder: 1
 titleFormat: null
 titleTranslationKeyFormat: null

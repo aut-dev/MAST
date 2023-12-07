@@ -2,9 +2,9 @@ bcc: ''
 cc: ''
 from: ''
 fromName: ''
-heading: '[Admin] Derail charge failed'
+heading: '[Admin] Error'
 instructions: ''
-key: admin_derail_charge_failed
+key: admin_error
 redactorConfig: ''
 replyTo: ''
 saveLogs: ''

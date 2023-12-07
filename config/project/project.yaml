@@ -1,4 +1,4 @@
-dateModified: 1693547779
+dateModified: 1701935758
 elementSources:
   craft\elements\Entry:
     -
@@ -48,9 +48,6 @@ elementSources:
       type: native
     -
       key: 'single:c95e7ea6-ef14-4d2b-af3e-da848760500f' # Page not found
-      type: native
-    -
-      key: 'single:a260febd-af3b-4bda-ba4c-67c7a8edb8d4'
       type: native
     -
       key: 'single:754e6619-64f1-4d4d-8a61-6df6f90e5a9b' # Tasks
@@ -104,6 +101,7 @@ elementSources:
         - 'field:70279873-4261-4f79-b9d0-6dc067fb97b4' # Length
         - 'field:86c4c449-df54-4c68-a16a-68793a118c14' # Done
         - 'field:5247feef-5882-4519-9d2b-a485acf7d4bc' # Processed
+        - 'field:45cd30bb-d856-4e04-9e66-cda6b52a0238' # Has derailed
       type: native
     -
       defaultSort:
@@ -136,6 +134,12 @@ elementSources:
     -
       heading: ''
       type: heading
+    -
+      heading: ''
+      type: heading
+    -
+      key: 'single:787d0a00-f053-4ce0-ae70-820f3a68179c' # Analytics
+      type: native
 email:
   fromEmail: $EMAIL_FROM
   fromName: Mast
@@ -164,6 +168,7 @@ meta:
     1a74b697-1724-49fa-bed7-7a43a4833e2d: Image # Image
     1b238269-1e74-4eb1-aca9-256f0fca08b9: 'Task type' # Task type
     1c3fe166-77a3-4dd4-8da6-f031611bb725: Sat # Sat
+    01d5d262-2c5b-481d-aa40-7044ec73584f: 'Group by' # Group by
     2bc6ab98-71ce-4ae7-88f6-958e82e6ce7c: Breaks # Breaks
     2e3e24ad-d20e-48fc-ba6a-453f1ac66748: User # User
     2e6b3d96-afd5-4f91-b04b-28c8111df017: Favicon # Favicon
@@ -179,10 +184,12 @@ meta:
     5d9bfa29-8f27-45dd-b445-818b98020132: Saturday # Saturday
     5eb652c6-c88b-4627-8ff1-847e25a82cb9: Insights # Insights
     6a9e4f78-0e55-4b7b-9e55-4fc31c721794: Mast # Mast
+    6cc778d4-d855-4eff-b82e-d8d91c76fb1d: Tasks # Tasks
     6d8a0ee5-61b5-4e2e-a5aa-4942e529a165: 'Contact us' # Contact us
     6d707569-67a4-4a4e-868e-31a9a6eef835: 'Set password form' # Set password form
     6df6f10a-5ece-4a68-8fb6-68c2af85721f: 'Page error' # Page error
     6f08d395-f505-46a5-b75a-f32bf4829ace: 'Stripe customer' # Stripe customer
+    6f2ee713-4375-4227-860d-181afeb6d0a6: 'Charge id' # Charge id
     6fca2f1a-63a4-491d-9571-490f34079df9: 'My account' # My account
     8ad10f9f-e461-4fb0-85a8-76ffc63cfb81: Charge # Charge
     8ad55fd2-2c4e-436b-a572-d9d4bef64524: 'Basic Seo' # Basic Seo
@@ -193,26 +200,31 @@ meta:
     9a578738-c83e-41fc-bbe3-6034ae1835d2: Default # Default
     9ed0591a-e479-4c5e-bd6a-f1bcb15c1c1f: Sun # Sun
     15bf8716-9770-426b-859b-3251b11fd49e: 'Edit task' # Edit task
+    15d878b0-2a10-49c8-85e1-5e7e4eed21eb: Type # Type
     18ad884e-ff55-4513-8822-fb6222c76f60: Imagery # Imagery
     18cdb983-638e-488a-8e8f-1df5244e2d03: Sat # Sat
     19e44a57-1ccd-4059-9775-2414120a25d6: 'Cancel at period end' # Cancel at period end
     28fc98a3-e1d4-4d4c-a78c-d92903e760cc: Sun # Sun
+    36c91347-2111-4a37-9dd1-35cced1e5bef: 'Date range' # Date range
     37e79b05-ad6f-49e5-a1eb-28f46e70f0fc: Default # Default
     38ab7a04-2df5-4c32-bcd3-2866a3e65e02: Timer # Timer
     39ee89b6-a1c3-43e0-90c8-f24db4a11f9a: Member # Member
     45cd30bb-d856-4e04-9e66-cda6b52a0238: 'Has derailed' # Has derailed
     51e58384-83d6-4c87-966f-ba12d10e9076: Image # Image
+    57c4de4f-19b0-4d55-a932-261083710ef8: Cumulative # Cumulative
     70c0d997-a64e-47f3-956a-11deff9be426: 'New task' # New task
     75dda2af-19e9-48e0-aed1-116af08373a5: Icon # Icon
     75f26b47-fb20-47e9-9ad1-bab31babae60: 'Time based' # Time based
     79cfda90-52f0-4348-b604-fdb241c209cf: Task # Task
     86c4c449-df54-4c68-a16a-68793a118c14: Done # Done
+    104f68b7-c452-4218-bd37-a9eb6c520ebf: Color # Color
     123c86c3-404e-49c2-8fb1-8666da333b2d: 'Sign up form' # Sign up form
     285c99c4-fa78-44f1-afd3-6eed1b0d5121: 'End date' # End date
     646a52b6-154e-4e2e-846b-72c6d35feadf: Timer # Timer
     710a7eff-aa51-42fe-886c-51590f147dd7: Wed # Wed
     720dc906-57fd-4848-92a1-447acf4703f3: Task # Task
     754e6619-64f1-4d4d-8a61-6df6f90e5a9b: Tasks # Tasks
+    787d0a00-f053-4ce0-ae70-820f3a68179c: Analytics # Analytics
     837fa2c1-2e58-4efa-860b-7c22abbaf240: Imagery # Imagery
     877c3423-006e-4942-bfdb-c44bac344c97: Timesheet # Timesheet
     927c248e-ecc9-43bd-a42c-f3149acdaed6: Big # Big
@@ -224,6 +236,7 @@ meta:
     9806b1c0-5f4e-476f-8f76-3301b70e9415: Tasks # Tasks
     9950af26-8378-4f58-a7ae-f7717f8870d7: 'Payment method' # Payment method
     34016fb2-d922-4483-809c-f30801615184: 'Background color' # Background color
+    63464ed4-3cec-4b3e-b213-f80800f3dc39: 'Date to' # Date to
     88153a03-a6b7-41a0-8649-8331ae28fe84: 'Redactor (full)' # Redactor (full)
     91581a4a-1722-498e-9e1c-bb245bbe8b3e: Default # Default
     786514c8-8adf-4d05-a1ce-0b054ab04b67: Craft # Craft
@@ -246,34 +259,45 @@ meta:
     aa6e4905-4e1c-44af-b6a2-84c73af59989: Text # Text
     aab9913c-15e8-4209-b0b1-a72e0945aecb: Weeks # Weeks
     ab6a1072-3bb0-460a-bf36-bbb4b5dac8da: 'Page not found' # Page not found
+    ac93f88b-19f1-4f21-bbf2-6f3ffef2189a: Size # Size
+    ae8336b2-6dbf-4538-a78c-b4a00409a4e7: Stacked # Stacked
     af8b97a9-5da5-416b-8c43-7222862e0d19: Thu # Thu
     b0685fcd-4b89-4f1f-b2fa-c95dbf8f5691: 'Hide inactive tasks' # Hide inactive tasks
     b39f1bdf-5ce7-4286-9e4f-3162f9c70830: Full # Full
     b4520f72-9c23-445d-84c9-ed6bb056271f: 'Edit task' # Edit task
     b6662c40-1d50-47d9-bc6d-45c902bbca73: 'Reset password form' # Reset password form
+    ba37f536-8bbb-41cb-830c-574792b2c653: Refunded # Refunded
     bb86fabf-06ca-4369-94a6-298c9595fce2: 'Unlimited break start' # Unlimited break start
     beb8aabf-7970-4442-9f8b-f70568d8757a: 'Start date' # Start date
     bf477c2a-b2b3-4dde-a0e0-0978de99ab77: 'New task' # New task
     c02d8ea3-fd26-4084-890d-83260c7fc0dd: 'Banner Images' # Banner Images
+    c4e129b5-b63a-4685-b066-ee309244b610: 'Data tracked' # Data tracked
+    c8cf0123-4051-4f22-b94b-bbb5845a0dc8: Charts # Charts
     c95e7ea6-ef14-4d2b-af3e-da848760500f: 'Page not found' # Page not found
     c9082cbb-9b75-4045-9758-066e0c93d453: 'Subscription status' # Subscription status
     c23328f2-0994-4997-be38-0ea95701ed16: Image # Image
     cb5a68ab-f470-4387-8531-bea8103c221b: Sunday # Sunday
     cd77c662-a80d-447b-9ca0-dd1aa44d6e6f: 'Login form' # Login form
+    ce4bf83f-a97c-4255-8d1f-f9bab90ec924: Analytics # Analytics
     ce94cb33-2051-4b81-9e4f-4e2c7d3c0cb3: Default # Default
     ce461ea7-466c-4a18-ab4f-dddeb94af716: Weeks # Weeks
     d0cf64d0-59b8-4a50-80de-0e5df63ec975: Tue # Tue
+    d8a00adf-0ab4-47da-b765-3c7efe18d9e6: 'Date from' # Date from
     d8e6583d-cac2-4e43-b492-687232234955: Mon # Mon
     d22f9b6b-afc7-49f4-af07-d03a17f0a2af: 'Page Maintenance' # Page Maintenance
+    d570c574-05bc-4f06-9f77-a24859b75bd4: 'All tasks' # All tasks
     d647773f-b5fa-4abf-93a9-e181c4d9d5d4: Breaks # Breaks
     d998792d-65c7-42c6-83f1-1f53db6dc772: Tuesday # Tuesday
     d9996114-81a4-47b8-82f7-9f4f219d67f9: 'Success message' # Success message
     da63acfe-db82-4781-98a1-7fe653f511c8: 'Stripe session id' # Stripe session id
+    e3aa8623-6511-47d1-96b7-823ac993c3ea: Chart # Chart
     e4dc77ff-7c96-4d98-b434-ed37c72fa8be: 'Matrix Content' # Matrix Content
     e237d745-b0a6-4a3f-9003-984efa160459: 'Page error' # Page error
+    e556dd16-7cf0-41d8-b35b-dff5f83625ae: Title # Title
     eca48186-ef8a-40ab-bb78-26a70ea56bb0: Text # Text
     ef036cf0-f8e0-43c2-8865-3706cbae1c3c: Tue # Tue
     f7edb11b-5202-431b-b3c7-0c227fe1ebed: week # week
+    f8cdae36-af2a-4da3-a8b6-170b7dd97716: 'Last charge failed' # Last charge failed
     f65685af-7097-4049-9d06-65a2c9435fe2: Insights # Insights
     f95157d7-1eac-4192-855e-c8bdb66fba9b: Monday # Monday
     fa53f651-84c9-437f-9bed-edaead3bf8ed: Home # Home
@@ -340,6 +364,10 @@ plugins:
     edition: standard
     enabled: true
     schemaVersion: 2.0.0
+  plugin-analytics:
+    edition: standard
+    enabled: true
+    schemaVersion: 1.0.0
   plugin-stripe:
     edition: standard
     enabled: true

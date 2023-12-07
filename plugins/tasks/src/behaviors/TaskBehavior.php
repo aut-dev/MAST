@@ -14,10 +14,11 @@ class TaskBehavior extends Behavior
 {
     public $owner;
     protected $daily;
+    protected $yesterday;
     protected $dailys;
 
     /**
-     * Get the total amount of derailed
+     * Get the total amount of derailed daily tasks
      *
      * @return int
      */
@@ -26,6 +27,22 @@ class TaskBehavior extends Behavior
         $total = 0;
         foreach ($this->getDailyTasks() as $daily) {
             if ($daily->hasDerailed) {
+                $total += 1;
+            }
+        }
+        return $total;
+    }
+
+    /**
+     * Get the total amount of completed daily tasks
+     *
+     * @return int
+     */
+    public function getTotalCompleted(): int
+    {
+        $total = 0;
+        foreach ($this->getDailyTasks() as $daily) {
+            if (!$daily->hasDerailed) {
                 $total += 1;
             }
         }
@@ -94,6 +111,22 @@ class TaskBehavior extends Behavior
             }
         }
         return $this->daily ?: null;
+    }
+
+    /**
+     * Get the yesterday daily task
+     *
+     * @return Entry
+     */
+    public function getYesterdayDailyTask(): ?Entry
+    {
+        if ($this->yesterday === null) {
+            $this->yesterday = false;
+            if ($daily = Tasks::$plugin->tasks->getDailyTask($this->owner, $this->owner->author->yesterday)) {
+                $this->yesterday = $daily;
+            }
+        }
+        return $this->yesterday ?: null;
     }
 
     /**

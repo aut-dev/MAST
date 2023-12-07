@@ -216,7 +216,7 @@
     {% set block_types = craft.superTable.getSuperTableBlocks(field.id) %}
     {% set block_type = block_types.0 %}
     <div class="form-group mb-3 field-weeksToggle">
-        <label>{{ 'Do you want to the task each day?'|t }}</label>
+        <label>{{ 'Do you want to do the task each day?'|t }}</label>
         {% if task and weeks|length > 0 %}
             {% for week in weeks %}
                 {{ _self.weekToggle(week, block_type, (not copy_id and week.id) ? week.id : 'new' ~ loop.index) }}
@@ -231,6 +231,9 @@
             {{ 'Background color'|t }}
         </label>
         <input type="color" name="fields[backgroundColor]" class="form-control form-control-color" value="{% if task %}{{ task.backgroundColor ?: '#ffffff' }}{% else %}#ffffff{% endif %}" title="{{ 'Choose your color'|t }}">
+        {% if task %}
+            {{ errorList(task.getErrors('backgroundColor')) }}
+        {% endif %}
     </div>
 
     {% if task %}

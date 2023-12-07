@@ -55,6 +55,25 @@ class UserBehavior extends Behavior
     }
 
     /**
+     * Has the saved payment method expired
+     *
+     * @return bool
+     */
+    public function getPaymentMethodHasExpired(): bool
+    {
+        $method = Stripe::$plugin->stripe->getPaymentMethod($this->owner);
+        if (!$method) {
+            return false;
+        }
+        $card = $method->card ?? null;
+        if (!$card) {
+            return false;
+        }
+        $now = $this->owner->now;
+        return ($card->exp_year < $now->format('Y') or ($card->exp_year == $now->format('Y') and $card->exp_month < $now->format('n')));
+    }
+
+    /**
      * Get the stripe payment method saved for the user
      *
      * @return ?PaymentMethod

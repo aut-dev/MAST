@@ -207,6 +207,30 @@ fieldLayouts:
             userCondition: null
             warning: null
             width: 50
+          -
+            elementCondition: null
+            fieldUid: ba37f536-8bbb-41cb-830c-574792b2c653 # Refunded
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: fc7f38d0-380c-48d5-8d82-df5dec855eea
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: 6f2ee713-4375-4227-860d-181afeb6d0a6 # Charge id
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 7e650499-3e40-4cf6-8b29-473b312a03df
+            userCondition: null
+            warning: null
+            width: 50
         name: Derail
         uid: 38469040-e65b-4b2f-8573-ca7541f83d5b
         userCondition: null
@@ -214,6 +238,9 @@ handle: default
 hasTitleField: false
 name: Default
 section: 2581372e-c8d5-41e4-a488-8782122e0d9c # Daily task
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
 sortOrder: 1
 titleFormat: '{ task.anyStatus().one().title }'
 titleTranslationKeyFormat: null
