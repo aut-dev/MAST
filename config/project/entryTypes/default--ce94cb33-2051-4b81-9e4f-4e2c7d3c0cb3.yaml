@@ -47,7 +47,7 @@ fieldLayouts:
             fieldUid: 104f68b7-c452-4218-bd37-a9eb6c520ebf # Color
             instructions: null
             label: 'Analytics color'
-            required: true
+            required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: ef1db984-e9f0-43e9-a332-b548c5d88d75

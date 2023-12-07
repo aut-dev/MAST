@@ -1,5 +1,5 @@
 <template>
-    <div class="col-12 col-md-6 col-lg-4 col-xl-3 py-3" v-if="!store.hideInactiveTasks || status != 'inactive'">
+    <div class="col-12 col-md-6 col-lg-4 col-xl-3 py-3" v-if="!store.hideInactiveTasks || (!['inactive', 'paused'].includes(status))">
         <a :href="task.url" class="text-body">
             <div :class="classes" :style="'background-color: ' + (task.backgroundColor ? task.backgroundColor : '#ffffff')">
                 <div class="d-flex justify-content-between align-items-center mb-2">
