@@ -55,7 +55,7 @@ class DataService extends Component
         foreach ($tasks as $task) {
             $labels[] = $task->title;
             $datasets[0]['data'][] = $data[$task->id] ?? 0;
-            $datasets[0]['backgroundColor'][] = 'rgba(' . $task->color->getR() . ',' . $task->color->getG() . ',' . $task->color->getB() . ',0.5)';
+            $datasets[0]['backgroundColor'][] = $task->color ? ('rgba(' . $task->color->getR() . ',' . $task->color->getG() . ',' . $task->color->getB() . ',0.5)') : '#000000';
         }
         return [
             'labels' => $labels,

@@ -210,7 +210,8 @@ class TasksService extends Component
         }
         if ($dailyTask->getTask()->enabled and
             !$dailyTask->isPaused() and
-            $dailyTask->hasDerailed()
+            $dailyTask->hasDerailed() and
+            $dailyTask->author->status == User::STATUS_ACTIVE
         ) {
             $chargeSucceeded = false;
             $intent = null;
