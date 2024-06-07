@@ -1,4 +1,4 @@
-dateModified: 1701935758
+dateModified: 1717779177
 elementSources:
   craft\elements\Entry:
     -
@@ -307,7 +307,7 @@ plugins:
   blitz-recommendations:
     edition: standard
     enabled: true
-    schemaVersion: 2.1.0
+    schemaVersion: 2.2.0
   cookie-consent-banner:
     edition: standard
     enabled: true
