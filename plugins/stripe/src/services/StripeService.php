@@ -55,7 +55,7 @@ class StripeService extends Component
             "payment_method_types" => ["card", "link"],
             'mode' => 'setup',
             'success_url' => UrlHelper::siteUrl('stripe-setup-success?session_id={CHECKOUT_SESSION_ID}'),
-            'cancel_url' => UrlHelper::siteUrl('save-card'),
+            'cancel_url' => UrlHelper::siteUrl('my-account'),
         ]);
     }
 
@@ -88,9 +88,11 @@ class StripeService extends Component
         $user = \Craft::$app->user->identity;
         $user->setFieldValues([
             'paymentMethod' => $session->setup_intent->payment_method,
-            'stripeSessionId' => $sessionId
+            'stripeSessionId' => $sessionId,
+            'lastChargeFailed' => false
         ]);
         \Craft::$app->elements->saveElement($user, false);
+        $this->clearPaymentMethodCache($user);
     }
 
     /**
