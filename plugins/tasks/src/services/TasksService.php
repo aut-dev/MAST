@@ -63,7 +63,7 @@ class TasksService extends Component
     }
 
     /**
-     * Actions before a task is saved, stop the timer if task is "deleted"
+     * Actions before a task is saved, stop the timer if task is disabled
      *
      * @param  Entry  $task
      */
@@ -86,7 +86,7 @@ class TasksService extends Component
                 $this->populateDailyTask($daily, $task);
                 \Craft::$app->elements->saveElement($daily, false);
             } else {
-                \Craft::$app->elements->deleteElement($daily);
+                \Craft::$app->elements->deleteElement($daily, true);
             }
         }
     }
@@ -103,6 +103,17 @@ class TasksService extends Component
         foreach ($dailys as $daily) {
             \Craft::$app->elements->deleteElement($daily, $hardDelete);
         }
+    }
+
+    /**
+     * Actions after a task is restored, need to restore all daily tasks
+     *
+     * @param  Entry  $task
+     */
+    public function afterRestoringTask(Entry $task)
+    {
+        $dailys = Entry::find()->section('dailyTask')->anyStatus()->trashed(null)->relatedTo($task)->all();
+        \Craft::$app->elements->restoreElements($dailys);
     }
 
     /**

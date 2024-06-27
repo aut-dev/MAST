@@ -4,6 +4,7 @@ namespace Plugins\Tasks\behaviors;
 
 use DateInterval;
 use DateTime;
+use Illuminate\Support\Collection;
 use Plugins\Tasks\Tasks;
 use Plugins\Tasks\helpers\TimeHelper;
 use craft\elements\Entry;
