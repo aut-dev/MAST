@@ -1,30 +1,30 @@
 .slick-carousel {
-    .slick-elem {
-        position: relative;
+  .slick-elem {
+    position: relative;
+  }
+  .content {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background: rgba(255 255 255 / 0.7);
+    border-radius: 20px;
+    box-shadow: -1px 0 15px 0 rgba(138 138 138 / 1);
+    p:last-child {
+      margin: 0;
     }
-    .content {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        padding: 20px;
-        background: rgba(255 255 255 / 0.7);
-        border-radius: 20px;
-        box-shadow: -1px 0 15px 0 rgba(138 138 138 / 1);
-        p:last-child {
-            margin: 0;
-        }
+  }
+  .slick-arrow {
+    z-index: 2;
+    &::before {
+      color: $primary;
     }
-    .slick-arrow {
-        z-index: 2;
-        &::before {
-            color: $primary;
-        }
-    }
-    .slick-prev {
-        left: 15px;
-    }
-    .slick-next {
-        right: 15px;
-    }
+  }
+  .slick-prev {
+    left: 15px;
+  }
+  .slick-next {
+    right: 15px;
+  }
 }

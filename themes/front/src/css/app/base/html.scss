@@ -1,48 +1,48 @@
 a {
-    transition: color 0.3s;
-    &:hover {
-        text-decoration: none;
-    }
+  transition: color 0.3s;
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 img {
-    display: inline-block;
-    max-width: 100%;
-    text-align: center;
-    height: auto;
+  display: inline-block;
+  max-width: 100%;
+  text-align: center;
+  height: auto;
 }
 
 .grecaptcha-badge {
-    display: none;
+  display: none;
 }
 
 #global-messages {
-    bottom: 10px;
-    right: 10px;
-    z-index: 1056;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1056;
 }
 
 .container.container-small {
-    width: 500px;
-    max-width: 100%;
+  width: 500px;
+  max-width: 100%;
 }
 
 #noscript-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(140, 140, 140, 0.7);
+  .content {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(140, 140, 140, 0.7);
-    .content{
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        border-radius: 15px;
-        padding: 10px 20px;
-        font-size: 20px;
-        min-width: 300px;
-    }
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-size: 20px;
+    min-width: 300px;
+  }
 }

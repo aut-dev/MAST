@@ -1,40 +1,40 @@
 .task {
-    cursor: pointer;
-    background: white;
-    border-width: 3px;
-    border-style: solid;
-    border-radius: 12px !important;
-    &.timer-started {
-        border-style: dashed !important;
+  cursor: pointer;
+  background: white;
+  border-width: 3px;
+  border-style: solid;
+  border-radius: 12px !important;
+  &.timer-started {
+    border-style: dashed !important;
+  }
+  .complete-tick {
+    position: relative;
+    .fa-check::after {
+      content: "";
+      border: 1px solid $body-color;
+      width: 25px;
+      height: 25px;
+      border-radius: 100%;
+      position: absolute;
+      left: -5px;
+      top: -1px;
     }
-    .complete-tick {
-        position: relative;
-        .fa-check::after {
-            content: "";
-            border: 1px solid $body-color;
-            width: 25px;
-            height: 25px;
-            border-radius: 100%;
-            position: absolute;
-            left: -5px;
-            top: -1px;
-        }
+  }
+  .task-done {
+    &::before {
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      content: "\f00d";
+      margin-right: 5px;
     }
-    .task-done {
-        &::before {
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            content: "\f00d";
-            margin-right: 5px;
-        }
-        &.done::before {
-            content: "\f00c";
-        }
+    &.done::before {
+      content: "\f00c";
     }
+  }
 }
 
 @include media-breakpoint-up(md) {
-    .task.wrapper {
-        display: block;
-    }
+  .task.wrapper {
+    display: block;
+  }
 }
