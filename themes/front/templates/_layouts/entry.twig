@@ -8,7 +8,7 @@
 {% endif %}
 
 {% if currentUser %}
-    {% do craft.elements.eagerLoadElements(className(currentUser), [currentUser], [
+    {% do craft.app.elements.eagerLoadElements(className(currentUser), [currentUser], [
         'timer.timer:task',
         'charts'
     ]) %}
