@@ -1,4 +1,4 @@
-dateModified: 1719561584
+dateModified: 1719563006
 elementSources:
   craft\elements\Entry:
     -
@@ -238,7 +238,6 @@ meta:
     9950af26-8378-4f58-a7ae-f7717f8870d7: 'Payment method' # Payment method
     34016fb2-d922-4483-809c-f30801615184: 'Background color' # Background color
     63464ed4-3cec-4b3e-b213-f80800f3dc39: 'Date to' # Date to
-    88153a03-a6b7-41a0-8649-8331ae28fe84: 'Redactor (full)' # Redactor (full)
     91581a4a-1722-498e-9e1c-bb245bbe8b3e: Default # Default
     786514c8-8adf-4d05-a1ce-0b054ab04b67: Craft # Craft
     794938f1-5646-4fb9-ac19-350aee00d94d: Wednesday # Wednesday
@@ -252,11 +251,9 @@ meta:
     a6a6cc39-5cd4-495c-ac23-6804047c2640: 'Page Maintenance' # Page Maintenance
     a7c9164e-c77f-412f-8498-26092f7a0289: Deadline # Deadline
     a94c6d7e-2908-40ca-a902-ac3457a73d26: Thu # Thu
-    a220a4df-7337-4099-807d-b7ac71becd03: 'Redactor (simple)' # Redactor (simple)
     a734c52f-ac36-48ae-9b7e-3482ebdff457: Break # Break
     a8096a2c-fe5e-4bee-8e2d-2fdd17c42bb5: Recurring # Recurring
     a25335f0-9a1f-4a5a-bb1b-f3d4480f55b1: Committed # Committed
-    aa5c9cbc-3fc7-44fd-aca8-a2410d75570e: 'Redactor (standard)' # Redactor (standard)
     aa6e4905-4e1c-44af-b6a2-84c73af59989: Text # Text
     aab9913c-15e8-4209-b0b1-a72e0945aecb: Weeks # Weeks
     ab6a1072-3bb0-460a-bf36-bbb4b5dac8da: 'Page not found' # Page not found
@@ -304,19 +301,11 @@ meta:
     fb9eba24-cb32-4bf5-8a07-ba003842b35f: Tasks # Tasks
     ffcbe586-fcdc-4583-8682-0098aae96672: Fri # Fri
 plugins:
-  blitz-recommendations:
-    edition: standard
-    enabled: true
-    schemaVersion: 2.2.0
   cookie-consent-banner:
     edition: standard
     enabled: true
     schemaVersion: 1.0.1
   device-detect:
-    edition: standard
-    enabled: true
-    schemaVersion: 1.0.0
-  eager-beaver:
     edition: standard
     enabled: true
     schemaVersion: 1.0.0
@@ -423,14 +412,10 @@ plugins:
     edition: standard
     enabled: true
     schemaVersion: 2.2.1
-  redactor:
-    edition: standard
-    enabled: true
-    schemaVersion: 2.3.0
   schedule:
     edition: standard
     enabled: true
-    schemaVersion: 0.4.0
+    schemaVersion: 0.6.2
     settings:
       cliPath: $PHP_PATH
       customCpNavName: ''
@@ -578,10 +563,6 @@ plugins:
     edition: standard
     enabled: true
     schemaVersion: 1.0.0
-  typedlinkfield:
-    edition: standard
-    enabled: true
-    schemaVersion: 2.0.0
 system:
   edition: pro
   live: true

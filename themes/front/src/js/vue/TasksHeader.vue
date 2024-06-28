@@ -32,7 +32,7 @@
         <a
           href="#"
           :class="{ 'me-2': true, 'text-light': !store.showArchivedTasks }"
-          :title="t('Show deleted tasks')"
+          :title="t('Show archived tasks')"
           @click.prevent="store.setShowArchivedTasks(!store.showArchivedTasks)"
         >
           <i class="fa-solid fa-trash fs-4"></i>
