@@ -13,6 +13,6 @@
   "extends": "eslint:recommended",
   "rules": {
     "no-undef": "warn",
-    "indent": ["error", 4]
+    "indent": ["error", 2]
   }
 }

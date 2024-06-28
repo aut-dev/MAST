@@ -1,24 +1,25 @@
-<div class="modal fade" tabindex="-1" id="delete-task-modal">
+<div class="modal fade" tabindex="-1" id="archive-task-modal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form method="post">
-                {{ actionInput('elements/delete') }}
-                {{ hiddenInput('elementId', task.id) }}
-                {{ successMessageInput('Task has been deleted'|t('site')) }}
+                {{ actionInput('entries/save-entry') }}
+                {{ hiddenInput('entryId', task.id) }}
+                {{ successMessageInput('Task has been archived'|t('site')) }}
+                {{ hiddenInput('fields[archive]', 1) }}
                 {{ redirectInput('/tasks') }}
                 {{ csrfInput() }}
                 <div class="modal-header">
-                    <h5 class="modal-title">{{ 'Delete task'|t }}</h5>
+                    <h5 class="modal-title">{{ 'Archive task'|t }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>{{ 'This will delete the task and all data associated to it, are you sure ?'|t }}</p>
+                    <p>{{ 'This will hide this task from views, the data will be kept indefinitely and you will be able to restore it if you wish'|t }}</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close'|t }}</button>
                     <button type="submit" class="btn btn-primary">
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                        {{ 'Delete'|t }}
+                        {{ 'Archive'|t }}
                     </button>
                 </div>
             </form>

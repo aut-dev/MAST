@@ -1,6 +1,6 @@
 {% extends "_layouts/entry" %}
 
-{% do eagerLoadElements(entry, [
+{% do craft.elements.eagerLoadElements(className(entry), [entry], [
     'bannerImages',
     'matrixContent',
     'matrixContent.image:image',

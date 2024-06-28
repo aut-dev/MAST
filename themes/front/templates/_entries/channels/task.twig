@@ -29,6 +29,11 @@
             <a href="/tasks" class="text-purple2"><i class="fa-solid fa-arrow-left"></i> {{ 'Back'|t }}</a>
         </div>
         <h1>{{ entry.title }}</h1>
+        {% if entry.archive %}
+            <div class="alert alert-warning" role="alert">
+                This task is archived
+            </div>
+        {% endif %}
         <div class="row">
             <div class="col-6">{{ 'Starting date'|t }}</div>
             <div class="col-6">{{ entry.startDate|date('short', currentUser.timezone) }}</div>

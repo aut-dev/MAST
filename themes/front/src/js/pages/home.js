@@ -1,9 +1,7 @@
-class Home
-{
-    constructor () 
-    {
-        console.log('Home initialised');
-    }
+class Home {
+  constructor() {
+    console.log("Home initialised");
+  }
 }
 
-new Home;
+new Home();

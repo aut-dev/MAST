@@ -1,90 +1,89 @@
 {
-    "name": "puzzlers/craft",
-    "description": "",
-    "require": {
-        "adigital/cookie-consent-banner": "^2.0",
-        "craftcms/cms": "^4.0",
-        "craftcms/redactor": "^3.0",
-        "diginov/craft-sentry-logger": "^4.0",
-        "ether/seo": "^4.0",
-        "leowebguy/device-detect": "^2.0",
-        "nystudio107/craft-eagerbeaver": "^4.0",
-        "nystudio107/craft-twigpack": "4.0.0-beta.4 as 4.0.0",
-        "panlatent/schedule": "^0.4",
-        "pennebaker/craft-architect": "^4.0",
-        "plugins/analytics": "^1.0",
-        "plugins/stripe": "^1.0",
-        "plugins/tasks": "^1.0",
-        "plugins/timer": "^1.0",
-        "plugins/timesheets": "^1.0",
-        "plugins/users": "^1.0",
-        "putyourlightson/craft-blitz-recommendations": "^2.0",
-        "putyourlightson/craft-elements-panel": "^2.0",
-        "puzzlers/base-plugin": "^3.0",
-        "puzzlers/craft-menus": "^2.0",
-        "puzzlers/emails": "^2.0",
-        "puzzlers/imager": "^3.0",
-        "puzzlers/translations": "^2.0",
-        "ryssbowh/craft-gtag": "^2.1",
-        "ryssbowh/craft-prefetch": "^2.0",
-        "sebastianlenz/linkfield": "^2.0",
-        "spicyweb/craft-embedded-assets": "^3.0",
-        "themes/front-theme": "^2.0",
-        "verbb/expanded-singles": "^2.0",
-        "verbb/field-manager": "^3.0",
-        "verbb/image-resizer": "^3.0",
-        "verbb/kint": "^3.0",
-        "verbb/social-login": "^1.0",
-        "verbb/super-table": "^3.0",
-        "vlucas/phpdotenv": "^5.4.0"
+  "name": "puzzlers/craft",
+  "description": "",
+  "require": {
+    "adigital/cookie-consent-banner": "^2.0",
+    "craftcms/cms": "^4.0",
+    "diginov/craft-sentry-logger": "^4.0",
+    "ether/seo": "^4.0",
+    "leowebguy/device-detect": "^2.0",
+    "panlatent/schedule": "^0.6",
+    "pennebaker/craft-architect": "^4.0",
+    "plugins/analytics": "^1.0",
+    "plugins/stripe": "^1.0",
+    "plugins/tasks": "^1.0",
+    "plugins/timer": "^1.0",
+    "plugins/timesheets": "^1.0",
+    "plugins/users": "^1.0",
+    "putyourlightson/craft-blitz-recommendations": "^2.0",
+    "putyourlightson/craft-elements-panel": "^2.0",
+    "puzzlers/base-plugin": "^3.0",
+    "puzzlers/craft-menus": "^2.0",
+    "puzzlers/emails": "^2.0",
+    "puzzlers/imager": "^3.0",
+    "puzzlers/translations": "^2.0",
+    "ryssbowh/craft-gtag": "^2.1",
+    "ryssbowh/craft-prefetch": "^2.0",
+    "spicyweb/craft-embedded-assets": "^4.0",
+    "themes/front-theme": "^2.0",
+    "verbb/expanded-singles": "^2.0",
+    "verbb/field-manager": "^3.0",
+    "verbb/image-resizer": "^3.0",
+    "verbb/social-login": "^1.0",
+    "verbb/super-table": "^3.0",
+    "vlucas/phpdotenv": "^5.4.0"
+  },
+  "scripts": {
+    "post-create-project-cmd": [
+      "cp .env.example .env",
+      "rm -f .gitlab-ci.yml",
+      "cp .gitlab-ci.yml.example .gitlab-ci.yml",
+      "rm .gitlab-ci.yml.example",
+      "./craft setup/app-id",
+      "./craft setup/security-key"
+    ],
+    "phpstan": "phpstan --memory-limit=1G"
+  },
+  "require-dev": {
+    "craftcms/phpstan": "dev-main",
+    "friendsoftwig/twigcs": "^5.0",
+    "phpmd/phpmd": "^2.0",
+    "squizlabs/php_codesniffer": "^3.0",
+    "yiisoft/yii2-shell": "^2.0"
+  },
+  "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true,
+    "gitlab-domains": [
+      "gitlab.webpuzzlers.co.uk"
+    ],
+    "platform": {
+      "php": "8.1"
     },
-    "scripts": {
-        "post-create-project-cmd": [
-            "cp .env.example .env",
-            "rm -f .gitlab-ci.yml",
-            "cp .gitlab-ci.yml.example .gitlab-ci.yml",
-            "rm .gitlab-ci.yml.example",
-            "./craft setup/app-id",
-            "./craft setup/security-key"
-        ]
-    },
-    "require-dev": {
-        "yiisoft/yii2-shell": "^2.0",
-        "squizlabs/php_codesniffer": "^3.0",
-        "phpmd/phpmd" : "^2.0",
-        "friendsoftwig/twigcs" : "^5.0"
-    },
-    "config": {
-        "sort-packages": true,
-        "optimize-autoloader": true,
-        "gitlab-domains": ["gitlab.webpuzzlers.co.uk"],
-        "platform": {
-            "php": "8.1"
-        },
-        "allow-plugins": {
-            "yiisoft/yii2-composer": true,
-            "craftcms/plugin-installer": true,
-            "php-http/discovery": true
-        }
-    },
-    "repositories": {
-        "puzzlers-craft": {
-            "type": "composer",
-            "url": "https://gitlab.webpuzzlers.co.uk/api/v4/group/8/-/packages/composer/packages.json"
-        },
-        "0": {
-            "type": "path",
-            "url": "plugins/*",
-            "options": {
-                "symlink": true
-            }
-        },
-        "1": {
-            "type": "path",
-            "url": "themes/*",
-            "options": {
-                "symlink": true
-            }
-        }
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true,
+      "php-http/discovery": true
     }
+  },
+  "repositories": {
+    "puzzlers-craft": {
+      "type": "composer",
+      "url": "https://gitlab.webpuzzlers.co.uk/api/v4/group/8/-/packages/composer/packages.json"
+    },
+    "0": {
+      "type": "path",
+      "url": "plugins/*",
+      "options": {
+        "symlink": true
+      }
+    },
+    "1": {
+      "type": "path",
+      "url": "themes/*",
+      "options": {
+        "symlink": true
+      }
+    }
+  }
 }

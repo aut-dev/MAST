@@ -78,10 +78,21 @@ class TimesheetsService extends Component
      */
     public function deleteForTask(Entry $task, bool $hardDelete)
     {
-        $sheets = Entry::find()->section('timesheet')->anyStatus()->trashed(null)->relatedTo($task)->all();
+        $sheets = Entry::find()->section('timesheet')->trashed(null)->relatedTo($task)->all();
         foreach ($sheets as $sheet) {
             \Craft::$app->elements->deleteElement($sheet, $hardDelete);
         }
+    }
+
+    /**
+     * Restore all timesheets for a task
+     *
+     * @param  Entry  $task
+     */
+    public function restoreForTask(Entry $task)
+    {
+        $dailys = Entry::find()->section('timesheet')->trashed(null)->relatedTo($task)->all();
+        \Craft::$app->elements->restoreElements($dailys);
     }
 
     /**

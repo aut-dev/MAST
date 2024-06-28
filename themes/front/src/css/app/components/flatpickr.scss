@@ -1,9 +1,9 @@
 .flatpickr-calendar {
-    .selected {
-        background-color: $primary;
-    }
+  .selected {
+    background-color: $primary;
+  }
 }
 
 input.datepicker[readonly] {
-    background-color: unset;
+  background-color: unset;
 }

@@ -1,25 +1,25 @@
 .ms-choice {
-    padding: $input-btn-padding-y $input-btn-padding-x;
-    height: 38px;
-    line-height: $input-btn-line-height;
-    border-color: $input-border-color;
-    & > span {
-        display: block;
-        position: static;
-        padding: 0;
-        &.placeholder {
-            display: none;
-        }
+  padding: $input-btn-padding-y $input-btn-padding-x;
+  height: 38px;
+  line-height: $input-btn-line-height;
+  border-color: $input-border-color;
+  & > span {
+    display: block;
+    position: static;
+    padding: 0;
+    &.placeholder {
+      display: none;
     }
+  }
 }
 
 .ms-drop {
-    border-color: $input-border-color;
-    input[data-name="selectAll"] {
-        opacity: 0;
-    }
+  border-color: $input-border-color;
+  input[data-name="selectAll"] {
+    opacity: 0;
+  }
 }
 
 .ms-parent {
-    flex-grow: 1;
+  flex-grow: 1;
 }

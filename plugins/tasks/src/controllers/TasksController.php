@@ -23,6 +23,9 @@ class TasksController extends Controller
             $tasks->id($id);
         }
         $out = [];
+        if (!(bool)$this->request->getQueryParam('archives')) {
+            $tasks->archive(false);
+        }
         foreach ($tasks->all() as $task) {
             $out[] = $this->getTaskData($task);
         }
@@ -56,10 +59,7 @@ class TasksController extends Controller
         $task = Entry::find()->id($this->request->getRequiredParam('entryId'))->one();
         $task->setFieldValuesFromRequest('fields');
         $service = Tasks::$plugin->tasks;
-        $daily = false;
-        if ($service->dayHasDailyTask($task)) {
-            $daily = $service->createDailyTask($task, $task->author->today, false);
-        }
+        $daily = $service->createDailyTaskIfNeeded($task, $task->author->today);
         return $this->asJson([
             'derailed' => $daily ? (!$daily->isPaused() and $daily->hasDerailed()) : false
         ]);
@@ -87,6 +87,7 @@ class TasksController extends Controller
             'length' => $daily ? round($daily->length / 60) : round($task->length / 60),
             'timerStarted' => $started ? $started->getTimestamp() : 0,
             'paused' => $task->paused,
+            'archived' => $task->archive,
             'backgroundColor' => $task->backgroundColor ? (string)$task->backgroundColor : null,
             'daily' => $daily ? [
                 'active' => true,
