@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2eef1e91c060660a538ff8e7dc7a40c8",
+    "content-hash": "423950e7a859724676cdc222041b26d8",
     "packages": [
         {
             "name": "adigital/cookie-consent-banner",
@@ -5605,6 +5605,73 @@
             "time": "2024-01-17T16:50:36+00:00"
         },
         {
+            "name": "nystudio107/craft-twigpack",
+            "version": "4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nystudio107/craft-twigpack.git",
+                "reference": "210f0f36728761380f51d5fde4092582efc4021d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nystudio107/craft-twigpack/zipball/210f0f36728761380f51d5fde4092582efc4021d",
+                "reference": "210f0f36728761380f51d5fde4092582efc4021d",
+                "shasum": ""
+            },
+            "require": {
+                "craftcms/cms": "^4.0.0"
+            },
+            "require-dev": {
+                "craftcms/cloud": "^1.41.0",
+                "craftcms/ecs": "dev-main",
+                "craftcms/phpstan": "dev-main",
+                "craftcms/rector": "dev-main"
+            },
+            "type": "craft-plugin",
+            "extra": {
+                "class": "nystudio107\\twigpack\\Twigpack",
+                "handle": "twigpack",
+                "name": "Twigpack"
+            },
+            "autoload": {
+                "psr-4": {
+                    "nystudio107\\twigpack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "nystudio107",
+                    "homepage": "https://nystudio107.com/"
+                }
+            ],
+            "description": "Twigpack is a bridge between Twig and webpack, with manifest.json & webpack-dev-server HMR support",
+            "keywords": [
+                "craft-plugin",
+                "craftcms",
+                "hmr-support",
+                "manifest-json",
+                "twig",
+                "webpack",
+                "webpack-dev-server"
+            ],
+            "support": {
+                "docs": "https://nystudio107.com/docs/twigpack/",
+                "issues": "https://nystudio107.com/plugins/twigpack/support",
+                "source": "https://github.com/nystudio107/craft-twigpack"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/khalwat",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-04-06T03:04:42+00:00"
+        },
+        {
             "name": "oscarotero/html-parser",
             "version": "v0.1.8",
             "source": {
@@ -7135,88 +7202,6 @@
                 "source": "https://github.com/php-fig/simple-cache/tree/3.0.0"
             },
             "time": "2021-10-29T13:26:27+00:00"
-        },
-        {
-            "name": "putyourlightson/craft-blitz-hints",
-            "version": "1.2.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/putyourlightson/craft-blitz-hints.git",
-                "reference": "a7a95485454ee61e7093a362f15c33d075fd2dd9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/putyourlightson/craft-blitz-hints/zipball/a7a95485454ee61e7093a362f15c33d075fd2dd9",
-                "reference": "a7a95485454ee61e7093a362f15c33d075fd2dd9",
-                "shasum": ""
-            },
-            "require": {
-                "craftcms/cms": "^4.0.0",
-                "php": "^8.0.2"
-            },
-            "type": "craft-module",
-            "autoload": {
-                "psr-4": {
-                    "putyourlightson\\blitzhints\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "mit"
-            ],
-            "description": "Provides templating performance hints.",
-            "support": {
-                "docs": "https://github.com/putyourlightson/craft-blitz-hints",
-                "issues": "https://github.com/putyourlightson/craft-blitz-hints/issues",
-                "source": "https://github.com/putyourlightson/craft-blitz-hints"
-            },
-            "time": "2024-04-16T14:56:13+00:00"
-        },
-        {
-            "name": "putyourlightson/craft-blitz-recommendations",
-            "version": "2.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/putyourlightson/craft-blitz-recommendations.git",
-                "reference": "713dd944af729b17f8a3ec35e987865954a9bc60"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/putyourlightson/craft-blitz-recommendations/zipball/713dd944af729b17f8a3ec35e987865954a9bc60",
-                "reference": "713dd944af729b17f8a3ec35e987865954a9bc60",
-                "shasum": ""
-            },
-            "require": {
-                "craftcms/cms": "^4.0",
-                "php": "^8.0.2",
-                "putyourlightson/craft-blitz-hints": "^1.2.0"
-            },
-            "type": "craft-plugin",
-            "extra": {
-                "name": "Blitz Recommendations",
-                "handle": "blitz-recommendations",
-                "developer": "PutYourLightsOn",
-                "developerUrl": "https://putyourlightson.com/",
-                "documentationUrl": "https://putyourlightson.com/plugins/blitz-recommendations",
-                "changelogUrl": "https://raw.githubusercontent.com/putyourlightson/craft-blitz-recommendations/v2/CHANGELOG.md",
-                "class": "putyourlightson\\blitzrecommendations\\BlitzRecommendations"
-            },
-            "autoload": {
-                "psr-4": {
-                    "putyourlightson\\blitzrecommendations\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "mit"
-            ],
-            "description": "Adds a utility that provides templating performance recommendations.",
-            "support": {
-                "docs": "https://putyourlightson.com/plugins/blitz-recommendations",
-                "issues": "https://github.com/putyourlightson/craft-blitz-recommendations/issues",
-                "source": "https://github.com/putyourlightson/craft-blitz-recommendations"
-            },
-            "time": "2024-03-13T01:44:56+00:00"
         },
         {
             "name": "putyourlightson/craft-elements-panel",
