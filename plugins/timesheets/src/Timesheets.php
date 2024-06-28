@@ -57,6 +57,12 @@ class Timesheets extends Plugin
                 Timesheets::$plugin->timesheets->deleteForTask($task, $event->hardDelete);
             }
         });
+        Event::on(Elements::class, Elements::EVENT_AFTER_RESTORE_ELEMENT, function (Event $event) {
+            $task = $event->element;
+            if ($task instanceof Entry and !ElementHelper::isDraftOrRevision($task) and $task->section->handle == 'task') {
+                Timesheets::$plugin->timesheets->restoreForTask($task);
+            }
+        });
     }
 
     protected function registerBehaviors()

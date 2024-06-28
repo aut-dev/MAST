@@ -62,7 +62,6 @@
     {{ csrfInput() }}
     {{ actionInput('entries/save-entry') }}
     {{ hiddenInput('sectionId', section.id) }}
-    {{ hiddenInput('enabled', '1') }}
     {{ hiddenInput('entryVariable', 'task'|hash) }}
     {{ redirectInput('/tasks') }}
     {{ successMessageInput('Task saved'|t) }}

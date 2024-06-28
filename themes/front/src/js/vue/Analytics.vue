@@ -17,7 +17,9 @@
         :key="index"
       >
         <div class="row">
-          <div class="col-3">{{ task.task.title }}</div>
+          <div class="col-3">
+            {{ task.task.title + (task.task.archive ? " (archived)" : "") }}
+          </div>
           <div class="col-3">{{ task.time }}</div>
           <div class="col-2">US${{ task.spent }}</div>
           <div class="col-2">{{ task.completed }}</div>

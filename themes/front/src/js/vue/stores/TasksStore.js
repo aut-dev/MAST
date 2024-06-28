@@ -11,7 +11,7 @@ export const useTasksStore = defineStore("tasks", {
     initialTaskLoading: true,
     disableFetchingTasks: false,
     hideInactiveTasks: false,
-    showDeletedTask: false,
+    showArchivedTasks: false,
     doning: false,
     pausing: false,
     reordering: false,
@@ -23,11 +23,16 @@ export const useTasksStore = defineStore("tasks", {
         return;
       }
       this.disableFetchingTasks = true;
-      axios.get("/?action=plugin-tasks/tasks/get").then((data) => {
-        this.tasks = data.data;
-        this.initialTaskLoading = false;
-        this.disableFetchingTasks = false;
-      });
+      axios
+        .get(
+          "/?action=plugin-tasks/tasks/get&archives=" +
+            (this.showArchivedTasks ? 1 : 0),
+        )
+        .then((data) => {
+          this.tasks = data.data;
+          this.initialTaskLoading = false;
+          this.disableFetchingTasks = false;
+        });
     },
     fetchTask(id) {
       this.disableFetchingTasks = true;
@@ -68,8 +73,9 @@ export const useTasksStore = defineStore("tasks", {
         },
       );
     },
-    setShowDeletedTasks(value) {
-      this.showDeletedTask = value;
+    setShowArchivedTasks(value) {
+      this.showArchivedTasks = value;
+      this.fetchTasks();
     },
     setTaskDone(id, done, deadlineHasPassed) {
       if (this.doning) {

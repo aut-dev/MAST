@@ -20,7 +20,14 @@
         <h1 class="text-center">{{ 'Edit task'|t('site') }}</h1>
         {% include "_includes/tasks/form" %}
         {% if task.id %}
-            <a href="#" class="js-delete-task btn btn-danger mt-5" data-id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#delete-task-modal">{{ 'Delete task'|t }}</a>
+            <a href="#" class="btn btn-danger mt-5" data-id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#delete-task-modal">{{ 'Delete task'|t }}</a>
+            {% if not task.archive %}
+                <a href="#" class="btn btn-danger mt-5" data-id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#archive-task-modal">{{ 'Archive task'|t }}</a>
+                {% include "_includes/tasks/archive-modal" %}
+            {% else %}
+                <a href="#" class="btn btn-danger mt-5" data-id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#restore-task-modal">{{ 'Restore task'|t }}</a>
+                {% include "_includes/tasks/restore-modal" %}
+            {% endif %}
             {% include "_includes/tasks/delete-modal" %}
             {% include "_includes/tasks/warning-modal" %}
         {% endif %}

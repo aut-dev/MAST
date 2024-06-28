@@ -16,7 +16,7 @@
           <div class="d-flex align-items-center">
             <div
               v-if="
-                task.daily.active &&
+                status != 'archived' &&
                 !this.store.onUnlimitedBreak &&
                 !this.store.onScheduledBreak
               "
@@ -42,6 +42,9 @@
             {{ t("One off") }}
           </span>
         </p>
+        <p v-if="task.archived" class="mt-2 mb-0 fs-sm text-warning">
+          This task is archived
+        </p>
         <div v-if="showProgressBar">
           <div class="progress">
             <div
@@ -61,7 +64,7 @@
         <div
           class="actions d-flex justify-content-between align-items-center mt-2"
         >
-          <span class="text-purple2 fs-5" v-if="task.timeBased">
+          <span class="text-purple2 fs-5" v-if="task.timeBased && task.enabled">
             <span v-if="timerStarted" @click.prevent="stopTimer">{{
               t("Stop")
             }}</span>
@@ -116,6 +119,9 @@ export default {
   },
   computed: {
     status() {
+      if (this.task.archived) {
+        return "archived";
+      }
       if (!this.task.daily.active) {
         return "inactive";
       }
@@ -136,16 +142,24 @@ export default {
       if (this.timerStarted) {
         classes += " timer-started";
       }
+      if (this.task.archived) {
+        classes += " opacity-50";
+      }
       return classes;
     },
     showProgressBar() {
-      if (!this.task.timeBased || this.isPaused || !this.task.daily.active) {
+      if (
+        this.task.archived ||
+        !this.task.timeBased ||
+        this.isPaused ||
+        !this.task.daily.active
+      ) {
         return false;
       }
       return true;
     },
     showCountdown() {
-      if (this.isPaused) {
+      if (this.isPaused || this.task.archived) {
         return false;
       }
       if (!this.task.timeBased) {
@@ -206,6 +220,11 @@ export default {
         )
         .then((data) => {
           this.changingTimer = false;
+        })
+        .catch(() => {
+          this.changingTimer = false;
+          this.stopPollingProgress();
+          this.timerStarted = 0;
         });
     },
     stopTimer() {

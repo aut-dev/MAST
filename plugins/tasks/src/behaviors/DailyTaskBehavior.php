@@ -28,7 +28,7 @@ class DailyTaskBehavior extends Behavior
             if ($this->owner->task instanceof Collection) {
                 $this->_task = $this->owner->task->first();
             } else {
-                $this->_task = $this->owner->task->anyStatus()->one();
+                $this->_task = $this->owner->task->one();
             }
         }
         return $this->_task;
