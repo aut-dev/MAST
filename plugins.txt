@@ -1,0 +1,11 @@
+# Claude Code plugins for GFX project
+#
+# Usage: For each non-comment line, run:
+#   claude plugin marketplace add <line>
+#
+# Or ask Claude: "/install-plugins"
+#
+# NOTE: Some plugins require post-install build steps (see install-plugins skill)
+
+steveyegge/beads
+hjertefolger/cortex  # Requires: npm install && npm run build
