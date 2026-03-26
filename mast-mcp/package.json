@@ -1,0 +1,17 @@
+{
+  "name": "mast-mcp",
+  "version": "1.0.0",
+  "description": "MAST — commitment escrow tools for AI agents. Your agent holds you accountable with real money.",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "mast-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "ethers": "^6.9.0"
+  }
+}
