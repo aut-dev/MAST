@@ -202,26 +202,27 @@
   <div class="container">
     <header>
       <h1>MAST</h1>
-      <div class="tagline">Money-backed commitments for AI agents</div>
+      <div class="tagline">AI-powered accountability with real consequences</div>
       <p class="summary">
-        MAST lets AI agents create financial commitments on behalf of users.
-        Put real money on your goals. Complete them, get it back.
-        Miss the deadline, lose the stake. Built on Base with USDC.
+        MAST is a self-improvement tool that uses accountability deposits to help
+        people follow through on their goals. An AI agent manages your commitments,
+        tracks your progress, and returns your deposit when you succeed.
+        Built on Base with USDC.
       </p>
     </header>
 
     <section>
       <h2>How It Works</h2>
       <p>
-        MAST is a commitment escrow system powered by an AI agent (via the
+        MAST is an accountability tool powered by an AI agent (via the
         <a href="https://modelcontextprotocol.io/" style="color: var(--accent);">Model Context Protocol</a>).
         The agent acts as a personal accountability partner &mdash; it helps users
-        define goals, stakes money on those goals, and verifies completion.
+        define goals, place accountability deposits on those goals, and verifies completion.
       </p>
       <p>
-        Users pre-fund their account once with a credit card. The agent manages
+        Users fund their account once with a credit card. The agent manages
         individual commitments from that balance. Completed goals return the
-        stake. Missed deadlines forfeit it.
+        deposit. Missed deadlines mean the deposit is not returned.
       </p>
 
       <div class="flow">
@@ -240,7 +241,7 @@
             <strong>Fund</strong><br>
             User adds funds once via credit card through Coinbase Onramp.
             The payment appears as a normal card charge. USDC is deposited
-            into a smart contract escrow on Base. Zero fees.
+            into a secure accountability contract on Base. Zero fees.
           </div>
         </div>
         <div class="flow-connector"><span></span></div>
@@ -249,7 +250,7 @@
           <div class="flow-content">
             <strong>Commit</strong><br>
             User tells the agent what they'll do. The agent creates a commitment
-            with a personalized message, stake amount, deadline, and strictness level.
+            with a personalized message, deposit amount, deadline, and strictness level.
             Funds are locked from the pre-funded balance.
           </div>
         </div>
@@ -257,9 +258,9 @@
         <div class="flow-step">
           <div class="flow-num">4</div>
           <div class="flow-content">
-            <strong>Complete or Forfeit</strong><br>
-            User reports completion to the agent &rarr; stake returns to available balance.
-            Deadline passes without completion &rarr; stake is forfeited.
+            <strong>Complete or Learn</strong><br>
+            User reports completion to the agent &rarr; deposit returns to available balance.
+            Deadline passes without completion &rarr; deposit is not returned, reinforcing the habit.
           </div>
         </div>
       </div>
@@ -290,7 +291,7 @@
         </div>
         <div class="feature">
           <h3>Strictness Levels</h3>
-          <p>From <em>iron</em> (no cancellation, no excuses) to <em>chill</em> (cancel anytime). Match the stakes to the goal.</p>
+          <p>From <em>iron</em> (no cancellation, no excuses) to <em>chill</em> (cancel anytime). Match the deposits to the goal.</p>
         </div>
         <div class="feature">
           <h3>Personalized Pages</h3>
@@ -298,7 +299,7 @@
         </div>
         <div class="feature">
           <h3>Smart Contract Escrow</h3>
-          <p>Funds are held in an auditable escrow contract on Base. Transparent. Verifiable. No trust required.</p>
+          <p>Funds are held in an auditable accountability contract on Base. Transparent. Verifiable. No trust required.</p>
         </div>
         <div class="feature">
           <h3>Zero-Fee Funding</h3>
@@ -322,7 +323,7 @@
         <li>Loss aversion is the strongest motivator &mdash; stronger than rewards, reminders, or willpower</li>
         <li>AI agents can now manage goals autonomously, but they lack real-world consequence mechanisms</li>
         <li>MAST gives agents the ability to create binding, verifiable, financial commitments</li>
-        <li>The smart contract makes stakes trustless &mdash; neither the user nor the platform can cheat</li>
+        <li>The smart contract makes deposits transparent &mdash; neither the user nor the platform can manipulate funds</li>
       </ul>
     </section>
 
@@ -331,7 +332,7 @@
       <p>
         MAST uses <strong>Coinbase Onramp</strong> as the payment gateway. Users pay with
         their credit card, debit card, Apple Pay, or Google Pay. The payment is
-        automatically converted to USDC and deposited into the escrow contract
+        automatically converted to USDC and deposited into a secure smart contract
         on Base &mdash; all behind the scenes.
       </p>
       <p>
@@ -361,9 +362,23 @@
       <p style="margin-top: 16px;">
         The MCP server integrates with any AI agent that supports the
         Model Context Protocol &mdash; including Claude, and any MCP-compatible assistant.
-        The server manages wallets, commitments, escrow deposits, and payment
+        The server manages wallets, commitments, accountability deposits, and payment
         page generation.
       </p>
+    </section>
+
+    <section>
+      <h2>Security</h2>
+      <p>
+        MAST is built with security as a first principle:
+      </p>
+      <ul class="why-list">
+        <li><strong>Authenticated API</strong> &mdash; Session tokens are generated server-side via an authenticated endpoint. API keys are never exposed to clients.</li>
+        <li><strong>CORS protection</strong> &mdash; Backend API restricts access to approved origins only. No wildcard access.</li>
+        <li><strong>No stored payment data</strong> &mdash; All payment processing is handled by Coinbase. MAST never sees or stores credit card details.</li>
+        <li><strong>Auditable smart contract</strong> &mdash; All fund movements are recorded on-chain and publicly verifiable on Base.</li>
+        <li><strong>User-controlled withdrawals</strong> &mdash; Users can withdraw their available balance back to fiat at any time via Coinbase Offramp.</li>
+      </ul>
     </section>
 
     <section>
@@ -384,11 +399,13 @@
     <footer>
       <p>
         MAST is open source.<br>
-        Escrow contract on Base mainnet:
+        Accountability contract on Base mainnet:
         <code style="font-size: 0.8rem;">0xb279110b7a7F77344094721Bf4232dE46AFC1C42</code>
       </p>
       <p style="margin-top: 16px;">
-        <a href="https://github.com/gaga/mast">GitHub</a>
+        <a href="https://github.com/aut-dev/MAST">GitHub</a> &nbsp;&middot;&nbsp;
+        <a href="./privacy.html">Privacy Policy</a> &nbsp;&middot;&nbsp;
+        <a href="./terms.html">Terms of Service</a>
       </p>
     </footer>
   </div>
