@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAST &mdash; Money-Backed Commitments for AI Agents</title>
+  <style>
+    :root {
+      --bg: #0a0f0d;
+      --bg2: #111a16;
+      --text: #d4e8dc;
+      --muted: #7a9e8c;
+      --accent: #4a9e7d;
+      --accent2: #3d8268;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    header {
+      padding: 80px 0 60px;
+      text-align: center;
+      border-bottom: 1px solid #1a2e24;
+    }
+    header h1 {
+      font-size: 3rem;
+      letter-spacing: 0.15em;
+      font-weight: 400;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    header .tagline {
+      font-size: 1.2rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 32px;
+    }
+    header .summary {
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto;
+      color: var(--text);
+    }
+
+    /* Sections */
+    section {
+      padding: 56px 0;
+      border-bottom: 1px solid #1a2e24;
+    }
+    section:last-of-type { border-bottom: none; }
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--accent);
+      margin-bottom: 24px;
+      letter-spacing: 0.05em;
+    }
+    p { margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+
+    /* Flow diagram */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 32px 0;
+    }
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 16px 0;
+    }
+    .flow-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent2);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .flow-content { flex: 1; }
+    .flow-content strong { color: var(--accent); }
+    .flow-connector {
+      width: 32px;
+      display: flex;
+      justify-content: center;
+      padding: 0;
+    }
+    .flow-connector span {
+      display: block;
+      width: 1px;
+      height: 12px;
+      background: var(--accent2);
+    }
+
+    /* Features */
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 24px 0;
+    }
+    .feature {
+      background: var(--bg2);
+      border: 1px solid #1a2e24;
+      border-radius: 8px;
+      padding: 24px;
+    }
+    .feature h3 {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .feature p {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* Code block */
+    .example {
+      background: var(--bg2);
+      border: 1px solid #1a2e24;
+      border-radius: 8px;
+      padding: 24px;
+      margin: 24px 0;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+    .example .agent { color: var(--accent); }
+    .example .user { color: var(--muted); }
+    .example .system { color: #5a6e62; font-style: italic; }
+
+    /* Why section */
+    .why-list {
+      list-style: none;
+      margin: 16px 0;
+    }
+    .why-list li {
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+    }
+    .why-list li::before {
+      content: '\2014';
+      position: absolute;
+      left: 0;
+      color: var(--accent2);
+    }
+
+    /* Footer */
+    footer {
+      padding: 48px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* Tech stack */
+    .tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .tech span {
+      background: var(--bg2);
+      border: 1px solid #1a2e24;
+      border-radius: 4px;
+      padding: 4px 12px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: monospace;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 2.2rem; }
+      .features { grid-template-columns: 1fr; }
+      header { padding: 48px 0 40px; }
+      section { padding: 40px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>MAST</h1>
+      <div class="tagline">Money-backed commitments for AI agents</div>
+      <p class="summary">
+        MAST lets AI agents create financial commitments on behalf of users.
+        Put real money on your goals. Complete them, get it back.
+        Miss the deadline, lose the stake. Built on Base with USDC.
+      </p>
+    </header>
+
+    <section>
+      <h2>How It Works</h2>
+      <p>
+        MAST is a commitment escrow system powered by an AI agent (via the
+        <a href="https://modelcontextprotocol.io/" style="color: var(--accent);">Model Context Protocol</a>).
+        The agent acts as a personal accountability partner &mdash; it helps users
+        define goals, stakes money on those goals, and verifies completion.
+      </p>
+      <p>
+        Users pre-fund their account once with a credit card. The agent manages
+        individual commitments from that balance. Completed goals return the
+        stake. Missed deadlines forfeit it.
+      </p>
+
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-num">1</div>
+          <div class="flow-content">
+            <strong>Setup</strong><br>
+            User connects to the agent. The agent calls <code>mast_setup</code> and learns about
+            the user &mdash; their goals, what drives them, their preferences.
+          </div>
+        </div>
+        <div class="flow-connector"><span></span></div>
+        <div class="flow-step">
+          <div class="flow-num">2</div>
+          <div class="flow-content">
+            <strong>Fund</strong><br>
+            User adds funds once via credit card through Coinbase Onramp.
+            The payment appears as a normal card charge. USDC is deposited
+            into a smart contract escrow on Base. Zero fees.
+          </div>
+        </div>
+        <div class="flow-connector"><span></span></div>
+        <div class="flow-step">
+          <div class="flow-num">3</div>
+          <div class="flow-content">
+            <strong>Commit</strong><br>
+            User tells the agent what they'll do. The agent creates a commitment
+            with a personalized message, stake amount, deadline, and strictness level.
+            Funds are locked from the pre-funded balance.
+          </div>
+        </div>
+        <div class="flow-connector"><span></span></div>
+        <div class="flow-step">
+          <div class="flow-num">4</div>
+          <div class="flow-content">
+            <strong>Complete or Forfeit</strong><br>
+            User reports completion to the agent &rarr; stake returns to available balance.
+            Deadline passes without completion &rarr; stake is forfeited.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Agent Conversation Example</h2>
+      <div class="example">
+        <span class="user">User:</span> I want to meditate for 10 minutes every day.<br><br>
+        <span class="agent">Agent:</span> Let's put money on it. How much per day?<br><br>
+        <span class="user">User:</span> $1<br><br>
+        <span class="system">&rarr; Agent calls mast_commit: "10 min meditation", $1/day, firm strictness</span><br>
+        <span class="system">&rarr; $1 locked from pre-funded balance. Deadline: midnight.</span><br><br>
+        <span class="agent">Agent:</span> Done. $1 locked on 10 minutes of meditation. Deadline is midnight. No day without a line.<br><br>
+        <em style="color: #5a6e62;">... later that evening ...</em><br><br>
+        <span class="user">User:</span> Done &mdash; meditated for 15 minutes.<br><br>
+        <span class="system">&rarr; Agent calls mast_complete. $1 returned to available balance.</span><br><br>
+        <span class="agent">Agent:</span> $1 returned. Streak: 12 days.
+      </div>
+    </section>
+
+    <section>
+      <h2>Features</h2>
+      <div class="features">
+        <div class="feature">
+          <h3>Recurring Commitments</h3>
+          <p>Daily, weekly, or one-off. The agent manages the cadence automatically. Funds lock and release each period.</p>
+        </div>
+        <div class="feature">
+          <h3>Strictness Levels</h3>
+          <p>From <em>iron</em> (no cancellation, no excuses) to <em>chill</em> (cancel anytime). Match the stakes to the goal.</p>
+        </div>
+        <div class="feature">
+          <h3>Personalized Pages</h3>
+          <p>Every commitment gets a unique page with the user's name, colors, mantra, and a message from the agent.</p>
+        </div>
+        <div class="feature">
+          <h3>Smart Contract Escrow</h3>
+          <p>Funds are held in an auditable escrow contract on Base. Transparent. Verifiable. No trust required.</p>
+        </div>
+        <div class="feature">
+          <h3>Zero-Fee Funding</h3>
+          <p>Credit card payments via Coinbase Onramp convert to USDC on Base with zero fees. Users see dollars, not crypto.</p>
+        </div>
+        <div class="feature">
+          <h3>Pre-Funded Balance</h3>
+          <p>Fund once, commit many times. No per-task payment friction. Balance carries across all active commitments.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Why MAST Exists</h2>
+      <p>
+        Research in behavioral economics shows that financial commitment devices
+        dramatically increase follow-through rates. People who put money on a
+        goal are 2&ndash;3x more likely to achieve it.
+      </p>
+      <ul class="why-list">
+        <li>Loss aversion is the strongest motivator &mdash; stronger than rewards, reminders, or willpower</li>
+        <li>AI agents can now manage goals autonomously, but they lack real-world consequence mechanisms</li>
+        <li>MAST gives agents the ability to create binding, verifiable, financial commitments</li>
+        <li>The smart contract makes stakes trustless &mdash; neither the user nor the platform can cheat</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Payment Flow</h2>
+      <p>
+        MAST uses <strong>Coinbase Onramp</strong> as the payment gateway. Users pay with
+        their credit card, debit card, Apple Pay, or Google Pay. The payment is
+        automatically converted to USDC and deposited into the escrow contract
+        on Base &mdash; all behind the scenes.
+      </p>
+      <p>
+        Users never interact with crypto directly. They see dollar amounts,
+        pay with familiar methods, and receive refunds to their available
+        balance on task completion. The blockchain is infrastructure, not interface.
+      </p>
+      <p>
+        <strong>Why Base + USDC:</strong> Near-zero gas fees (&lt;$0.01 per transaction),
+        instant finality, and Coinbase Onramp provides zero-fee conversion from
+        fiat to USDC on Base. This means a $1 commitment actually locks $1 &mdash;
+        no fees eaten in transit.
+      </p>
+    </section>
+
+    <section>
+      <h2>Technical Stack</h2>
+      <div class="tech">
+        <span>MCP Server (Node.js)</span>
+        <span>Base L2</span>
+        <span>USDC</span>
+        <span>Solidity (Escrow Contract)</span>
+        <span>Coinbase Onramp</span>
+        <span>Coinbase CDP</span>
+        <span>ethers.js</span>
+      </div>
+      <p style="margin-top: 16px;">
+        The MCP server integrates with any AI agent that supports the
+        Model Context Protocol &mdash; including Claude, and any MCP-compatible assistant.
+        The server manages wallets, commitments, escrow deposits, and payment
+        page generation.
+      </p>
+    </section>
+
+    <section>
+      <h2>Use Cases</h2>
+      <p>
+        MAST is designed for anyone who wants to follow through on their commitments
+        with real financial accountability:
+      </p>
+      <ul class="why-list">
+        <li><strong>Daily habits</strong> &mdash; meditation, exercise, journaling, reading</li>
+        <li><strong>Productivity</strong> &mdash; deep work sessions, project deadlines, shipping features</li>
+        <li><strong>Health</strong> &mdash; gym attendance, meal prep, sleep schedules</li>
+        <li><strong>Learning</strong> &mdash; language practice, course completion, skill development</li>
+        <li><strong>Creative work</strong> &mdash; writing daily, practicing an instrument, drawing</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>
+        MAST is open source.<br>
+        Escrow contract on Base mainnet:
+        <code style="font-size: 0.8rem;">0xb279110b7a7F77344094721Bf4232dE46AFC1C42</code>
+      </p>
+      <p style="margin-top: 16px;">
+        <a href="https://github.com/gaga/mast">GitHub</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
