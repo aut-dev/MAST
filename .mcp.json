@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mast": {
+      "command": "node",
+      "args": ["/Users/gaga/MAST/mast-mcp/index.js"]
+    }
+  }
+}

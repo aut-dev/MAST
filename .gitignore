@@ -22,9 +22,17 @@ npm-debug.log
 500.shtml
 cp_errordocument.shtml
 
-#node 
+#node
 /node_modules/
 /npm_debug.log
+
+#mast-mcp
+/mast-mcp/node_modules/
+
+#contracts
+/contracts/node_modules/
+/contracts/artifacts/
+/contracts/cache/
 
 #composer
 /vendor/
