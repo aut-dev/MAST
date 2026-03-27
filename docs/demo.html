@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAST &mdash; Fund Your Account</title>
+  <style>
+    :root {
+      --bg: #0a0f0d;
+      --bg2: #111a16;
+      --text: #d4e8dc;
+      --muted: #7a9e8c;
+      --accent: #4a9e7d;
+      --accent2: #3d8268;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .page {
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+    .back {
+      display: block;
+      margin-bottom: 2rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .back:hover { color: var(--accent); }
+    h1 {
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 2rem;
+    }
+    .info {
+      background: var(--bg2);
+      border: 1px solid #1a2e24;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 2rem;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+    .info p { margin-bottom: 12px; }
+    .info p:last-child { margin-bottom: 0; }
+    .amounts {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .amount-btn {
+      background: var(--bg2);
+      border: 2px solid #1a2e24;
+      border-radius: 8px;
+      color: var(--text);
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .amount-btn:hover { border-color: var(--accent2); }
+    .amount-btn.selected {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .fund-btn {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 14px 40px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      font-family: inherit;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      margin-bottom: 1rem;
+    }
+    .fund-btn:hover { opacity: 0.85; }
+    .fund-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .status {
+      font-size: 0.85rem;
+      color: var(--muted);
+      min-height: 1.5em;
+    }
+    .status.error { color: #e07a6a; }
+    .note {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      opacity: 0.6;
+    }
+    footer {
+      margin-top: 3rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <a href="./" class="back">&larr; Back to MAST</a>
+    <h1>MAST</h1>
+    <p class="subtitle">Fund your accountability account</p>
+
+    <div class="info">
+      <p>Add funds to your MAST account with a credit card, debit card, Apple Pay, or Google Pay.</p>
+      <p>Your money is converted to USDC on Base and held in a secure smart contract. Use it to back your commitments. Withdraw anytime.</p>
+      <p><strong>Zero fees</strong> on all deposits.</p>
+    </div>
+
+    <div class="amounts">
+      <button class="amount-btn" data-amount="5" onclick="selectAmount(5)">$5</button>
+      <button class="amount-btn selected" data-amount="10" onclick="selectAmount(10)">$10</button>
+      <button class="amount-btn" data-amount="25" onclick="selectAmount(25)">$25</button>
+      <button class="amount-btn" data-amount="50" onclick="selectAmount(50)">$50</button>
+    </div>
+
+    <button class="fund-btn" id="fundBtn" onclick="fundAccount()">Fund $10</button>
+    <p class="status" id="status"></p>
+
+    <p class="note">
+      Payment processed by Coinbase. MAST never sees your card details.
+    </p>
+
+    <footer>
+      <a href="./privacy.html">Privacy Policy</a> &nbsp;&middot;&nbsp;
+      <a href="./terms.html">Terms of Service</a>
+    </footer>
+  </div>
+
+  <script>
+    const API_URL = 'https://mast-onramp.afokay.workers.dev';
+    const API_KEY = 'jashdfa-oqw48975-jakljghla';
+    // Demo wallet address (would be user's wallet in production)
+    const WALLET_ADDRESS = '0x44eC021bC81c63D12a930Bc4af46697595b169F5';
+
+    let selectedAmount = 10;
+
+    function selectAmount(amount) {
+      selectedAmount = amount;
+      document.querySelectorAll('.amount-btn').forEach(btn => {
+        btn.classList.toggle('selected', parseInt(btn.dataset.amount) === amount);
+      });
+      document.getElementById('fundBtn').textContent = `Fund $${amount}`;
+    }
+
+    async function fundAccount() {
+      const btn = document.getElementById('fundBtn');
+      const status = document.getElementById('status');
+
+      btn.disabled = true;
+      status.className = 'status';
+      status.textContent = 'Generating secure payment link...';
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${API_KEY}`,
+          },
+          body: JSON.stringify({
+            address: WALLET_ADDRESS,
+            amount: selectedAmount,
+          }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || `Request failed (${res.status})`);
+        }
+
+        const data = await res.json();
+        const onrampUrl = `https://pay.coinbase.com/buy/select-asset?sessionToken=${data.token}`
+          + `&defaultAsset=USDC&defaultNetwork=base`
+          + `&presetFiatAmount=${selectedAmount}&fiatCurrency=USD`;
+
+        status.textContent = 'Redirecting to Coinbase...';
+        window.location.href = onrampUrl;
+
+      } catch (err) {
+        status.className = 'status error';
+        status.textContent = `Error: ${err.message}`;
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
