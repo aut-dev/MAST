@@ -238,7 +238,7 @@ async function fetchOnrampToken(jwt, address) {
   if (!response.ok) {
     const text = await response.text();
     console.error('Coinbase API error:', response.status, text);
-    throw new Error(`Coinbase API returned ${response.status}: ${text}`);
+    throw new Error(`Coinbase API returned ${response.status}`);
   }
 
   return response.json();
@@ -316,7 +316,7 @@ async function handleRequest(request, env) {
     tokenData = await fetchOnrampToken(jwt, address);
   } catch (err) {
     console.error('Onramp token fetch failed:', err.message);
-    return withCors(errorResponse(`Debug: ${err.message}`, 502), request);
+    return withCors(errorResponse('Failed to obtain onramp session token', 502), request);
   }
 
   return withCors(jsonResponse(tokenData), request);
