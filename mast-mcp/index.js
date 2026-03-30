@@ -9,10 +9,11 @@ import {
   GetPromptRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { ethers } from "ethers";
+import { SignJWT, importPKCS8 } from "jose";
 import fs from "fs";
 import path from "path";
 import os from "os";
-import { randomUUID } from "crypto";
+import { randomUUID, randomBytes } from "crypto";
 
 // ── Config paths ──────────────────────────────────────────────────
 
@@ -99,6 +100,82 @@ function saveProfile(profile) {
 
 function ensurePages() {
   if (!fs.existsSync(PAGES_DIR)) fs.mkdirSync(PAGES_DIR, { recursive: true });
+}
+
+// ── Coinbase Onramp helpers ───────────────────────────────────────
+
+async function generateCdpJwt(config, method, path) {
+  const keyId = config.cdpApiKeyId;
+  const secret = config.cdpApiKeySecret;
+  if (!keyId || !secret) return null;
+
+  // CDP API key secrets are base64-encoded Ed25519 keys (64 bytes: 32-byte seed + 32-byte public)
+  const seed = Buffer.from(secret, "base64").subarray(0, 32);
+  const ed25519Prefix = Buffer.from("302e020100300506032b657004220420", "hex");
+  const pkcs8Der = Buffer.concat([ed25519Prefix, seed]);
+  const pem =
+    "-----BEGIN PRIVATE KEY-----\n" +
+    pkcs8Der.toString("base64") +
+    "\n-----END PRIVATE KEY-----";
+
+  const privateKey = await importPKCS8(pem, "EdDSA");
+  const uri = `${method} api.developer.coinbase.com${path}`;
+  const nonce = randomBytes(16).toString("hex");
+  const now = Math.floor(Date.now() / 1000);
+
+  const jwt = await new SignJWT({ sub: keyId, iss: "cdp", aud: ["cdp_service"], uri })
+    .setProtectedHeader({ alg: "EdDSA", kid: keyId, nonce, typ: "JWT" })
+    .setIssuedAt(now)
+    .setNotBefore(now)
+    .setExpirationTime(now + 120)
+    .sign(privateKey);
+
+  return jwt;
+}
+
+async function generateOnrampSessionToken(config, amountUsd) {
+  const tokenPath = "/onramp/v1/token";
+  const jwt = await generateCdpJwt(config, "POST", tokenPath);
+  if (!jwt) return null;
+
+  const body = {
+    addresses: [{ address: config.address, blockchains: ["base"] }],
+    assets: ["USDC"],
+  };
+
+  const res = await fetch(`https://api.developer.coinbase.com${tokenPath}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Coinbase session token error (${res.status}): ${text}`);
+  }
+
+  const data = await res.json();
+  return data.token;
+}
+
+function buildOnrampUrl(config, amountUsd, sessionToken) {
+  if (sessionToken) {
+    return `https://pay.coinbase.com/buy/select-asset?sessionToken=${sessionToken}` +
+      `&defaultAsset=USDC&defaultNetwork=base` +
+      `&presetFiatAmount=${amountUsd}&fiatCurrency=USD`;
+  }
+  // Fallback to appId mode (won't work if secure init is required)
+  const appIdParam = config.coinbaseAppId ? `&appId=${config.coinbaseAppId}` : "";
+  return `https://pay.coinbase.com/buy/select-asset?` +
+    `destinationWallets=${encodeURIComponent(JSON.stringify([{
+      address: config.address, blockchains: ["base"], assets: ["USDC"],
+    }]))}` +
+    `&defaultAsset=USDC&defaultNetwork=base` +
+    `&presetFiatAmount=${amountUsd}&fiatCurrency=USD` + appIdParam;
 }
 
 // ── Blockchain helpers ────────────────────────────────────────────
@@ -227,8 +304,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       name: "mast_fund",
       description:
         "Get a link for the user to add funds with their credit card (Visa, Mastercard, Apple Pay). " +
-        "Opens Coinbase Onramp — the user pays with their card and USDC is deposited automatically. " +
-        "They never see crypto. Also shows direct deposit address for users who prefer crypto.",
+        "Opens Coinbase Onramp — the user pays with their card and funds are available for commitments automatically. " +
+        "They never see crypto. This is a one-time step — funds are auto-deposited into the smart contract.",
       inputSchema: {
         type: "object",
         properties: {
@@ -243,8 +320,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "mast_deposit_to_escrow",
       description:
-        "After funding, deposit USDC from the wallet into the escrow contract so it can be used for commitments. " +
-        "This approves and transfers USDC in one step.",
+        "Manually deposit USDC from the wallet into the escrow contract. " +
+        "Usually not needed — mast_commit auto-deposits when making a commitment. " +
+        "Use this only if you want to deposit without committing.",
       inputSchema: {
         type: "object",
         properties: {
@@ -259,14 +337,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "mast_balance",
       description:
-        "Check the user's current balance: wallet USDC, available in escrow (can be committed), and locked (in active commitments).",
+        "Check the user's current balance: available for commitments, locked in active commitments, and total.",
       inputSchema: { type: "object", properties: {} },
     },
     {
       name: "mast_commit",
       description:
-        "Lock money against a commitment. The user is putting real money on the line to follow through on something. " +
-        "If they complete it, they get the money back. If the deadline passes, the money is forfeited. " +
+        "Create a commitment backed by real money. The user's deposit is locked — " +
+        "returned on completion, forfeited if the deadline passes. " +
+        "Supports one-off and recurring (daily/weekly) commitments. " +
+        "For recurring, the deposit amount is per period (e.g. $1/day). " +
+        "Auto-deposits wallet funds into the contract if needed. " +
         "USE THIS when the user makes a promise, sets a goal, or says they'll do something.",
       inputSchema: {
         type: "object",
@@ -277,11 +358,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           },
           amount_usd: {
             type: "number",
-            description: "How much to put on the line, in USD.",
+            description: "Deposit amount in USD. For recurring commitments, this is the amount per period.",
+          },
+          cadence: {
+            type: "string",
+            enum: ["once", "daily", "weekly"],
+            description: "How often this commitment repeats. 'once' = one-off (default). 'daily' = resets at midnight. 'weekly' = resets Monday midnight.",
+            default: "once",
           },
           deadline_hours: {
             type: "number",
-            description: "Hours from now until the deadline. Default 24.",
+            description: "Hours from now until the deadline. Default 24. For recurring commitments, this is ignored — deadline is midnight (daily) or Monday midnight (weekly).",
             default: 24,
           },
           strictness: {
@@ -289,7 +376,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
             enum: ["iron", "firm", "moderate", "flexible", "chill"],
             description:
               "How hard it is to back out of THIS commitment. " +
-              "'iron' = cannot cancel even if user begs (use for weaknesses). " +
+              "'iron' = cannot cancel even if user begs. Late reports not accepted. " +
+              "'firm' = hard to back out. Late reports accepted. " +
               "'chill' = cancel anytime (use for stretch goals). " +
               "If omitted, uses the default from setup.",
           },
@@ -350,7 +438,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "mast_withdraw",
       description:
-        "Withdraw USDC from escrow back to the wallet. Only unlocked funds can be withdrawn.",
+        "Withdraw available funds. Moves USDC from the smart contract back to the wallet. " +
+        "Only uncommitted funds can be withdrawn. Use this when the user wants their money back.",
       inputSchema: {
         type: "object",
         properties: {
@@ -474,27 +563,21 @@ async function handleFund(args) {
   const net = NETWORKS[config.network];
   const amount = args.amount_usd || 50;
 
-  // Coinbase Onramp URL — user pays with credit card, USDC goes to their wallet
-  const appIdParam = config.coinbaseAppId ? `&appId=${config.coinbaseAppId}` : "";
-  const onrampUrl =
-    `https://pay.coinbase.com/buy/select-asset?` +
-    `destinationWallets=${encodeURIComponent(JSON.stringify([{
-      address: config.address,
-      blockchains: ["base"],
-      assets: ["USDC"],
-    }]))}` +
-    `&defaultAsset=USDC` +
-    `&defaultNetwork=base` +
-    `&presetFiatAmount=${amount}` +
-    `&fiatCurrency=USD` +
-    appIdParam;
+  // Generate session token for secure Coinbase Onramp
+  let onrampUrl;
+  try {
+    const sessionToken = await generateOnrampSessionToken(config, amount);
+    onrampUrl = buildOnrampUrl(config, amount, sessionToken);
+  } catch (e) {
+    onrampUrl = buildOnrampUrl(config, amount, null);
+  }
 
   return ok(
     `To add funds, the user should open this link:\n\n${onrampUrl}\n\n` +
     `This opens Coinbase — they pay with their credit card (Visa, Mastercard, Apple Pay, Google Pay) ` +
-    `and $${amount} in USDC will be sent to their wallet automatically.\n\n` +
+    `and $${amount} will be available for commitments automatically.\n\n` +
     `Alternatively, they can send USDC directly on ${net.name} to:\n${config.address}\n\n` +
-    `After funding, use mast_deposit_to_escrow to move funds into the commitment escrow.`
+    `Once funded, the user can start making commitments immediately.`
   );
 }
 
@@ -539,13 +622,13 @@ async function handleBalance() {
   const escrow = getEscrow(config);
 
   const walletBal = await usdc.balanceOf(config.address);
-  const [available, lockedAmt] = await escrow.getUserInfo(config.address);
+  const [escrowAvailable, lockedAmt] = await escrow.getUserInfo(config.address);
+  const totalAvailable = walletBal + escrowAvailable;
 
   return ok(
-    `Wallet USDC: $${formatUsdc(walletBal)}\n` +
-    `Escrow available: $${formatUsdc(available)} (can be committed)\n` +
-    `Escrow locked: $${formatUsdc(lockedAmt)} (in active commitments)\n` +
-    `Total: $${formatUsdc(walletBal + available + lockedAmt)}`
+    `Available: $${formatUsdc(totalAvailable)} (can be committed)\n` +
+    `Locked: $${formatUsdc(lockedAmt)} (in active commitments)\n` +
+    `Total: $${formatUsdc(totalAvailable + lockedAmt)}`
   );
 }
 
@@ -555,22 +638,74 @@ async function handleCommit(args) {
   const escrow = getEscrow(config);
 
   const id = randomUUID();
-  const taskId = taskIdHash(id);
+  const cadence = args.cadence || "once";
   const amountUsd = args.amount_usd;
   const amount = parseUsdc(amountUsd);
-  const hours = args.deadline_hours || 24;
-  const deadline = Math.floor(Date.now() / 1000) + hours * 3600;
   const strictness = args.strictness || config.defaultStrictness || "firm";
   const message = args.message || "";
 
-  // Check escrow balance — do we need funding?
-  const [available] = await escrow.getUserInfo(config.address);
+  // Calculate deadline based on cadence
+  let deadline;
+  let hours;
+  if (cadence === "daily") {
+    // Midnight tonight (local time)
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+    deadline = Math.floor(midnight.getTime() / 1000);
+    hours = Math.max(1, Math.round((deadline - Math.floor(Date.now() / 1000)) / 3600));
+  } else if (cadence === "weekly") {
+    // Next Monday midnight
+    const now = new Date();
+    const daysUntilMonday = (8 - now.getDay()) % 7 || 7;
+    const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday, 0, 0, 0);
+    deadline = Math.floor(monday.getTime() / 1000);
+    hours = Math.max(1, Math.round((deadline - Math.floor(Date.now() / 1000)) / 3600));
+  } else {
+    hours = args.deadline_hours || 24;
+    deadline = Math.floor(Date.now() / 1000) + hours * 3600;
+  }
+
+  // For recurring: use a period-specific task ID so each period is a separate on-chain commitment
+  const periodSuffix = cadence !== "once" ? `-${new Date().toISOString().slice(0, 10)}` : "";
+  const taskId = taskIdHash(id + periodSuffix);
+
+  // Check escrow balance — auto-deposit from wallet if needed
+  const usdc = getUsdc(config);
+  let [available] = await escrow.getUserInfo(config.address);
+
+  if (available < amount) {
+    // Check if wallet has USDC to auto-deposit
+    const walletBal = await usdc.balanceOf(config.address);
+    if (walletBal > 0n) {
+      const depositAmount = walletBal < (amount - available) ? walletBal : (amount - available);
+      const allowance = await usdc.allowance(config.address, config.escrowContract);
+      if (allowance < depositAmount) {
+        const approveTx = await usdc.approve(config.escrowContract, depositAmount);
+        await approveTx.wait();
+      }
+      const depositTx = await escrow.deposit(depositAmount);
+      await depositTx.wait();
+      [available] = await escrow.getUserInfo(config.address);
+    }
+  }
+
   const needsFunding = available < amount;
+
+  // Generate session token for payment if needed
+  let onrampUrl = "";
+  if (needsFunding) {
+    try {
+      const sessionToken = await generateOnrampSessionToken(config, amountUsd);
+      onrampUrl = buildOnrampUrl(config, amountUsd, sessionToken);
+    } catch (e) {
+      onrampUrl = buildOnrampUrl(config, amountUsd, null);
+    }
+  }
 
   // Generate the commitment page
   const pagePath = generateCommitmentPage({
     id, config, profile, title: args.title, amountUsd, hours,
-    deadline, strictness, message, needsFunding,
+    deadline, strictness, message, needsFunding, onrampUrl,
   });
 
   // Save commitment locally (pending if needs funding, active if not)
@@ -579,6 +714,7 @@ async function handleCommit(args) {
     title: args.title,
     taskId,
     amount_usd: amountUsd,
+    cadence,
     strictness,
     message,
     deadline_utc: new Date(deadline * 1000).toISOString(),
@@ -602,9 +738,9 @@ async function handleCommit(args) {
       `Commitment page opened in browser.\n\n` +
       `"${args.title}" — $${amountUsd} [${strictness}]\n` +
       `Deadline: ${hours}h from now\n\n` +
-      `The user needs to fund this commitment ($${amountUsd}). ` +
-      `The page has a payment button. Once funded, use mast_deposit_to_escrow ` +
-      `then mast_lock_commitment to lock the funds.\n\n` +
+      `The user needs to fund their account ($${amountUsd}). ` +
+      `The page has a payment button. Once funded, the commitment will be locked automatically ` +
+      `the next time mast_commit is called.\n\n` +
       `Page: ${pagePath}`
     );
   }
@@ -617,17 +753,21 @@ async function handleCommit(args) {
   commitments[id].tx_hash = receipt.hash;
   saveCommitments(commitments);
 
+  const cadenceLabel = cadence === "daily" ? " (daily, resets at midnight)" :
+                       cadence === "weekly" ? " (weekly, resets Monday midnight)" : "";
+
   return ok(
     `Commitment created and locked!\n\n` +
-    `"${args.title}" — $${amountUsd} [${strictness}]\n` +
+    `"${args.title}" — $${amountUsd}${cadenceLabel} [${strictness}]\n` +
     `Deadline: ${new Date(deadline * 1000).toLocaleString()} (${hours}h)\n` +
     `Tx: ${NETWORKS[config.network].explorer}/tx/${receipt.hash}\n\n` +
     `Commitment page opened in browser: ${pagePath}` +
-    (strictness === "iron" ? `\n\nThis commitment is IRON — it cannot be cancelled.` : "")
+    (strictness === "iron" ? `\n\nThis commitment is IRON — it cannot be cancelled. Late reports not accepted.` : "") +
+    (cadence !== "once" ? `\n\nThis is a recurring commitment. When the user reports completion, the deposit is returned and a new period begins automatically.` : "")
   );
 }
 
-function generateCommitmentPage({ id, config, profile, title, amountUsd, hours, deadline, strictness, message, needsFunding }) {
+function generateCommitmentPage({ id, config, profile, title, amountUsd, hours, deadline, strictness, message, needsFunding, onrampUrl }) {
   ensurePages();
 
   const p = profile || {
@@ -651,18 +791,7 @@ function generateCommitmentPage({ id, config, profile, title, amountUsd, hours, 
     ? p.font
     : `'${p.font}', sans-serif`;
 
-  const pageAppIdParam = config.coinbaseAppId ? `&appId=${config.coinbaseAppId}` : "";
-  const onrampUrl = needsFunding
-    ? `https://pay.coinbase.com/buy/select-asset?` +
-      `destinationWallets=${encodeURIComponent(JSON.stringify([{
-        address: config.address,
-        blockchains: ["base"],
-        assets: ["USDC"],
-      }]))}` +
-      `&defaultAsset=USDC&defaultNetwork=base` +
-      `&presetFiatAmount=${amountUsd}&fiatCurrency=USD` +
-      pageAppIdParam
-    : "";
+  // onrampUrl is now passed in from the caller (with session token)
 
   const paymentSection = needsFunding
     ? `<div class="payment">
