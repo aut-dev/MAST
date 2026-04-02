@@ -9,11 +9,10 @@ import {
   GetPromptRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { ethers } from "ethers";
-import { SignJWT, importPKCS8 } from "jose";
 import fs from "fs";
 import path from "path";
 import os from "os";
-import { randomUUID, randomBytes } from "crypto";
+import { randomUUID } from "crypto";
 
 // ── Config paths ──────────────────────────────────────────────────
 
@@ -44,6 +43,9 @@ const USDC_ABI = [
 ];
 
 // ── Defaults ──────────────────────────────────────────────────────
+
+const DEFAULT_CONTRACT = "0xb279110b7a7F77344094721Bf4232dE46AFC1C42";
+const DEFAULT_NETWORK = "base";
 
 const NETWORKS = {
   "base-sepolia": {
@@ -102,82 +104,6 @@ function ensurePages() {
   if (!fs.existsSync(PAGES_DIR)) fs.mkdirSync(PAGES_DIR, { recursive: true });
 }
 
-// ── Coinbase Onramp helpers ───────────────────────────────────────
-
-async function generateCdpJwt(config, method, path) {
-  const keyId = config.cdpApiKeyId;
-  const secret = config.cdpApiKeySecret;
-  if (!keyId || !secret) return null;
-
-  // CDP API key secrets are base64-encoded Ed25519 keys (64 bytes: 32-byte seed + 32-byte public)
-  const seed = Buffer.from(secret, "base64").subarray(0, 32);
-  const ed25519Prefix = Buffer.from("302e020100300506032b657004220420", "hex");
-  const pkcs8Der = Buffer.concat([ed25519Prefix, seed]);
-  const pem =
-    "-----BEGIN PRIVATE KEY-----\n" +
-    pkcs8Der.toString("base64") +
-    "\n-----END PRIVATE KEY-----";
-
-  const privateKey = await importPKCS8(pem, "EdDSA");
-  const uri = `${method} api.developer.coinbase.com${path}`;
-  const nonce = randomBytes(16).toString("hex");
-  const now = Math.floor(Date.now() / 1000);
-
-  const jwt = await new SignJWT({ sub: keyId, iss: "cdp", aud: ["cdp_service"], uri })
-    .setProtectedHeader({ alg: "EdDSA", kid: keyId, nonce, typ: "JWT" })
-    .setIssuedAt(now)
-    .setNotBefore(now)
-    .setExpirationTime(now + 120)
-    .sign(privateKey);
-
-  return jwt;
-}
-
-async function generateOnrampSessionToken(config, amountUsd) {
-  const tokenPath = "/onramp/v1/token";
-  const jwt = await generateCdpJwt(config, "POST", tokenPath);
-  if (!jwt) return null;
-
-  const body = {
-    addresses: [{ address: config.address, blockchains: ["base"] }],
-    assets: ["USDC"],
-  };
-
-  const res = await fetch(`https://api.developer.coinbase.com${tokenPath}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Coinbase session token error (${res.status}): ${text}`);
-  }
-
-  const data = await res.json();
-  return data.token;
-}
-
-function buildOnrampUrl(config, amountUsd, sessionToken) {
-  if (sessionToken) {
-    return `https://pay.coinbase.com/buy/select-asset?sessionToken=${sessionToken}` +
-      `&defaultAsset=USDC&defaultNetwork=base` +
-      `&presetFiatAmount=${amountUsd}&fiatCurrency=USD`;
-  }
-  // Fallback to appId mode (won't work if secure init is required)
-  const appIdParam = config.coinbaseAppId ? `&appId=${config.coinbaseAppId}` : "";
-  return `https://pay.coinbase.com/buy/select-asset?` +
-    `destinationWallets=${encodeURIComponent(JSON.stringify([{
-      address: config.address, blockchains: ["base"], assets: ["USDC"],
-    }]))}` +
-    `&defaultAsset=USDC&defaultNetwork=base` +
-    `&presetFiatAmount=${amountUsd}&fiatCurrency=USD` + appIdParam;
-}
-
 // ── Blockchain helpers ────────────────────────────────────────────
 
 function getProvider(config) {
@@ -224,7 +150,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "mast_setup",
       description:
-        "First-time MAST setup. Generates a crypto wallet for the user (they never need to know it's crypto). " +
+        "First-time MAST setup. Generates a local wallet and configures the escrow contract. " +
+        "No arguments needed — uses Base mainnet and the official MAST contract by default. " +
         "Run this before any other MAST tool. If already set up, returns current config.",
       inputSchema: {
         type: "object",
@@ -232,16 +159,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           network: {
             type: "string",
             enum: ["base-sepolia", "base"],
-            description: "Network to use. 'base-sepolia' for testing, 'base' for real money.",
-            default: "base-sepolia",
+            description: "Network to use. Default: 'base' (mainnet).",
+            default: "base",
           },
           escrow_contract: {
             type: "string",
-            description: "Address of the deployed CommitmentEscrow contract.",
-          },
-          coinbase_app_id: {
-            type: "string",
-            description: "Coinbase Developer Platform Project ID (appId) for Coinbase Onramp. Get one at https://portal.cdp.coinbase.com/",
+            description: "Address of the CommitmentEscrow contract. Default: official MAST contract on Base.",
           },
           default_strictness: {
             type: "string",
@@ -250,7 +173,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
             default: "firm",
           },
         },
-        required: ["escrow_contract"],
       },
     },
     {
@@ -303,18 +225,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "mast_fund",
       description:
-        "Get a link for the user to add funds with their credit card (Visa, Mastercard, Apple Pay). " +
-        "Opens Coinbase Onramp — the user pays with their card and funds are available for commitments automatically. " +
-        "They never see crypto. This is a one-time step — funds are auto-deposited into the smart contract.",
+        "Show the user's wallet address so they can send USDC to fund their account. " +
+        "Users can send USDC from Coinbase, another wallet, or use the Coinbase Payments MCP to buy and send USDC. " +
+        "Funds sent to this address are auto-deposited into the escrow contract when a commitment is made.",
       inputSchema: {
         type: "object",
-        properties: {
-          amount_usd: {
-            type: "number",
-            description: "Suggested amount in USD to fund.",
-            default: 50,
-          },
-        },
+        properties: {},
       },
     },
     {
@@ -507,18 +423,18 @@ async function handleSetup(args) {
     );
   }
 
-  const network = args.network || "base-sepolia";
+  const network = args.network || DEFAULT_NETWORK;
   const net = NETWORKS[network];
   if (!net) return err(`Unknown network: ${network}`);
 
+  const escrowContract = args.escrow_contract || DEFAULT_CONTRACT;
   const wallet = ethers.Wallet.createRandom();
   const defaultStrictness = args.default_strictness || "firm";
   const config = {
     privateKey: wallet.privateKey,
     address: wallet.address,
     network,
-    escrowContract: args.escrow_contract,
-    coinbaseAppId: args.coinbase_app_id || "",
+    escrowContract,
     defaultStrictness,
   };
   saveConfig(config);
@@ -527,12 +443,13 @@ async function handleSetup(args) {
     `MAST setup complete!\n\n` +
     `Wallet address: ${wallet.address}\n` +
     `Network: ${net.name}\n` +
-    `Escrow contract: ${args.escrow_contract}\n` +
+    `Escrow contract: ${escrowContract}\n` +
     `Default strictness: ${defaultStrictness}\n` +
     `Config saved to: ${CONFIG_FILE}\n\n` +
     `Next steps:\n` +
     `1. Get to know the user — ask their name, what drives them, their aesthetic preferences — then call mast_save_profile.\n` +
-    `2. When they're ready to make their first commitment, use mast_commit. It will generate a personal commitment page and open it in their browser.`
+    `2. Ask if they already have USDC on Base. If not, call mast_fund to open the funding page — it has a "Buy USDC with Card" button powered by Coinbase.\n` +
+    `3. When they're ready to make their first commitment, use mast_commit.`
   );
 }
 
@@ -558,26 +475,42 @@ async function handleSaveProfile(args) {
   );
 }
 
-async function handleFund(args) {
+async function handleFund() {
   const config = requireConfig();
+  const profile = loadProfile();
   const net = NETWORKS[config.network];
-  const amount = args.amount_usd || 50;
 
-  // Generate session token for secure Coinbase Onramp
-  let onrampUrl;
+  // Check current balances
+  const usdc = getUsdc(config);
+  const escrow = getEscrow(config);
+  const walletBal = await usdc.balanceOf(config.address);
+  const [escrowAvailable, lockedAmt] = await escrow.getUserInfo(config.address);
+
+  // Generate and open branded funding page
+  const pagePath = generateFundingPage({
+    config, profile,
+    walletBal, escrowAvailable, escrowLocked: lockedAmt,
+  });
+
+  const openCmd = process.platform === "darwin" ? "open" : process.platform === "win32" ? "start" : "xdg-open";
   try {
-    const sessionToken = await generateOnrampSessionToken(config, amount);
-    onrampUrl = buildOnrampUrl(config, amount, sessionToken);
+    const { execSync } = await import("child_process");
+    execSync(`${openCmd} "${pagePath}"`);
   } catch (e) {
-    onrampUrl = buildOnrampUrl(config, amount, null);
+    // fallback: return the path
   }
 
+  const totalAvailable = formatUsdc(walletBal + escrowAvailable);
+
   return ok(
-    `To add funds, the user should open this link:\n\n${onrampUrl}\n\n` +
-    `This opens Coinbase — they pay with their credit card (Visa, Mastercard, Apple Pay, Google Pay) ` +
-    `and $${amount} will be available for commitments automatically.\n\n` +
-    `Alternatively, they can send USDC directly on ${net.name} to:\n${config.address}\n\n` +
-    `Once funded, the user can start making commitments immediately.`
+    `Funding page opened in browser.\n\n` +
+    `Current balance: $${totalAvailable} available\n` +
+    `  Wallet: $${formatUsdc(walletBal)} | Escrow: $${formatUsdc(escrowAvailable)} | Locked: $${formatUsdc(lockedAmt)}\n\n` +
+    `The page has a "Buy USDC with Card" button (via Coinbase) and the wallet address for direct transfers.\n` +
+    `Network: ${net.name}\n` +
+    `Address: ${config.address}\n\n` +
+    `If the Coinbase Payments MCP is available, you can also use the "fund" skill to help the user buy USDC directly from this conversation.\n\n` +
+    `Page: ${pagePath}`
   );
 }
 
@@ -691,21 +624,10 @@ async function handleCommit(args) {
 
   const needsFunding = available < amount;
 
-  // Generate session token for payment if needed
-  let onrampUrl = "";
-  if (needsFunding) {
-    try {
-      const sessionToken = await generateOnrampSessionToken(config, amountUsd);
-      onrampUrl = buildOnrampUrl(config, amountUsd, sessionToken);
-    } catch (e) {
-      onrampUrl = buildOnrampUrl(config, amountUsd, null);
-    }
-  }
-
   // Generate the commitment page
   const pagePath = generateCommitmentPage({
     id, config, profile, title: args.title, amountUsd, hours,
-    deadline, strictness, message, needsFunding, onrampUrl,
+    deadline, strictness, message, needsFunding,
   });
 
   // Save commitment locally (pending if needs funding, active if not)
@@ -734,13 +656,14 @@ async function handleCommit(args) {
   }
 
   if (needsFunding) {
+    const shortfall = formatUsdc(amount - available);
     return ok(
       `Commitment page opened in browser.\n\n` +
       `"${args.title}" — $${amountUsd} [${strictness}]\n` +
       `Deadline: ${hours}h from now\n\n` +
-      `The user needs to fund their account ($${amountUsd}). ` +
-      `The page has a payment button. Once funded, the commitment will be locked automatically ` +
-      `the next time mast_commit is called.\n\n` +
+      `The user needs to fund their account — short $${shortfall} USDC.\n` +
+      `Send USDC on ${NETWORKS[config.network].name} to: ${config.address}\n\n` +
+      `Once funded, run mast_commit again to lock the commitment.\n\n` +
       `Page: ${pagePath}`
     );
   }
@@ -767,7 +690,195 @@ async function handleCommit(args) {
   );
 }
 
-function generateCommitmentPage({ id, config, profile, title, amountUsd, hours, deadline, strictness, message, needsFunding, onrampUrl }) {
+function buildCoinbasePayUrl(address) {
+  const wallets = JSON.stringify([{ address, blockchains: ["base"], assets: ["USDC"] }]);
+  return `https://pay.coinbase.com/buy/select-asset?` +
+    `destinationWallets=${encodeURIComponent(wallets)}` +
+    `&defaultAsset=USDC&defaultNetwork=base&fiatCurrency=USD`;
+}
+
+function generateFundingPage({ config, profile, walletBal, escrowAvailable, escrowLocked }) {
+  ensurePages();
+
+  const p = profile || {
+    name: "You",
+    motivation: "",
+    primaryColor: "#6366f1",
+    backgroundColor: "#0a0a0f",
+    textColor: "#e0e0e8",
+    font: "sans-serif",
+    tone: "calm",
+    personalMantra: "",
+  };
+
+  const net = NETWORKS[config.network];
+  const coinbaseUrl = buildCoinbasePayUrl(config.address);
+  const totalAvailable = formatUsdc(walletBal + escrowAvailable);
+
+  const fontImport = p.font && !["serif", "sans-serif", "mono", "monospace"].includes(p.font)
+    ? `<link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(p.font)}&display=swap" rel="stylesheet">`
+    : "";
+  const fontFamily = ["serif", "sans-serif", "mono", "monospace"].includes(p.font)
+    ? p.font
+    : `'${p.font}', sans-serif`;
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fund MAST — ${p.name}</title>
+  ${fontImport}
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: ${fontFamily};
+      background: ${p.backgroundColor};
+      color: ${p.textColor};
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .page { max-width: 540px; width: 100%; text-align: center; }
+    .name {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: ${p.primaryColor};
+      margin-bottom: 2rem;
+    }
+    .title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.6;
+      margin-bottom: 2rem;
+    }
+    .balance-card {
+      background: ${p.primaryColor}10;
+      border: 1px solid ${p.primaryColor}30;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .balance-amount {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: ${p.primaryColor};
+    }
+    .balance-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+      margin-top: 0.25rem;
+    }
+    .balance-breakdown {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      opacity: 0.6;
+    }
+    .fund-btn {
+      display: inline-block;
+      background: ${p.primaryColor};
+      color: white;
+      padding: 1rem 2.5rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity 0.15s;
+      margin-top: 2rem;
+    }
+    .fund-btn:hover { opacity: 0.85; }
+    .or-divider {
+      margin: 1.5rem 0;
+      font-size: 0.8rem;
+      opacity: 0.3;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+    .wallet-addr {
+      font-family: monospace;
+      font-size: 0.8rem;
+      padding: 0.75rem 1rem;
+      background: ${p.primaryColor}10;
+      border: 1px solid ${p.primaryColor}25;
+      border-radius: 8px;
+      word-break: break-all;
+      user-select: all;
+      cursor: pointer;
+    }
+    .wallet-label {
+      font-size: 0.75rem;
+      opacity: 0.4;
+      margin-top: 0.5rem;
+    }
+    .network-badge {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.3rem 0.8rem;
+      border: 1px solid ${p.primaryColor}44;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: ${p.primaryColor};
+    }
+    .mantra {
+      margin: 2.5rem 0 0;
+      padding: 1.5rem;
+      border-left: 3px solid ${p.primaryColor};
+      text-align: left;
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="name">${p.name}</div>
+    <h1 class="title">Fund Your Commitments</h1>
+    <p class="subtitle">Add USDC to start putting money on your goals.</p>
+
+    <div class="balance-card">
+      <div class="balance-amount">$${totalAvailable}</div>
+      <div class="balance-label">Available for commitments</div>
+      <div class="balance-breakdown">
+        <span>Wallet: $${formatUsdc(walletBal)}</span>
+        <span>Escrow: $${formatUsdc(escrowAvailable)}</span>
+        <span>Locked: $${formatUsdc(escrowLocked)}</span>
+      </div>
+    </div>
+
+    <a href="${coinbaseUrl}" target="_blank" class="fund-btn">Buy USDC with Card</a>
+
+    <div class="or-divider">or send directly</div>
+
+    <div class="wallet-addr" onclick="navigator.clipboard.writeText('${config.address}')" title="Click to copy">${config.address}</div>
+    <div class="wallet-label">Send USDC on ${net.name} — click to copy</div>
+
+    <div class="network-badge">${net.name}</div>
+    ${p.personalMantra ? `<div class="mantra">${p.personalMantra}</div>` : ""}
+  </div>
+</body>
+</html>`;
+
+  const filePath = path.join(PAGES_DIR, "fund.html");
+  fs.writeFileSync(filePath, html);
+  return filePath;
+}
+
+function generateCommitmentPage({ id, config, profile, title, amountUsd, hours, deadline, strictness, message, needsFunding }) {
   ensurePages();
 
   const p = profile || {
@@ -791,12 +902,12 @@ function generateCommitmentPage({ id, config, profile, title, amountUsd, hours, 
     ? p.font
     : `'${p.font}', sans-serif`;
 
-  // onrampUrl is now passed in from the caller (with session token)
-
+  const net = NETWORKS[config.network];
   const paymentSection = needsFunding
     ? `<div class="payment">
-        <a href="${onrampUrl}" target="_blank" class="pay-btn">I commit — charge me $${amountUsd}</a>
-        <p class="pay-note">One click. Card saved from last time.</p>
+        <p class="pay-note">Send USDC on ${net.name} to:</p>
+        <p class="wallet-addr">${config.address}</p>
+        <p class="pay-note">Then re-run the commitment to lock it.</p>
       </div>`
     : `<div class="locked">
         <div class="lock-icon">&#x1f512;</div>
@@ -879,18 +990,17 @@ function generateCommitmentPage({ id, config, profile, title, amountUsd, hours, 
       opacity: 0.7;
     }
     .payment { margin-top: 2.5rem; }
-    .pay-btn {
-      display: inline-block;
-      background: ${p.primaryColor};
-      color: white;
-      padding: 1rem 2.5rem;
+    .wallet-addr {
+      font-family: monospace;
+      font-size: 0.85rem;
+      padding: 0.75rem 1rem;
+      background: ${p.primaryColor}15;
+      border: 1px solid ${p.primaryColor}33;
       border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: opacity 0.15s;
+      margin: 0.75rem 0;
+      word-break: break-all;
+      user-select: all;
     }
-    .pay-btn:hover { opacity: 0.85; }
     .pay-note {
       margin-top: 0.75rem;
       font-size: 0.8rem;
