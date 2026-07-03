@@ -225,12 +225,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "mast_fund",
       description:
-        "Show the user's wallet address so they can send USDC to fund their account. " +
-        "Users can send USDC from Coinbase, another wallet, or use the Coinbase Payments MCP to buy and send USDC. " +
+        "Show the user's wallet address so they can send USDC on Base to fund their account. " +
+        "Users send USDC from any wallet (Coinbase, MetaMask, Rainbow, etc). " +
         "Funds sent to this address are auto-deposited into the escrow contract when a commitment is made.",
       inputSchema: {
         type: "object",
-        properties: {},
+        properties: {
+          amount_usd: {
+            type: "number",
+            description: "Suggested funding amount in USD. Shows the recommended amount on the funding page.",
+          },
+        },
       },
     },
     {
@@ -448,8 +453,9 @@ async function handleSetup(args) {
     `Config saved to: ${CONFIG_FILE}\n\n` +
     `Next steps:\n` +
     `1. Get to know the user — ask their name, what drives them, their aesthetic preferences — then call mast_save_profile.\n` +
-    `2. Ask if they already have USDC on Base. If not, call mast_fund to open the funding page — it has a "Buy USDC with Card" button powered by Coinbase.\n` +
-    `3. When they're ready to make their first commitment, use mast_commit.`
+    `2. Run the commitment questionnaire — what are they procrastinating on? Gather all items, calculate weekly cost.\n` +
+    `3. Call mast_fund to show the wallet address — they send USDC from any wallet.\n` +
+    `4. Once funded, create all commitments with mast_commit.`
   );
 }
 
@@ -475,10 +481,11 @@ async function handleSaveProfile(args) {
   );
 }
 
-async function handleFund() {
+async function handleFund(args) {
   const config = requireConfig();
   const profile = loadProfile();
   const net = NETWORKS[config.network];
+  const amountUsd = args.amount_usd || null;
 
   // Check current balances
   const usdc = getUsdc(config);
@@ -490,6 +497,7 @@ async function handleFund() {
   const pagePath = generateFundingPage({
     config, profile,
     walletBal, escrowAvailable, escrowLocked: lockedAmt,
+    amountUsd,
   });
 
   const openCmd = process.platform === "darwin" ? "open" : process.platform === "win32" ? "start" : "xdg-open";
@@ -506,10 +514,9 @@ async function handleFund() {
     `Funding page opened in browser.\n\n` +
     `Current balance: $${totalAvailable} available\n` +
     `  Wallet: $${formatUsdc(walletBal)} | Escrow: $${formatUsdc(escrowAvailable)} | Locked: $${formatUsdc(lockedAmt)}\n\n` +
-    `The page has a "Buy USDC with Card" button (via Coinbase) and the wallet address for direct transfers.\n` +
-    `Network: ${net.name}\n` +
-    `Address: ${config.address}\n\n` +
-    `If the Coinbase Payments MCP is available, you can also use the "fund" skill to help the user buy USDC directly from this conversation.\n\n` +
+    `Send USDC on ${net.name} to: ${config.address}\n` +
+    `From any wallet — Coinbase, MetaMask, Rainbow, etc.\n\n` +
+    (amountUsd ? `Recommended amount: $${amountUsd}\n\n` : "") +
     `Page: ${pagePath}`
   );
 }
@@ -526,7 +533,7 @@ async function handleDepositToEscrow(args) {
   if (walletBal < amount) {
     return err(
       `Wallet only has $${formatUsdc(walletBal)} USDC. Need $${args.amount_usd}. ` +
-      `Use mast_fund to add funds with a credit card.`
+      `Use mast_fund to get the wallet address and send USDC.`
     );
   }
 
@@ -690,14 +697,7 @@ async function handleCommit(args) {
   );
 }
 
-function buildCoinbasePayUrl(address) {
-  const wallets = JSON.stringify([{ address, blockchains: ["base"], assets: ["USDC"] }]);
-  return `https://pay.coinbase.com/buy/select-asset?` +
-    `destinationWallets=${encodeURIComponent(wallets)}` +
-    `&defaultAsset=USDC&defaultNetwork=base&fiatCurrency=USD`;
-}
-
-function generateFundingPage({ config, profile, walletBal, escrowAvailable, escrowLocked }) {
+function generateFundingPage({ config, profile, walletBal, escrowAvailable, escrowLocked, amountUsd }) {
   ensurePages();
 
   const p = profile || {
@@ -712,7 +712,6 @@ function generateFundingPage({ config, profile, walletBal, escrowAvailable, escr
   };
 
   const net = NETWORKS[config.network];
-  const coinbaseUrl = buildCoinbasePayUrl(config.address);
   const totalAvailable = formatUsdc(walletBal + escrowAvailable);
 
   const fontImport = p.font && !["serif", "sans-serif", "mono", "monospace"].includes(p.font)
@@ -787,40 +786,30 @@ function generateFundingPage({ config, profile, walletBal, escrowAvailable, escr
       font-size: 0.85rem;
       opacity: 0.6;
     }
-    .fund-btn {
-      display: inline-block;
-      background: ${p.primaryColor};
-      color: white;
-      padding: 1rem 2.5rem;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: opacity 0.15s;
-      margin-top: 2rem;
-    }
-    .fund-btn:hover { opacity: 0.85; }
-    .or-divider {
-      margin: 1.5rem 0;
-      font-size: 0.8rem;
-      opacity: 0.3;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-    }
     .wallet-addr {
       font-family: monospace;
-      font-size: 0.8rem;
-      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      padding: 1rem 1.25rem;
       background: ${p.primaryColor}10;
       border: 1px solid ${p.primaryColor}25;
       border-radius: 8px;
       word-break: break-all;
       user-select: all;
       cursor: pointer;
+      margin-top: 2rem;
+      transition: border-color 0.15s;
     }
+    .wallet-addr:hover { border-color: ${p.primaryColor}; }
     .wallet-label {
       font-size: 0.75rem;
       opacity: 0.4;
+      margin-top: 0.5rem;
+    }
+    .copied {
+      font-size: 0.8rem;
+      color: ${p.primaryColor};
+      opacity: 0;
+      transition: opacity 0.2s;
       margin-top: 0.5rem;
     }
     .network-badge {
@@ -833,6 +822,16 @@ function generateFundingPage({ config, profile, walletBal, escrowAvailable, escr
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: ${p.primaryColor};
+    }
+    .instructions {
+      margin-top: 2rem;
+      padding: 1.25rem;
+      background: ${p.primaryColor}08;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      opacity: 0.6;
+      line-height: 1.6;
+      text-align: left;
     }
     .mantra {
       margin: 2.5rem 0 0;
@@ -848,7 +847,7 @@ function generateFundingPage({ config, profile, walletBal, escrowAvailable, escr
   <div class="page">
     <div class="name">${p.name}</div>
     <h1 class="title">Fund Your Commitments</h1>
-    <p class="subtitle">Add USDC to start putting money on your goals.</p>
+    <p class="subtitle">${amountUsd ? `Send at least <strong>$${amountUsd} USDC</strong> to get started.` : `Send USDC to start putting money on your goals.`}</p>
 
     <div class="balance-card">
       <div class="balance-amount">$${totalAvailable}</div>
@@ -860,14 +859,16 @@ function generateFundingPage({ config, profile, walletBal, escrowAvailable, escr
       </div>
     </div>
 
-    <a href="${coinbaseUrl}" target="_blank" class="fund-btn">Buy USDC with Card</a>
-
-    <div class="or-divider">or send directly</div>
-
-    <div class="wallet-addr" onclick="navigator.clipboard.writeText('${config.address}')" title="Click to copy">${config.address}</div>
+    <div class="wallet-addr" onclick="navigator.clipboard.writeText('${config.address}'); document.getElementById('copied').style.opacity='1'; setTimeout(() => document.getElementById('copied').style.opacity='0', 2000)" title="Click to copy">${config.address}</div>
     <div class="wallet-label">Send USDC on ${net.name} — click to copy</div>
+    <div class="copied" id="copied">Copied!</div>
 
-    <div class="network-badge">${net.name}</div>
+    <div class="network-badge">${net.name} · USDC</div>
+
+    <div class="instructions">
+      Send from any wallet — Coinbase, MetaMask, Rainbow, or any app that supports USDC on Base. Make sure you're sending <strong>USDC on the Base network</strong>, not Ethereum mainnet.
+    </div>
+
     ${p.personalMantra ? `<div class="mantra">${p.personalMantra}</div>` : ""}
   </div>
 </body>
