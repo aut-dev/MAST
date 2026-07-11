@@ -56,7 +56,7 @@ const NETWORKS = {
     name: "Base Sepolia (testnet)",
   },
   "base": {
-    rpc: "https://mainnet.base.org",
+    rpc: "https://base-rpc.publicnode.com",
     chainId: 8453,
     usdc: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     explorer: "https://basescan.org",
@@ -108,7 +108,7 @@ function ensurePages() {
 
 function getProvider(config) {
   const net = NETWORKS[config.network] || NETWORKS["base-sepolia"];
-  return new ethers.JsonRpcProvider(net.rpc);
+  return new ethers.JsonRpcProvider(config.rpc || net.rpc);
 }
 
 function getWallet(config) {
