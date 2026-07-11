@@ -378,6 +378,32 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "mast_cancel",
+      description:
+        "Cancel an active commitment and return the money — no forfeit, no renewal. " +
+        "GATE THIS BY THE COMMITMENT'S STRICTNESS before calling: " +
+        "'iron' = NEVER call this, no exceptions. " +
+        "'firm' = push back hard; only call for a genuinely compelling reason. " +
+        "'moderate' = ask why once, then respect the answer. " +
+        "'flexible' = quick 'are you sure?', then call. " +
+        "'chill' = call immediately. " +
+        "Always appropriate regardless of strictness when the underlying task no longer exists (e.g. already done, obligation removed).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          commitment_id: {
+            type: "string",
+            description: "The ID of the commitment to cancel.",
+          },
+          reason: {
+            type: "string",
+            description: "Why this is being cancelled — recorded on the commitment.",
+          },
+        },
+        required: ["commitment_id", "reason"],
+      },
+    },
+    {
       name: "mast_commitments",
       description:
         "List all active commitments with their deadlines and amounts. " +
@@ -443,6 +469,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await handleCommit(args);
       case "mast_complete":
         return await handleComplete(args);
+      case "mast_cancel":
+        return await handleCancel(args);
       case "mast_commitments":
         return await handleCommitments();
       case "mast_set_default_strictness":
@@ -1187,6 +1215,39 @@ async function handleComplete(args) {
       `(start_date ${localIsoDate(nextDate)}) to resume.`
     );
   }
+}
+
+async function handleCancel(args) {
+  const config = requireConfig();
+  const escrow = getEscrow(config);
+
+  const commitments = loadCommitments();
+  const commitment = commitments[args.commitment_id];
+  if (!commitment) return err(`Commitment not found: ${args.commitment_id}`);
+  if (commitment.status !== "active") return err(`Commitment already ${commitment.status}.`);
+  if (commitment.strictness === "iron") {
+    return err(
+      `"${commitment.title}" is IRON. Iron commitments cannot be cancelled — that was the deal. ` +
+      `The money returns on completion or is forfeited at the deadline.`
+    );
+  }
+
+  // The contract has no separate cancel — completing releases the locked funds.
+  const tx = await escrow.complete(commitment.taskId);
+  const receipt = await tx.wait();
+
+  commitment.status = "cancelled";
+  commitment.cancelled_at = new Date().toISOString();
+  commitment.cancel_reason = args.reason;
+  commitment.cancel_tx = receipt.hash;
+  saveCommitments(commitments);
+
+  return ok(
+    `Commitment cancelled. No forfeit${commitment.cadence && commitment.cadence !== "once" ? ", no further periods" : ""}.\n\n` +
+    `"${commitment.title}" — $${commitment.amount_usd} returned to escrow balance.\n` +
+    `Reason: ${args.reason}\n` +
+    `Tx: ${NETWORKS[config.network].explorer}/tx/${receipt.hash}`
+  );
 }
 
 async function handleCommitments() {
