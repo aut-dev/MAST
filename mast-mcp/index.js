@@ -136,6 +136,36 @@ function taskIdHash(id) {
   return ethers.id(id);
 }
 
+// ── Recurring schedule helpers ────────────────────────────────────
+
+const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+
+function localIsoDate(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function isAllowedDay(date, days, vacationDates) {
+  if (days && days.length && !days.includes(DAY_KEYS[date.getDay()])) return false;
+  if (vacationDates && vacationDates.includes(localIsoDate(date))) return false;
+  return true;
+}
+
+// First allowed date on or after `from`. Returns a date at local midnight.
+function nextAllowedDate(from, days, vacationDates) {
+  const d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+  for (let i = 0; i < 366; i++) {
+    if (isAllowedDay(d, days, vacationDates)) return d;
+    d.setDate(d.getDate() + 1);
+  }
+  return null;
+}
+
+// Deadline for a daily period: midnight at the end of the period's day.
+function periodDeadline(periodDate) {
+  const end = new Date(periodDate.getFullYear(), periodDate.getMonth(), periodDate.getDate() + 1, 0, 0, 0);
+  return Math.floor(end.getTime() / 1000);
+}
+
 // ── MCP Server ────────────────────────────────────────────────────
 
 const server = new Server(
@@ -308,6 +338,23 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
               "A personal message for the commitment page, written by you (the agent) for this specific commitment. " +
               "Speak directly to the user. Reference what they told you. Make it real. " +
               "e.g. 'You said mornings are when you feel weakest. This is you fighting back.'",
+          },
+          days: {
+            type: "array",
+            items: { type: "string", enum: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] },
+            description:
+              "For daily cadence: which days of the week this commitment applies. " +
+              "Default: every day. Weekdays only: [\"mon\",\"tue\",\"wed\",\"thu\",\"fri\"]. " +
+              "Skipped days are free — no deadline, no money at stake.",
+          },
+          vacation_dates: {
+            type: "array",
+            items: { type: "string" },
+            description: "ISO dates (YYYY-MM-DD) excluded from a recurring schedule — vacation days with no deadline.",
+          },
+          start_date: {
+            type: "string",
+            description: "ISO date (YYYY-MM-DD) for the first period of a recurring commitment. Default: today (or the next allowed day).",
           },
         },
         required: ["title", "amount_usd"],
@@ -584,14 +631,20 @@ async function handleCommit(args) {
   const strictness = args.strictness || config.defaultStrictness || "firm";
   const message = args.message || "";
 
+  const days = args.days && args.days.length ? args.days : null;
+  const vacationDates = args.vacation_dates && args.vacation_dates.length ? args.vacation_dates : null;
+
   // Calculate deadline based on cadence
   let deadline;
   let hours;
+  let periodDate = null;
   if (cadence === "daily") {
-    // Midnight tonight (local time)
-    const now = new Date();
-    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
-    deadline = Math.floor(midnight.getTime() / 1000);
+    // First allowed day on or after start_date (default today), deadline midnight at its end
+    const from = args.start_date ? new Date(args.start_date + "T00:00:00") : new Date();
+    const startFrom = from > new Date() ? from : new Date();
+    periodDate = nextAllowedDate(startFrom, days, vacationDates);
+    if (!periodDate) return err("No allowed day found in the next year — check days/vacation_dates.");
+    deadline = periodDeadline(periodDate);
     hours = Math.max(1, Math.round((deadline - Math.floor(Date.now() / 1000)) / 3600));
   } else if (cadence === "weekly") {
     // Next Monday midnight
@@ -606,7 +659,7 @@ async function handleCommit(args) {
   }
 
   // For recurring: use a period-specific task ID so each period is a separate on-chain commitment
-  const periodSuffix = cadence !== "once" ? `-${new Date().toISOString().slice(0, 10)}` : "";
+  const periodSuffix = cadence !== "once" ? `-${localIsoDate(periodDate || new Date())}` : "";
   const taskId = taskIdHash(id + periodSuffix);
 
   // Check escrow balance — auto-deposit from wallet if needed
@@ -646,6 +699,9 @@ async function handleCommit(args) {
     cadence,
     strictness,
     message,
+    days,
+    vacation_dates: vacationDates,
+    period_date: periodDate ? localIsoDate(periodDate) : null,
     deadline_utc: new Date(deadline * 1000).toISOString(),
     created_at: new Date().toISOString(),
     status: needsFunding ? "pending_funding" : "pending_lock",
@@ -683,7 +739,8 @@ async function handleCommit(args) {
   commitments[id].tx_hash = receipt.hash;
   saveCommitments(commitments);
 
-  const cadenceLabel = cadence === "daily" ? " (daily, resets at midnight)" :
+  const dayLabel = days ? ` on ${days.join("/")}` : "";
+  const cadenceLabel = cadence === "daily" ? ` (daily${dayLabel}, resets at midnight)` :
                        cadence === "weekly" ? " (weekly, resets Monday midnight)" : "";
 
   return ok(
@@ -1061,17 +1118,75 @@ async function handleComplete(args) {
   const tx = await escrow.complete(commitment.taskId);
   const receipt = await tx.wait();
 
-  commitment.status = "completed";
-  commitment.completed_at = new Date().toISOString();
-  commitment.complete_tx = receipt.hash;
-  saveCommitments(commitments);
+  const isRecurring = commitment.cadence && commitment.cadence !== "once";
 
-  return ok(
-    `Commitment completed! Money returned.\n\n` +
-    `"${commitment.title}"\n` +
-    `$${commitment.amount_usd} returned to escrow balance.\n` +
-    `Tx: ${NETWORKS[config.network].explorer}/tx/${receipt.hash}`
-  );
+  if (!isRecurring) {
+    commitment.status = "completed";
+    commitment.completed_at = new Date().toISOString();
+    commitment.complete_tx = receipt.hash;
+    saveCommitments(commitments);
+
+    return ok(
+      `Commitment completed! Money returned.\n\n` +
+      `"${commitment.title}"\n` +
+      `$${commitment.amount_usd} returned to escrow balance.\n` +
+      `Tx: ${NETWORKS[config.network].explorer}/tx/${receipt.hash}`
+    );
+  }
+
+  // Recurring: record this period, then lock the next one
+  commitment.history = commitment.history || [];
+  commitment.history.push({
+    period_date: commitment.period_date,
+    completed_at: new Date().toISOString(),
+    complete_tx: receipt.hash,
+  });
+
+  let nextDate;
+  if (commitment.cadence === "weekly") {
+    const prev = new Date(commitment.deadline_utc);
+    nextDate = new Date(prev.getFullYear(), prev.getMonth(), prev.getDate() + 7);
+  } else {
+    const prevPeriod = commitment.period_date
+      ? new Date(commitment.period_date + "T00:00:00")
+      : new Date();
+    const dayAfter = new Date(prevPeriod.getFullYear(), prevPeriod.getMonth(), prevPeriod.getDate() + 1);
+    nextDate = nextAllowedDate(dayAfter, commitment.days, commitment.vacation_dates);
+  }
+
+  try {
+    const nextTaskId = taskIdHash(args.commitment_id + `-${localIsoDate(nextDate)}`);
+    const nextDeadline = commitment.cadence === "weekly"
+      ? Math.floor(nextDate.getTime() / 1000)
+      : periodDeadline(nextDate);
+    const nextTx = await escrow.commit(nextTaskId, parseUsdc(commitment.amount_usd), nextDeadline);
+    const nextReceipt = await nextTx.wait();
+
+    commitment.taskId = nextTaskId;
+    commitment.period_date = localIsoDate(nextDate);
+    commitment.deadline_utc = new Date(nextDeadline * 1000).toISOString();
+    commitment.tx_hash = nextReceipt.hash;
+    saveCommitments(commitments);
+
+    return ok(
+      `Period completed! Money returned, next period locked.\n\n` +
+      `"${commitment.title}"\n` +
+      `$${commitment.amount_usd} returned. Next period: ${localIsoDate(nextDate)}, ` +
+      `deadline ${new Date(nextDeadline * 1000).toLocaleString()}.\n` +
+      `Complete tx: ${NETWORKS[config.network].explorer}/tx/${receipt.hash}`
+    );
+  } catch (e) {
+    // Renewal failed — money is back in the available balance, commitment paused
+    commitment.status = "renewal_failed";
+    commitment.completed_at = new Date().toISOString();
+    commitment.complete_tx = receipt.hash;
+    saveCommitments(commitments);
+    return ok(
+      `Period completed and $${commitment.amount_usd} returned, but locking the next period failed: ${e.message}\n\n` +
+      `The money is safe in the available balance. Re-create the commitment with mast_commit ` +
+      `(start_date ${localIsoDate(nextDate)}) to resume.`
+    );
+  }
 }
 
 async function handleCommitments() {
