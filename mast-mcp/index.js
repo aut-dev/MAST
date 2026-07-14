@@ -1187,7 +1187,18 @@ async function handleComplete(args) {
     const nextDeadline = commitment.cadence === "weekly"
       ? Math.floor(nextDate.getTime() / 1000)
       : periodDeadline(nextDate);
-    const nextTx = await escrow.commit(nextTaskId, parseUsdc(commitment.amount_usd), nextDeadline);
+    // Public RPC nodes lag behind the complete() tx; a fresh read can miss the
+    // just-returned balance and revert with "insufficient balance". Retry with backoff.
+    let nextTx;
+    for (let attempt = 1; ; attempt++) {
+      try {
+        nextTx = await escrow.commit(nextTaskId, parseUsdc(commitment.amount_usd), nextDeadline);
+        break;
+      } catch (e) {
+        if (attempt >= 4) throw e;
+        await new Promise((r) => setTimeout(r, attempt * 2000));
+      }
+    }
     const nextReceipt = await nextTx.wait();
 
     commitment.taskId = nextTaskId;
