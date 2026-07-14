@@ -1,0 +1,12 @@
+{
+  "name": "mast-timer",
+  "version": "1.0.0",
+  "description": "Start/stop time tracking for MAST commitments",
+  "type": "module",
+  "bin": {
+    "mast-timer": "./timer.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
