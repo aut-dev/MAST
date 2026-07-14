@@ -166,6 +166,30 @@ function periodDeadline(periodDate) {
   return Math.floor(end.getTime() / 1000);
 }
 
+// ── Time log (written by mast-timer) ──────────────────────────────
+
+const TIMELOG_FILE = path.join(MAST_DIR, "timelog.jsonl");
+
+// "Writing — 20 minutes" → { project: "writing", targetMinutes: 20 }
+function parseTimeTarget(title) {
+  const m = title.match(/^(.+?)\s*—\s*(\d+)\s*min/i);
+  return m ? { project: m[1].trim().toLowerCase(), targetMinutes: parseInt(m[2], 10) } : null;
+}
+
+// Total minutes logged for a project on a given local ISO date.
+function minutesLogged(project, isoDate) {
+  if (!fs.existsSync(TIMELOG_FILE)) return 0;
+  let total = 0;
+  for (const line of fs.readFileSync(TIMELOG_FILE, "utf-8").split("\n")) {
+    if (!line.trim()) continue;
+    const e = JSON.parse(line);
+    if (e.project !== project || e.start.slice(0, 10) !== isoDate) continue;
+    const stop = e.stop ? new Date(e.stop) : new Date();
+    total += (stop - new Date(e.start)) / 60000;
+  }
+  return total;
+}
+
 // ── MCP Server ────────────────────────────────────────────────────
 
 const server = new Server(
@@ -356,6 +380,16 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
             type: "string",
             description: "ISO date (YYYY-MM-DD) for the first period of a recurring commitment. Default: today (or the next allowed day).",
           },
+          forfeit_mode: {
+            type: "string",
+            enum: ["binary", "prorata"],
+            default: "binary",
+            description:
+              "What happens to the stake when a period falls short. 'binary' (default): all-or-nothing. " +
+              "'prorata': for recurring TIME-LOGGED commitments only (title like 'Writing — 20 minutes'), " +
+              "the earned fraction (minutes logged / target) returns and only the rest forfeits — settled " +
+              "when mast_complete is called before the deadline. One-off commitments must stay binary.",
+          },
         },
         required: ["title", "amount_usd"],
       },
@@ -365,7 +399,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       description:
         "Mark a commitment as completed and return the money to the user's balance. " +
         "USE THIS when you've verified the user actually followed through. " +
-        "Ask for evidence before completing: screenshots, links, descriptions of what they did.",
+        "Ask for evidence before completing: screenshots, links, descriptions of what they did. " +
+        "For forfeit_mode 'prorata' commitments, call this BEFORE the deadline even when the " +
+        "target wasn't fully met — it settles the period pro-rata from the time log " +
+        "(earned fraction returned, rest forfeited). Missing the deadline entirely still forfeits everything.",
       inputSchema: {
         type: "object",
         properties: {
@@ -661,6 +698,13 @@ async function handleCommit(args) {
 
   const days = args.days && args.days.length ? args.days : null;
   const vacationDates = args.vacation_dates && args.vacation_dates.length ? args.vacation_dates : null;
+  const forfeitMode = args.forfeit_mode || "binary";
+  if (forfeitMode === "prorata") {
+    if (cadence === "once") return err("forfeit_mode 'prorata' is only for recurring commitments — one-offs are all-or-nothing.");
+    if (!parseTimeTarget(args.title)) {
+      return err(`forfeit_mode 'prorata' needs a time-logged title like "Writing — 20 minutes" so minutes can be measured.`);
+    }
+  }
 
   // Calculate deadline based on cadence
   let deadline;
@@ -729,6 +773,7 @@ async function handleCommit(args) {
     message,
     days,
     vacation_dates: vacationDates,
+    forfeit_mode: forfeitMode,
     period_date: periodDate ? localIsoDate(periodDate) : null,
     deadline_utc: new Date(deadline * 1000).toISOString(),
     created_at: new Date().toISOString(),
@@ -1134,6 +1179,38 @@ function generateCommitmentPage({ id, config, profile, title, amountUsd, hours, 
   return filePath;
 }
 
+// Forfeit an amount to the contract's platformBalance — the same place expired
+// stakes go. There is no direct forfeit function, so lock the amount in a
+// synthetic commitment with an immediate deadline and expire it.
+async function forfeitToPlatform(config, escrow, idBase, amountUsd) {
+  const provider = getProvider(config);
+  const taskId = taskIdHash(idBase);
+  const latest = await provider.getBlock("latest");
+  const deadline = latest.timestamp + 8;
+
+  // Same stale-node retry as renewal: the just-completed funds may not be visible yet.
+  let tx;
+  for (let attempt = 1; ; attempt++) {
+    try {
+      tx = await escrow.commit(taskId, parseUsdc(amountUsd), deadline);
+      break;
+    } catch (e) {
+      if (attempt >= 4) throw e;
+      await new Promise((r) => setTimeout(r, attempt * 2000));
+    }
+  }
+  await tx.wait();
+
+  for (let i = 0; i < 30; i++) {
+    const b = await provider.getBlock("latest");
+    if (b.timestamp > deadline) break;
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+  const ex = await escrow.expire(taskId);
+  const exReceipt = await ex.wait();
+  return exReceipt.hash;
+}
+
 async function handleComplete(args) {
   const config = requireConfig();
   const escrow = getEscrow(config);
@@ -1162,12 +1239,39 @@ async function handleComplete(args) {
     );
   }
 
+  // Pro-rata settlement: complete() returned the full stake; forfeit the
+  // unearned fraction (by minutes logged vs target) to the platform balance.
+  let prorata = null;
+  if (commitment.forfeit_mode === "prorata") {
+    const t = parseTimeTarget(commitment.title);
+    if (t) {
+      const mins = minutesLogged(t.project, commitment.period_date);
+      if (mins < t.targetMinutes) {
+        const fraction = Math.max(0, Math.min(1, mins / t.targetMinutes));
+        const unearned = Math.round(commitment.amount_usd * (1 - fraction) * 100) / 100;
+        if (unearned >= 0.01) {
+          const forfeitTx = await forfeitToPlatform(
+            config, escrow, args.commitment_id + `-forfeit-${commitment.period_date}`, unearned
+          );
+          prorata = {
+            minutes: Math.round(mins * 10) / 10,
+            target: t.targetMinutes,
+            earned: Math.round((commitment.amount_usd - unearned) * 100) / 100,
+            forfeited: unearned,
+            forfeit_tx: forfeitTx,
+          };
+        }
+      }
+    }
+  }
+
   // Recurring: record this period, then lock the next one
   commitment.history = commitment.history || [];
   commitment.history.push({
     period_date: commitment.period_date,
     completed_at: new Date().toISOString(),
     complete_tx: receipt.hash,
+    ...(prorata ? { prorata } : {}),
   });
 
   let nextDate;
@@ -1207,10 +1311,17 @@ async function handleComplete(args) {
     commitment.tx_hash = nextReceipt.hash;
     saveCommitments(commitments);
 
+    const settlementLine = prorata
+      ? `Pro-rata settlement: ${prorata.minutes}/${prorata.target} min logged — ` +
+        `$${prorata.earned} returned, $${prorata.forfeited} forfeited ` +
+        `(${NETWORKS[config.network].explorer}/tx/${prorata.forfeit_tx})\n`
+      : `$${commitment.amount_usd} returned. `;
+
     return ok(
-      `Period completed! Money returned, next period locked.\n\n` +
+      `Period ${prorata ? "settled" : "completed!"} Next period locked.\n\n` +
       `"${commitment.title}"\n` +
-      `$${commitment.amount_usd} returned. Next period: ${localIsoDate(nextDate)}, ` +
+      settlementLine +
+      `Next period: ${localIsoDate(nextDate)}, ` +
       `deadline ${new Date(nextDeadline * 1000).toLocaleString()}.\n` +
       `Complete tx: ${NETWORKS[config.network].explorer}/tx/${receipt.hash}`
     );
