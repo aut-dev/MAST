@@ -735,25 +735,7 @@ async function handleCommit(args) {
   const taskId = taskIdHash(id + periodSuffix);
 
   // Check escrow balance — auto-deposit from wallet if needed
-  const usdc = getUsdc(config);
-  let [available] = await escrow.getUserInfo(config.address);
-
-  if (available < amount) {
-    // Check if wallet has USDC to auto-deposit
-    const walletBal = await usdc.balanceOf(config.address);
-    if (walletBal > 0n) {
-      const depositAmount = walletBal < (amount - available) ? walletBal : (amount - available);
-      const allowance = await usdc.allowance(config.address, config.escrowContract);
-      if (allowance < depositAmount) {
-        const approveTx = await usdc.approve(config.escrowContract, depositAmount);
-        await approveTx.wait();
-      }
-      const depositTx = await escrow.deposit(depositAmount);
-      await depositTx.wait();
-      [available] = await escrow.getUserInfo(config.address);
-    }
-  }
-
+  const available = await ensureAvailable(config, escrow, amount);
   const needsFunding = available < amount;
 
   // Generate the commitment page
@@ -1179,6 +1161,28 @@ function generateCommitmentPage({ id, config, profile, title, amountUsd, hours, 
   return filePath;
 }
 
+// Ensure `amount` (raw USDC units) is available in escrow, auto-depositing
+// from the wallet if needed. Returns the resulting available balance.
+async function ensureAvailable(config, escrow, amount) {
+  let [available] = await escrow.getUserInfo(config.address);
+  if (available >= amount) return available;
+
+  const usdc = getUsdc(config);
+  const walletBal = await usdc.balanceOf(config.address);
+  if (walletBal > 0n) {
+    const depositAmount = walletBal < (amount - available) ? walletBal : (amount - available);
+    const allowance = await usdc.allowance(config.address, config.escrowContract);
+    if (allowance < depositAmount) {
+      const approveTx = await usdc.approve(config.escrowContract, depositAmount);
+      await approveTx.wait();
+    }
+    const depositTx = await escrow.deposit(depositAmount);
+    await depositTx.wait();
+    [available] = await escrow.getUserInfo(config.address);
+  }
+  return available;
+}
+
 // Forfeit an amount to the contract's platformBalance — the same place expired
 // stakes go. There is no direct forfeit function, so lock the amount in a
 // synthetic commitment with an immediate deadline and expire it.
@@ -1291,6 +1295,10 @@ async function handleComplete(args) {
     const nextDeadline = commitment.cadence === "weekly"
       ? Math.floor(nextDate.getTime() / 1000)
       : periodDeadline(nextDate);
+    // Pro-rata forfeits can leave escrow short of the next period's stake —
+    // top up from the wallet like a fresh commit does.
+    await ensureAvailable(config, escrow, parseUsdc(commitment.amount_usd));
+
     // Public RPC nodes lag behind the complete() tx; a fresh read can miss the
     // just-returned balance and revert with "insufficient balance". Retry with backoff.
     let nextTx;
