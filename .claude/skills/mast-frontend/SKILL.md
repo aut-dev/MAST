@@ -10,8 +10,13 @@ Start the dashboard server (if not already running) and open it:
    ```bash
    node /Users/gaga/MAST/mast-mcp/server.js 7777
    ```
-3. Open it in the browser: `open http://localhost:7777` (on the local machine)
-4. Tell the user the URL, the secret token (from `~/.mast/frontend-token`), and that the page live-updates every 5 seconds (running timers pulse ▶, completed targets get ✓).
+3. Get the actual local network IP: `ifconfig | grep "inet " | grep -v 127.0.0.1 | head -1 | awk '{print $2}'`
+4. Get the token: `cat ~/.mast/frontend-token`
+5. Open it in the browser: `open "http://localhost:7777/?token=$(cat ~/.mast/frontend-token)"`
+6. Tell the user:
+   - The **local URL** for this machine
+   - The **public/pod URL** (IP + token) they can share with accountability partners
+   - That the page live-updates every 5 seconds (running timers pulse ▶, completed targets get ✓)
 
 **Public access:** The server binds to 0.0.0.0 by default, meaning any computer can reach it at `http://<your-machine-ip>:7777?token=<secret>`. The token is persistent and auto-generated on first run; regenerate with `node /Users/gaga/MAST/mast-mcp/server.js --new-token`. Pass `--local-only` to bind 127.0.0.1 instead (bypasses token check from localhost only).
 
