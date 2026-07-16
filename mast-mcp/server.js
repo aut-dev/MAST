@@ -1,18 +1,40 @@
 #!/usr/bin/env node
 // MAST dashboard — serves a live, profile-styled view of today's
 // commitments, the timelog, and balances. Read-only; never exposes
-// the private key. Default: http://localhost:7777
+// the private key. Binds to 0.0.0.0 by default (public), requires
+// secret token in URL (?token=...) or Authorization header.
 //
-// Usage: node server.js [port]
+// Usage: node server.js [port] [--local-only]
+// ENV: MAST_PUBLIC_PORT, MAST_TOKEN (generates random if not set)
 
 import fs from "fs";
 import os from "os";
 import path from "path";
 import http from "http";
+import crypto from "crypto";
+import url from "url";
 import { ethers } from "ethers";
 
 const MAST_DIR = path.join(os.homedir(), ".mast");
-const PORT = parseInt(process.argv[2] || process.env.MAST_PORT || "7777", 10);
+const TOKEN_FILE = path.join(MAST_DIR, "frontend-token");
+const PORT = parseInt(process.env.MAST_PUBLIC_PORT || process.argv[2] || "7777", 10);
+const LOCAL_ONLY = process.argv.includes("--local-only");
+
+// Token management: persist across restarts, regenerate with --new-token
+function getOrCreateToken() {
+  if (process.argv.includes("--new-token")) {
+    const token = crypto.randomBytes(24).toString("hex");
+    fs.writeFileSync(TOKEN_FILE, token);
+    console.log(`Generated new token: ${token}`);
+    return token;
+  }
+  if (fs.existsSync(TOKEN_FILE)) return fs.readFileSync(TOKEN_FILE, "utf-8").trim();
+  const token = crypto.randomBytes(24).toString("hex");
+  fs.writeFileSync(TOKEN_FILE, token);
+  return token;
+}
+
+const TOKEN = process.env.MAST_TOKEN || getOrCreateToken();
 
 const config = JSON.parse(fs.readFileSync(path.join(MAST_DIR, "config.json"), "utf-8"));
 const provider = new ethers.JsonRpcProvider(config.rpc || "https://base-rpc.publicnode.com");
@@ -163,9 +185,27 @@ refresh(); setInterval(refresh, 5000);
 </body></html>`;
 };
 
+function checkToken(req) {
+  const u = new url.URL(req.url, `http://${req.headers.host}`);
+  const tokenParam = u.searchParams.get("token");
+  const authHeader = req.headers.authorization?.split(" ")[1];
+  const provided = tokenParam || authHeader;
+  return provided === TOKEN;
+}
+
 http.createServer(async (req, res) => {
   try {
-    if (req.url === "/api/state") {
+    // All routes require token unless --local-only and on loopback
+    const fromLoopback = req.socket.remoteAddress === "127.0.0.1" || req.socket.remoteAddress === "::1";
+    if (!LOCAL_ONLY || !fromLoopback) {
+      if (!checkToken(req)) {
+        res.writeHead(401, { "Content-Type": "text/plain" });
+        res.end("Unauthorized: missing or invalid token");
+        return;
+      }
+    }
+
+    if (req.url.startsWith("/api/state")) {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(await state()));
     } else {
@@ -176,6 +216,13 @@ http.createServer(async (req, res) => {
     res.writeHead(500, { "Content-Type": "text/plain" });
     res.end(String(e.message));
   }
-}).listen(PORT, "127.0.0.1", () => {
-  console.log(`MAST dashboard: http://localhost:${PORT}`);
+}).listen(PORT, LOCAL_ONLY ? "127.0.0.1" : "0.0.0.0", () => {
+  const bind = LOCAL_ONLY ? "127.0.0.1" : "0.0.0.0";
+  const url_local = `http://localhost:${PORT}`;
+  const url_public = `http://<your-ip>:${PORT}?token=${TOKEN}`;
+  console.log(`MAST dashboard:`);
+  console.log(`  Local:  ${url_local}`);
+  console.log(`  Public: ${url_public}`);
+  console.log(`  Token:  ${TOKEN}`);
+  console.log(`  Binding to: ${bind}:${PORT}`);
 });
