@@ -92,17 +92,32 @@ async function state() {
   const profile = readJson("profile.json", {});
   const today = todayIso();
   const items = [];
+  const settlements = [];
   let returned = 0, forfeited = 0, periods = 0;
 
   for (const c of Object.values(commitments)) {
+    let settledToday = false;
     for (const h of c.history || []) {
       periods += 1;
-      if (h.prorata) { returned += h.prorata.earned; forfeited += h.prorata.forfeited; }
-      else returned += c.amount_usd;
+      const earned = h.prorata ? h.prorata.earned : c.amount_usd;
+      const lost = h.prorata ? h.prorata.forfeited : 0;
+      returned += earned;
+      forfeited += lost;
+      if (h.period_date === today) settledToday = true;
+      settlements.push({
+        title: c.title,
+        date: h.period_date,
+        earned,
+        forfeited: lost,
+        minutes: h.prorata ? h.prorata.minutes : null,
+        target: h.prorata ? h.prorata.target : null,
+      });
     }
     if (c.status !== "active") continue;
     const t = parseTimeTarget(c.title);
-    const log = t && c.period_date === today ? minutesLogged(t.project, today) : { mins: 0, running: false };
+    // Always show today's logged minutes — a settled commitment's period has
+    // already rolled to tomorrow, but the user cares about today's work.
+    const log = t ? minutesLogged(t.project, today) : { mins: 0, running: false };
     items.push({
       title: c.title,
       amount: c.amount_usd,
@@ -112,11 +127,18 @@ async function state() {
       target: t ? t.targetMinutes : null,
       minutes: Math.round(log.mins * 10) / 10,
       running: log.running,
-      done: t ? log.mins >= t.targetMinutes : false,
+      done: settledToday || (t ? log.mins >= t.targetMinutes : false),
     });
   }
   items.sort((a, b) => (b.target || 0) - (a.target || 0));
-  return { profile, today, items, lifetime: { periods, returned, forfeited }, balances: await balances() };
+  settlements.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  const targetsMet = items.filter((i) => i.done).length;
+  return {
+    profile, today, items, targetsMet,
+    settlements: settlements.slice(0, 15),
+    lifetime: { periods, returned, forfeited },
+    balances: await balances(),
+  };
 }
 
 const HTML = () => {
@@ -147,25 +169,42 @@ const HTML = () => {
   .running .t::after { content:" ▶"; color:${primary}; animation:pulse 1.5s infinite; }
   @keyframes pulse { 50% { opacity:.3; } }
   .lifetime { margin-top:2rem; font-size:.85rem; opacity:.6; }
+  .headline { font-size:.9rem; margin-bottom:1rem; color:${primary}; letter-spacing:.05em; }
+  h2 { font-size:.75rem; text-transform:uppercase; letter-spacing:.2em; opacity:.4; margin:2rem 0 .8rem; }
+  .settle { display:flex; justify-content:space-between; font-size:.8rem; padding:.45rem .2rem; border-bottom:1px solid ${primary}10; }
+  .settle .earn { color:${primary}; }
+  .settle .lost { color:#f87171; margin-left:.8rem; }
+  .settle .meta { opacity:.45; }
   .mantra { margin-top:3rem; text-align:center; font-style:italic; letter-spacing:.2em; opacity:.35; font-size:.85rem; }
 </style></head>
 <body>
   <h1>MAST</h1>
   <div class="date" id="date"></div>
+  <div class="headline" id="headline"></div>
   <div class="balances" id="balances"></div>
   <div id="items"></div>
+  <h2>Settlement history</h2>
+  <div id="settlements"></div>
   <div class="lifetime" id="lifetime"></div>
   <div class="mantra">${p.personalMantra || ""}</div>
 <script>
 async function refresh() {
   const s = await (await fetch("/api/state")).json();
   document.getElementById("date").textContent = s.today + " — " + new Date().toLocaleTimeString();
+  document.getElementById("headline").textContent = s.targetsMet + "/" + s.items.length + " targets met today";
   const b = s.balances;
   document.getElementById("balances").innerHTML = [
     ["$" + b.locked.toFixed(2), "locked today"],
-    ["$" + (b.wallet + b.escrowAvailable).toFixed(2), "available"],
-    ["$" + s.lifetime.forfeited.toFixed(2), "forfeited (lifetime)"],
+    ["$" + b.wallet.toFixed(2), "wallet"],
+    ["$" + b.escrowAvailable.toFixed(2), "escrow free"],
+    ["$" + b.platform.toFixed(2), "forfeited (all-time)"],
   ].map(([v,l]) => '<div class="bal"><div class="v">'+v+'</div><div class="l">'+l+'</div></div>').join("");
+  document.getElementById("settlements").innerHTML = s.settlements.map(x =>
+    '<div class="settle"><span>'+x.date+' · '+x.title+
+    (x.minutes !== null ? ' <span class="meta">('+x.minutes+'/'+x.target+'m)</span>' : '')+
+    '</span><span><span class="earn">+$'+x.earned.toFixed(2)+'</span>'+
+    (x.forfeited ? '<span class="lost">−$'+x.forfeited.toFixed(2)+'</span>' : '')+
+    '</span></div>').join("") || '<div class="settle meta">nothing settled yet</div>';
   document.getElementById("items").innerHTML = s.items.map(i => {
     const pct = i.target ? Math.min(100, i.minutes / i.target * 100) : 0;
     const cls = i.done ? "done" : i.running ? "running" : "";
