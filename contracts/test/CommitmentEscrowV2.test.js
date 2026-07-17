@@ -1,0 +1,144 @@
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+const { time } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
+
+const usdc = (n) => ethers.parseUnits(String(n), 6);
+const id = (s) => ethers.keccak256(ethers.toUtf8Bytes(s));
+const WEEK = 7 * 24 * 3600;
+
+describe("CommitmentEscrowV2", () => {
+  let token, escrow, owner, a, b, c, outsider;
+
+  beforeEach(async () => {
+    [owner, a, b, c, outsider] = await ethers.getSigners();
+    token = await (await ethers.getContractFactory("MockUSDC")).deploy();
+    escrow = await (await ethers.getContractFactory("CommitmentEscrowV2")).deploy(token.target);
+    for (const u of [a, b, c]) {
+      await token.mint(u.address, usdc(1000));
+      await token.connect(u).approve(escrow.target, usdc(1000));
+      await escrow.connect(u).deposit(usdc(100));
+    }
+  });
+
+  describe("solo forfeit plans", () => {
+    it("routes forfeits per weighted plan, remainder to last entry", async () => {
+      const burn = await escrow.BURN_ADDRESS();
+      // 50% burn, 30% to outsider (a "charity"), 20% back to self
+      await escrow.connect(a).setForfeitPlan(
+        [burn, outsider.address, a.address],
+        [5000, 3000, 2000]
+      );
+      await escrow.connect(a).commit(id("t1"), usdc(10), (await time.latest()) + 100);
+      await time.increase(200);
+      await escrow.connect(b).expire(id("t1"));
+
+      expect(await token.balanceOf(burn)).to.equal(usdc(5));
+      expect(await token.balanceOf(outsider.address)).to.equal(usdc(3));
+      expect(await token.balanceOf(a.address)).to.equal(usdc(900 + 2));
+      expect(await escrow.platformBalance()).to.equal(0);
+    });
+
+    it("rejects plans not summing to 10000", async () => {
+      await expect(
+        escrow.connect(a).setForfeitPlan([a.address], [9999])
+      ).to.be.revertedWith("weights must sum to 10000");
+    });
+
+    it("defaults to platform with no plan", async () => {
+      await escrow.connect(a).commit(id("t2"), usdc(10), (await time.latest()) + 100);
+      await time.increase(200);
+      await escrow.connect(b).expire(id("t2"));
+      expect(await escrow.platformBalance()).to.equal(usdc(10));
+    });
+  });
+
+  describe("pod mode: parimutuel split", () => {
+    const POD = id("pod1");
+
+    beforeEach(async () => {
+      const weekZero = await time.latest();
+      await escrow.connect(a).createPod(
+        POD, [a.address, b.address, c.address], usdc(0.2) / 60n || 3333n, 300, weekZero
+      );
+    });
+
+    it("expired pod stakes pool by week; majority split vote pays completers by stake", async () => {
+      const deadline = (await time.latest()) + 3600; // inside week 0
+      // A stakes $48 (4h), B stakes $12 (1h): both "complete".
+      // C stakes $24 (2h) and misses -> $24 pool.
+      await escrow.connect(a).commitPod(POD, id("pa"), usdc(48), deadline);
+      await escrow.connect(b).commitPod(POD, id("pb"), usdc(12), deadline);
+      await escrow.connect(c).commitPod(POD, id("pc"), usdc(24), deadline);
+      await escrow.connect(a).complete(id("pa"));
+      await escrow.connect(b).complete(id("pb"));
+      await time.increase(2 * 3600);
+      await escrow.connect(outsider).expire(id("pc"));
+      expect(await escrow.podPool(POD, 0)).to.equal(usdc(24));
+
+      // Week 0 over: agents compute completers-split-by-stake:
+      // A: 48/60 = 8000 bps, B: 12/60 = 2000 bps, C: 0.
+      await time.increase(WEEK);
+      const shares = [8000, 2000, 0];
+      await escrow.connect(a).voteWeekSplit(POD, 0, shares);
+      await escrow.connect(b).voteWeekSplit(POD, 0, shares);
+      await escrow.connect(c).voteWeekSplit(POD, 0, shares);
+      await escrow.connect(outsider).resolveWeek(POD, 0);
+
+      const [aBal] = await escrow.getUserInfo(a.address);
+      const [bBal] = await escrow.getUserInfo(b.address);
+      const [cBal] = await escrow.getUserInfo(c.address);
+      expect(aBal).to.equal(usdc(100 + 19.2)); // 24 * 0.8
+      expect(bBal).to.equal(usdc(100 + 4.8));  // 24 * 0.2
+      expect(cBal).to.equal(usdc(100 - 24));
+      expect(await escrow.podPool(POD, 0)).to.equal(0);
+    });
+
+    it("no majority on mismatched splits; refund failsafe returns pool to contributors", async () => {
+      const deadline = (await time.latest()) + 3600;
+      await escrow.connect(c).commitPod(POD, id("pc2"), usdc(24), deadline);
+      await time.increase(2 * 3600);
+      await escrow.connect(outsider).expire(id("pc2"));
+
+      await time.increase(WEEK);
+      // Agents disagree (anomaly): no two vectors match.
+      await escrow.connect(a).voteWeekSplit(POD, 0, [8000, 2000, 0]);
+      await escrow.connect(b).voteWeekSplit(POD, 0, [5000, 5000, 0]);
+      await escrow.connect(c).voteWeek(POD, 0, 4, ethers.ZeroAddress); // Recall
+      await expect(escrow.resolveWeek(POD, 0)).to.be.revertedWith("no majority");
+
+      // Past refund deadline anyone can trigger the failsafe.
+      await time.increase(8 * 24 * 3600);
+      await escrow.connect(outsider).refundWeek(POD, 0);
+      const [cBal] = await escrow.getUserInfo(c.address);
+      expect(cBal).to.equal(usdc(100)); // made whole
+    });
+
+    it("majority anomaly vote can roll the pool into next week", async () => {
+      const deadline = (await time.latest()) + 3600;
+      await escrow.connect(a).commitPod(POD, id("pa3"), usdc(10), deadline);
+      await time.increase(2 * 3600);
+      await escrow.connect(outsider).expire(id("pa3"));
+
+      await time.increase(WEEK);
+      await escrow.connect(a).voteWeek(POD, 0, 7, ethers.ZeroAddress); // Rollover
+      await escrow.connect(b).voteWeek(POD, 0, 7, ethers.ZeroAddress);
+      await escrow.connect(c).voteWeek(POD, 0, 7, ethers.ZeroAddress);
+      await escrow.connect(outsider).resolveWeek(POD, 0);
+      expect(await escrow.podPool(POD, 0)).to.equal(0);
+      expect(await escrow.podPool(POD, 1)).to.equal(usdc(10));
+    });
+
+    it("non-members cannot commit, log, or vote", async () => {
+      await expect(
+        escrow.connect(outsider).commitPod(POD, id("px"), usdc(1), (await time.latest()) + 100)
+      ).to.be.revertedWith("not a member");
+      await expect(
+        escrow.connect(outsider).logProgress(POD, 13, 5000, 45)
+      ).to.be.revertedWith("not a member");
+      await time.increase(WEEK + 10);
+      await expect(
+        escrow.connect(outsider).voteWeekSplit(POD, 0, [10000, 0, 0])
+      ).to.be.revertedWith("not a member");
+    });
+  });
+});

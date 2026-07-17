@@ -23,8 +23,10 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  *         IDs plus percent progress (names stay off-chain). Stakes
  *         that expire during a week accumulate in that week's pool.
  *         After the week ends, members vote on the outcome — in the
- *         normal case everyone's agent reads the chain, computes the
- *         winner, and votes for them; the pool pays out on majority.
+ *         normal case every agent reads the chain, computes the same
+ *         parimutuel split (members who hit their own weekly target
+ *         share the pool pro-rata by the stake they had at risk), and
+ *         votes for that share vector; it executes on majority.
  *         On anomalies (e.g. a timer left running) members can vote
  *         instead to send the pool to charity, an anticharity, burn
  *         it, recall it to contributors, or award any member. If no
@@ -83,7 +85,7 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         bool exists;
     }
 
-    enum ResolutionKind { None, Winner, Charity, Anticharity, Recall, Burn }
+    enum ResolutionKind { None, Winner, Charity, Anticharity, Recall, Burn, Split, Rollover }
 
     struct Vote {
         ResolutionKind kind;
@@ -97,6 +99,10 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
     mapping(bytes32 => mapping(uint256 => uint256)) public podPool; // podId => week => forfeited pool
     mapping(bytes32 => mapping(uint256 => mapping(address => uint256))) public podContrib;
     mapping(bytes32 => mapping(uint256 => mapping(address => Vote))) private podVotes;
+    // Split votes carry a share vector (aligned to pod.members, bps summing
+    // to 10000); the hash is what majority-matching compares.
+    mapping(bytes32 => mapping(uint256 => mapping(address => uint16[]))) private splitVotes;
+    mapping(bytes32 => mapping(uint256 => mapping(address => bytes32))) private splitHash;
     mapping(bytes32 => mapping(uint256 => bool)) public weekResolved;
 
     // ── Events ────────────────────────────────────────────────
@@ -292,16 +298,16 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         return p.weekZero + (week + 1) * WEEK;
     }
 
-    /// @notice Vote on what happens to a finished week's pool. In the
-    ///         normal case every member's agent computes the winner from
-    ///         ProgressLogged events and votes Winner for them. On
-    ///         anomalies, vote Charity/Anticharity/Burn/Recall/Winner as
-    ///         the pod decides. Re-voting is allowed until resolution.
+    /// @notice Vote on what happens to a finished week's pool. On
+    ///         anomalies, vote Charity/Anticharity/Burn/Recall/Rollover/
+    ///         Winner as the pod decides. The normal parimutuel path is
+    ///         voteWeekSplit. Re-voting is allowed until resolution.
     function voteWeek(bytes32 podId, uint256 week, ResolutionKind kind, address target) external {
         require(isPodMember[podId][msg.sender], "not a member");
         require(block.timestamp > weekEnd(podId, week), "week not over");
         require(!weekResolved[podId][week], "already resolved");
         require(kind != ResolutionKind.None, "invalid kind");
+        require(kind != ResolutionKind.Split, "use voteWeekSplit");
         if (kind == ResolutionKind.Winner) {
             require(isPodMember[podId][target], "winner not a member");
         } else if (kind == ResolutionKind.Charity || kind == ResolutionKind.Anticharity) {
@@ -310,7 +316,32 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
             require(target == address(0), "target must be zero");
         }
         podVotes[podId][week][msg.sender] = Vote(kind, target, true);
+        delete splitVotes[podId][week][msg.sender];
+        delete splitHash[podId][week][msg.sender];
         emit VoteCast(podId, week, msg.sender, kind, target);
+    }
+
+    /// @notice The normal weekly path: parimutuel settlement. Every agent
+    ///         computes the same share vector from on-chain data — members
+    ///         who hit their own weekly target split the pool pro-rata by
+    ///         the stake they had at risk (completers split the forfeits,
+    ///         weighted by stake) — and votes for it. Shares align with the
+    ///         pod's member order and must sum to 10000 bps. Honest agents
+    ///         reading the same chain produce identical vectors, so
+    ///         majority agreement is the natural outcome.
+    function voteWeekSplit(bytes32 podId, uint256 week, uint16[] calldata sharesBps) external {
+        require(isPodMember[podId][msg.sender], "not a member");
+        require(block.timestamp > weekEnd(podId, week), "week not over");
+        require(!weekResolved[podId][week], "already resolved");
+        Pod storage p = pods[podId];
+        require(sharesBps.length == p.members.length, "shares/members mismatch");
+        uint256 sum;
+        for (uint256 i = 0; i < sharesBps.length; i++) sum += sharesBps[i];
+        require(sum == BPS, "shares must sum to 10000");
+        podVotes[podId][week][msg.sender] = Vote(ResolutionKind.Split, address(0), true);
+        splitVotes[podId][week][msg.sender] = sharesBps;
+        splitHash[podId][week][msg.sender] = keccak256(abi.encodePacked(sharesBps));
+        emit VoteCast(podId, week, msg.sender, ResolutionKind.Split, address(0));
     }
 
     /// @notice Execute the majority resolution. Callable by anyone once a
@@ -330,20 +361,26 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         }
         require(castCount == n || block.timestamp > end + VOTE_GRACE, "waiting for votes");
 
-        // Find an option with a strict majority of all members.
+        // Find an option with a strict majority of all members. Split votes
+        // match only if their share vectors are identical (compared by hash).
         ResolutionKind winKind = ResolutionKind.None;
         address winTarget;
+        address winVoter;
         for (uint256 i = 0; i < n; i++) {
             Vote storage v = podVotes[podId][week][p.members[i]];
             if (!v.cast) continue;
+            bytes32 vHash = splitHash[podId][week][p.members[i]];
             uint256 count;
             for (uint256 j = 0; j < n; j++) {
                 Vote storage w = podVotes[podId][week][p.members[j]];
-                if (w.cast && w.kind == v.kind && w.target == v.target) count++;
+                if (!w.cast || w.kind != v.kind || w.target != v.target) continue;
+                if (v.kind == ResolutionKind.Split && splitHash[podId][week][p.members[j]] != vHash) continue;
+                count++;
             }
             if (count * 2 > n) {
                 winKind = v.kind;
                 winTarget = v.target;
+                winVoter = p.members[i];
                 break;
             }
         }
@@ -354,10 +391,14 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         podPool[podId][week] = 0;
 
         if (pool > 0) {
-            if (winKind == ResolutionKind.Winner) {
+            if (winKind == ResolutionKind.Split) {
+                _distributeSplit(p, splitVotes[podId][week][winVoter], pool);
+            } else if (winKind == ResolutionKind.Winner) {
                 balances[winTarget] += pool;
             } else if (winKind == ResolutionKind.Recall) {
                 _refundContributors(podId, week, pool);
+            } else if (winKind == ResolutionKind.Rollover) {
+                podPool[podId][week + 1] += pool;
             } else if (winKind == ResolutionKind.Burn) {
                 usdc.safeTransfer(BURN_ADDRESS, pool);
             } else {
@@ -365,6 +406,21 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
             }
         }
         emit WeekResolved(podId, week, winKind, winTarget, pool);
+    }
+
+    function _distributeSplit(Pod storage p, uint16[] storage sharesBps, uint256 pool) internal {
+        uint256 distributed;
+        uint256 lastNonzero;
+        for (uint256 i = 0; i < sharesBps.length; i++) {
+            if (sharesBps[i] > 0) lastNonzero = i;
+        }
+        for (uint256 i = 0; i < sharesBps.length; i++) {
+            if (sharesBps[i] == 0) continue;
+            // Last nonzero share takes the rounding remainder.
+            uint256 amount = i == lastNonzero ? pool - distributed : (pool * sharesBps[i]) / BPS;
+            distributed += amount;
+            balances[p.members[i]] += amount;
+        }
     }
 
     /// @notice Failsafe: if voting never produced a majority, anyone can
@@ -431,5 +487,9 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
     ) {
         Vote memory v = podVotes[podId][week][member];
         return (v.kind, v.target, v.cast);
+    }
+
+    function getSplitVote(bytes32 podId, uint256 week, address member) external view returns (uint16[] memory) {
+        return splitVotes[podId][week][member];
     }
 }

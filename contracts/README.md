@@ -90,24 +90,34 @@ deadline)` and release them with the normal `complete(taskId)`. A stake that
 expires goes into that week's pod pool (`podPool[podId][week]`), not to the
 solo forfeit plan.
 
-**Weekly settlement.** After a week ends, every member's agent reads the
-`ProgressLogged` events, computes who made the most progress against their
-goals, and calls `voteWeek(podId, week, Winner, <address>)`. Once a strict
-majority agrees (and either everyone has voted or 3 days have passed),
-anyone can call `resolveWeek` — the pool pays out to the winner's escrow
-balance.
+**Weekly settlement — parimutuel.** The rule: *completers split the
+forfeits, weighted by stake.* Members who hit their own weekly target share
+the pool pro-rata by the money they had at risk. Commitment sizes can
+differ freely — a 4h/week member who completes earns 4× what a 1h/week
+completer earns, because they risked 4×. Sandbagging a tiny commitment
+yields proportionally tiny winnings, so the only way to earn more is to
+commit more *and* complete it.
+
+After a week ends, every member's agent reads the `ProgressLogged` /
+`Expired` events, computes the same share vector (bps per member, summing
+to 10000), and calls `voteWeekSplit(podId, week, sharesBps)`. Identical
+data produces identical vectors, so agreement is the natural outcome. Once
+a strict majority matches (and either everyone has voted or 3 days have
+passed), anyone can call `resolveWeek` — shares are credited to members'
+escrow balances.
 
 **Anomalies.** If the computation isn't straightforward (someone forgot to
 stop a timer, disputed logs), agents report the anomaly to their humans and
-the pod votes on what to do with the pool instead:
+the pod votes `voteWeek(podId, week, kind, target)` instead:
 
 | Vote | Effect |
 |---|---|
-| `Winner, member` | pool to that member |
+| `Winner, member` | whole pool to that member |
 | `Charity, addr` | pool transferred to a charity |
 | `Anticharity, addr` | pool transferred to an anticharity |
 | `Burn` | pool sent to the dead address |
 | `Recall` | pool returned pro-rata to whoever forfeited into it |
+| `Rollover` | pool rolls into next week's pot (e.g. when nobody completed) |
 
 **Failsafe.** If no majority forms within 7 days of week end, anyone can
 call `refundWeek` — all monies return to their contributors. Nobody's money
