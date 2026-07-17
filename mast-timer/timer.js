@@ -37,10 +37,18 @@ function tsNow() {
   );
 }
 
-// "--at 19:40" or "--at 7:40pm" → ISO timestamp today
-function tsAt(spec) {
+function tsFromDate(d) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}${tsNow().slice(-5)}`;
+}
+
+// "--at 19:40" or "--at 7:40pm" → ISO timestamp, LOCAL time. A future
+// time resolves to yesterday; anything more than 12h in the past is
+// refused unless --force, because it is usually a timezone mistake
+// (e.g. an agent passing UTC). Prefer --ago, which cannot go wrong.
+function tsAt(spec, force) {
   const m = spec.trim().toLowerCase().match(/^(\d{1,2}):(\d{2})\s*(am|pm)?$/);
-  if (!m) die(`Cannot parse time "${spec}" — use HH:MM or H:MMam/pm`);
+  if (!m) die(`Cannot parse time "${spec}" — use HH:MM or H:MMam/pm (LOCAL time), or --ago <minutes>`);
   let h = parseInt(m[1], 10);
   const min = parseInt(m[2], 10);
   if (m[3] === "pm" && h < 12) h += 12;
@@ -48,9 +56,26 @@ function tsAt(spec) {
   const d = new Date();
   d.setHours(h, min, 0, 0);
   if (d > new Date()) d.setDate(d.getDate() - 1); // a future time means yesterday's
-  const iso = tsNow();
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(h)}:${pad(min)}:00${iso.slice(-5)}`;
+  const hoursAgo = (new Date() - d) / 3600000;
+  if (hoursAgo > 12 && !force) {
+    die(
+      `--at ${spec} resolves to ${tsFromDate(d)} — ${hoursAgo.toFixed(1)}h ago.\n` +
+      `That is usually a timezone mistake (--at is LOCAL time, now ${tsNow().slice(11, 16)}).\n` +
+      `Use --ago <minutes> for relative backdating, or add --force if you really mean it.`
+    );
+  }
+  return tsFromDate(d);
+}
+
+// "--ago 5" / "--ago 5m" / "--ago 1.5h" → ISO timestamp that long ago.
+// Relative, so timezones cannot bite.
+function tsAgo(spec) {
+  const m = spec.trim().toLowerCase().match(/^(\d+(?:\.\d+)?)\s*(m|min|mins|h|hr|hrs)?$/);
+  if (!m) die(`Cannot parse duration "${spec}" — use e.g. --ago 5, --ago 45m, --ago 1.5h`);
+  const n = parseFloat(m[1]);
+  const minutes = (m[2] || "m").startsWith("h") ? n * 60 : n;
+  if (minutes > 12 * 60) die(`--ago ${spec} is more than 12 hours — refusing; edit ${LOG_FILE} by hand if you really mean it.`);
+  return tsFromDate(new Date(Date.now() - minutes * 60000));
 }
 
 function minutesBetween(a, b) {
@@ -88,9 +113,18 @@ function openEntry(entries, project) {
 }
 
 const [cmd, ...rest] = process.argv.slice(2);
+const force = rest.includes("--force");
 const atIdx = rest.indexOf("--at");
-const at = atIdx >= 0 ? tsAt(rest[atIdx + 1] || "") : null;
-const project = (atIdx >= 0 ? rest.filter((_, i) => i !== atIdx && i !== atIdx + 1) : rest).join(" ").trim().toLowerCase();
+const agoIdx = rest.indexOf("--ago");
+if (atIdx >= 0 && agoIdx >= 0) die("Use --at or --ago, not both.");
+const at = atIdx >= 0 ? tsAt(rest[atIdx + 1] || "", force)
+  : agoIdx >= 0 ? tsAgo(rest[agoIdx + 1] || "")
+  : null;
+const flagIdx = Math.max(atIdx, agoIdx);
+const project = rest
+  .filter((_, i) => flagIdx < 0 || (i !== flagIdx && i !== flagIdx + 1))
+  .filter((a) => a !== "--force")
+  .join(" ").trim().toLowerCase();
 
 const entries = loadEntries();
 
@@ -99,9 +133,11 @@ switch (cmd) {
     if (!project) die("Usage: timer start <project> [--at HH:MM]");
     const open = openEntry(entries, project);
     if (open) die(`"${project}" already running since ${open.start}. Stop it first.`);
-    entries.push({ project, start: at || tsNow(), stop: null });
+    const start = at || tsNow();
+    entries.push({ project, start, stop: null });
     saveEntries(entries);
-    console.log(`Started "${project}" at ${(at || tsNow()).slice(11, 19)}`);
+    const minsAgo = minutesBetween(start, tsNow());
+    console.log(`Started "${project}" at ${start.slice(0, 16).replace("T", " ")}${minsAgo >= 1 ? ` (${minsAgo.toFixed(0)} min ago)` : ""}`);
     break;
   }
 
@@ -114,6 +150,9 @@ switch (cmd) {
     if (mins < 0) die(`Stop time is before start time (${open.start}) — not saved.`);
     saveEntries(entries);
     console.log(`Stopped "${project}" — ${mins.toFixed(1)} min this session.`);
+    if (mins > 8 * 60) {
+      console.log(`⚠ That is ${(mins / 60).toFixed(1)} hours — forgotten timer? Session started ${open.start.slice(0, 16).replace("T", " ")}. Edit ${LOG_FILE} if wrong.`);
+    }
     break;
   }
 
@@ -157,6 +196,6 @@ switch (cmd) {
   }
 
   default:
-    console.log("Usage: timer <start|stop|status|today> [project] [--at HH:MM]");
+    console.log("Usage: timer <start|stop|status|today> [project] [--at HH:MM (local) | --ago <minutes>] [--force]");
     process.exit(cmd ? 1 : 0);
 }
