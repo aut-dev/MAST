@@ -1,0 +1,52 @@
+{
+  "$comment": "Curated forfeit destinations for MAST solo-mode forfeit plans (CommitmentEscrowV2.setForfeitPlan). Updated from time to time. RULE: an entry with \"address\": null is NOT usable until someone verifies the address on the org's OFFICIAL donation page and fills it in via PR. Never send funds to an unverified address — on Base, a typo is a burn.",
+  "network": "base",
+  "updated": "2026-07-17",
+  "constants": {
+    "burn": {
+      "address": "0x000000000000000000000000000000000000dEaD",
+      "note": "Canonical dead address. USDC rejects 0x0, so this is the burn destination. Irrecoverable by anyone.",
+      "verified": true
+    },
+    "mast_project": {
+      "address": null,
+      "note": "MAST creator's tip address. To be published by the project owner.",
+      "verified": false
+    }
+  },
+  "charities": [
+    {
+      "name": "GiveDirectly",
+      "url": "https://www.givedirectly.org/crypto/",
+      "address": null,
+      "note": "Accepts crypto; verify current USDC-on-Base address on the official page before use."
+    },
+    {
+      "name": "Against Malaria Foundation",
+      "url": "https://www.againstmalaria.com/",
+      "address": null,
+      "note": "Accepts crypto via The Giving Block; verify address and network support before use."
+    },
+    {
+      "name": "Internet Archive",
+      "url": "https://archive.org/donate/cryptocurrency/",
+      "address": null,
+      "note": "Publishes crypto addresses directly on its donation page; confirm Base/USDC support."
+    },
+    {
+      "name": "Electronic Frontier Foundation",
+      "url": "https://www.eff.org/pages/other-ways-give-and-donor-support",
+      "address": null,
+      "note": "Accepts crypto; verify address and network support before use."
+    }
+  ],
+  "anticharities": [
+    {
+      "$comment": "Anticharity = an org the committer would hate to fund; the strongest motivator (the stickK model). MAST does not endorse these orgs — that is the point. Entries are user-supplied: pick an org whose mission you oppose, verify it accepts USDC on Base, and add its official donation address here or directly in your forfeit plan.",
+      "name": "(user-supplied)",
+      "url": null,
+      "address": null,
+      "note": "By design, anticharities are personal. Your agent should ask what you're against, then help you verify the org's official crypto donation address."
+    }
+  ]
+}
