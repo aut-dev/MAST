@@ -1,34 +1,98 @@
-# Craft base project
+# MAST — My Awesome Self-management Tool
 
-This repo is hooked on https://gitlab.webpuzzlers.co.uk/web-puzzlers/autonomy
+Put real money on your goals. MAST is a commitment escrow system: you
+deposit USDC on Base, your AI agent locks it against your commitments, and
+you get it back when you follow through. Miss the deadline and the stake is
+forfeited — the point isn't to lose money, it's to make the cost of
+procrastination real enough that you don't.
 
-PHP version is 8.1  
-Uses a mariadb 10.4 database  
-Uses composer version 2
+## How it works
 
-# Installation
+1. You tell your agent (Claude Code with the MAST MCP server) what you're
+   committing to: *"20 minutes of writing every weekday, $8 a day."*
+2. The agent locks $8 of your escrowed USDC against today's deadline on an
+   escrow smart contract on Base.
+3. You do the work (optionally tracked with the bundled CLI timer).
+4. Complete → your money returns. Miss → it's forfeited. Partial, on
+   time-logged commitments → pro-rata: the earned fraction returns.
+5. Recurring commitments re-lock automatically each period; a nightly
+   settlement daemon handles the bookkeeping.
 
-## Composer config (do only once per computer)
+Nobody holds your money except the contract: deposits, commits, completions,
+and withdrawals are all self-service from your own wallet. The contract
+owner only ever receives forfeits you route to them.
 
-Update your global composer config by running the commands :
+## Repository layout
 
-- `composer config -g repositories.puzzlers-craft composer https://gitlab.puzzlers.run/api/v4/group/7/-/packages/composer/`
-- `composer config -g gitlab-token.gitlab.puzzlers.run <TOKEN>`
-- `composer config -g gitlab-domains gitlab.puzzlers.run`
-
-\<TOKEN> is your gitlab token, found on gitlab, user settings -> Access tokens -> Tick "api" scopes and create -> copy paste
-
-That will tell composer where to look for the craft package that live on gitlab, and take care of all authentication.
+| Path | What it is |
+|---|---|
+| `mast-mcp/` | MCP server exposing the `mast_*` tools, plus dashboard (`server.js`), nightly settlement daemon (`settle.js`), and status board (`status.js`) |
+| `mast-timer/` | CLI time tracker (`timer.js`) — sessions feed pro-rata settlement |
+| `contracts/` | Solidity escrow contracts + deployment docs ([README](contracts/README.md)) |
+| `.claude/skills/` | `/mast-status` and `/mast-frontend` slash commands for Claude Code |
+| `CLAUDE.md` | Agent instructions: onboarding flow, strictness levels, funding |
 
 ## Installation
 
-- copy .env.example into .env
-- run `composer install` or `ddev composer install` if you're using ddev
-- run `craft setup/app-id` or `ddev craft setup/app-id`
-- run `craft setup/security-key` or `ddev craft setup/security-key`
+Prerequisites: Node 18+, [Claude Code](https://claude.com/claude-code).
 
-## DDEV
+```bash
+git clone https://github.com/aut-dev/MAST.git
+cd MAST/mast-mcp && npm install
+```
 
-This project can be run on ddev : https://ddev.readthedocs.io/en/stable/
+Register the MCP server with Claude Code:
 
-Run `ddev start` and access website at https://autonomy.ddev.site
+```bash
+claude mcp add mast -- node /absolute/path/to/MAST/mast-mcp/index.js
+```
+
+## Setup
+
+Open Claude Code in the repo (so it picks up `CLAUDE.md`) and say
+**"set up MAST"**. The agent walks you through:
+
+1. **Technical setup** — `mast_setup` generates a fresh wallet and stores it
+   in `~/.mast/config.json`. **Back this file up: it is the only copy of
+   your private key.** The default escrow contract on Base mainnet is
+   `0xb279110b7a7F77344094721Bf4232dE46AFC1C42`; deploy your own from
+   [`contracts/`](contracts/README.md) if you'd rather not trust anyone
+   else's.
+2. **Profile & strictness** — name your agent, then choose how hard it
+   should push back when you try to cancel or claw back a stake, from
+   **iron** (no exceptions, ever) to **chill** (honor system). Overridable
+   per commitment.
+3. **Commitments** — list what you're procrastinating on; the agent prices
+   each item, totals a weekly cost, and confirms it with you.
+4. **Funding** — `mast_fund` shows your wallet address and the recommended
+   amount. Send USDC on Base from any wallet (Coinbase app, MetaMask,
+   Rainbow, …). MAST never touches fiat or processes payments.
+
+## Daily use
+
+```bash
+# Track time against a commitment (project name matches the commitment title)
+node mast-timer/timer.js start writing
+node mast-timer/timer.js stop writing
+node mast-timer/timer.js today          # progress vs targets
+node mast-timer/timer.js start writing --ago 5   # started 5 min ago
+
+# In Claude Code
+/mast-status      # balances, today's progress bars, deadlines
+/mast-frontend    # live web dashboard (shareable with a secret token)
+```
+
+Completion is conversational — tell your agent you're done (or the nightly
+daemon settles time-logged commitments automatically at midnight, pro-rata
+if you fell short). Vacation days can be excluded per commitment.
+
+## Roadmap
+
+- **Forfeit plans** (contract ready, not yet deployed): route forfeits to
+  an address you control, the MAST project, a burn address, charities, an
+  anticharity, or any weighted mix. See [contracts/README.md](contracts/README.md).
+- **Pod Mode** (contract ready): group accountability — a shared $/minute
+  rate, goals logged on-chain as anonymous integer IDs, weekly parimutuel
+  settlement where completers split the forfeits weighted by stake, and
+  member voting for anomalies.
+- Pod messaging via Telegram/WhatsApp (stub in `mast-mcp/pod-notify.js`).
