@@ -70,21 +70,35 @@ Open Claude Code in the repo (so it picks up `CLAUDE.md`) and say
 
 ## Daily use
 
+You just talk to your agent:
+
+> **"start writing"** — starts the timer on your writing commitment
+>
+> **"stop studying"** — stops the timer; the minutes count toward today's target
+>
+> **"I brushed my teeth"** / **"I completed the tax filing"** — reports
+> completion of a one-off or non-timed commitment; your stake comes back
+>
+> **"start writing, back-time it five minutes"** — you were already working
+>
+> **"how am I doing?"** / **/mast-status** — balances, today's progress
+> bars, hours to deadline
+>
+> **/mast-frontend** — live web dashboard (shareable with a secret token)
+
+Time-logged commitments also settle automatically at midnight via the
+nightly daemon — pro-rata if you fell short. Vacation days can be excluded
+per commitment.
+
+Under the hood the agent drives a CLI you can also use directly (most
+people won't need to):
+
 ```bash
-# Track time against a commitment (project name matches the commitment title)
 node mast-timer/timer.js start writing
 node mast-timer/timer.js stop writing
-node mast-timer/timer.js today          # progress vs targets
+node mast-timer/timer.js today                   # progress vs targets
 node mast-timer/timer.js start writing --ago 5   # started 5 min ago
-
-# In Claude Code
-/mast-status      # balances, today's progress bars, deadlines
-/mast-frontend    # live web dashboard (shareable with a secret token)
 ```
-
-Completion is conversational — tell your agent you're done (or the nightly
-daemon settles time-logged commitments automatically at midnight, pro-rata
-if you fell short). Vacation days can be excluded per commitment.
 
 ## Roadmap
 
