@@ -9,7 +9,7 @@ Two contracts live here:
 | Contract | Status | What it does |
 |---|---|---|
 | `CommitmentEscrow.sol` (V1) | deployed at `0xb279110b7a7F77344094721Bf4232dE46AFC1C42` (Base mainnet) | Solo commitments; all forfeits go to the contract owner's platform balance |
-| `CommitmentEscrowV2.sol` | source ready, not yet deployed | Solo mode with configurable forfeit plans, plus Pod Mode (group accountability with weekly winner-takes-pool) |
+| `CommitmentEscrowV2.sol` | source ready, not yet deployed | Solo mode with configurable forfeit plans, plus Pod Mode (group accountability with parimutuel weekly settlement) |
 
 ## Setup & deployment
 
@@ -76,10 +76,10 @@ expiry time, so changing it affects only future forfeits.
 Two or more people hold each other accountable with a shared stake rate.
 
 **Setup.** One member calls `createPod(podId, members[], ratePerMinute,
-weeklyMinutes, weekZero, period)`. The member list is fixed at creation.
+targetMinutes, periodZero, periodLength)`. The member list is fixed at creation.
 `ratePerMinute` (USDC, 6 decimals) is the pod's single $/minute parameter —
-hours per week × rate = money per week. `weekZero` anchors the cycle and
-`period` is its length in seconds (`7 days` for a real weekly pod; a short
+hours per period × rate = money per period. `periodZero` anchors the cycle and
+`periodLength` is its length in seconds (`7 days` for a real weekly pod; a short
 value like `600` makes a 10-minute pod for end-to-end testing). Grace and
 refund windows scale with the period (one and two extra periods).
 
@@ -90,28 +90,28 @@ id → name mapping locally (in `~/.mast/`). Progress is logged with
 
 **Stakes.** Members commit stakes with `commitPod(podId, taskId, amount,
 deadline)` and release them with the normal `complete(taskId)`. A stake that
-expires goes into that week's pod pool (`podPool[podId][week]`), not to the
+expires goes into that period's pod pool (`podPool[podId][period]`), not to the
 solo forfeit plan.
 
 **Weekly settlement — parimutuel.** The rule: *completers split the
 forfeits, weighted by stake.* Members who hit their own weekly target share
 the pool pro-rata by the money they had at risk. Commitment sizes can
-differ freely — a 4h/week member who completes earns 4× what a 1h/week
+differ freely — a 4h/period member who completes earns 4× what a 1h/period
 completer earns, because they risked 4×. Sandbagging a tiny commitment
 yields proportionally tiny winnings, so the only way to earn more is to
 commit more *and* complete it.
 
-After a week ends, every member's agent reads the `ProgressLogged` /
+After a period ends, every member's agent reads the `ProgressLogged` /
 `Expired` events, computes the same share vector (bps per member, summing
-to 10000), and calls `voteWeekSplit(podId, week, sharesBps)`. Identical
+to 10000), and calls `votePeriodSplit(podId, period, sharesBps)`. Identical
 data produces identical vectors, so agreement is the natural outcome. Once
 a strict majority matches (and either everyone has voted or 3 days have
-passed), anyone can call `resolveWeek` — shares are credited to members'
+passed), anyone can call `resolvePeriod` — shares are credited to members'
 escrow balances.
 
 **Anomalies.** If the computation isn't straightforward (someone forgot to
 stop a timer, disputed logs), agents report the anomaly to their humans and
-the pod votes `voteWeek(podId, week, kind, target)` instead:
+the pod votes `votePeriod(podId, period, kind, target)` instead:
 
 | Vote | Effect |
 |---|---|
@@ -120,10 +120,10 @@ the pod votes `voteWeek(podId, week, kind, target)` instead:
 | `Anticharity, addr` | pool transferred to an anticharity |
 | `Burn` | pool sent to the dead address |
 | `Recall` | pool returned pro-rata to whoever forfeited into it |
-| `Rollover` | pool rolls into next week's pot (e.g. when nobody completed) |
+| `Rollover` | pool rolls into next period's pot (e.g. when nobody completed) |
 
-**Failsafe.** If no majority forms within 7 days of week end, anyone can
-call `refundWeek` — all monies return to their contributors. Nobody's money
+**Failsafe.** If no majority forms within 7 days of period end, anyone can
+call `refundPeriod` — all monies return to their contributors. Nobody's money
 can get stuck on a stalled vote.
 
 **Messaging (stub).** Pod nudges/announcements via Telegram/WhatsApp are

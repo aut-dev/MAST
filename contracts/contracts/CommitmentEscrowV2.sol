@@ -21,8 +21,8 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  *         POD MODE — two or more people form a pod with a shared
  *         $/minute rate. Goals are logged on-chain only as integer
  *         IDs plus percent progress (names stay off-chain). Stakes
- *         that expire during a week accumulate in that week's pool.
- *         After the week ends, members vote on the outcome — in the
+ *         that expire during a period accumulate in that period's pool.
+ *         After the period ends, members vote on the outcome — in the
  *         normal case every agent reads the chain, computes the same
  *         parimutuel split (members who hit their own weekly target
  *         share the pool pro-rata by the stake they had at risk), and
@@ -80,9 +80,9 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
     struct Pod {
         address[] members;
         uint256 ratePerMinute; // USDC (6 decimals) per minute — the pod's single $/min parameter
-        uint32 weeklyMinutes;  // informational target used by agents
-        uint64 weekZero;       // anchor timestamp; period n = [weekZero + n*period, weekZero + (n+1)*period)
-        uint64 period;         // seconds per settlement period (WEEK for real pods, shorter for tests)
+        uint32 targetMinutes;  // informational target used by agents
+        uint64 periodZero;       // anchor timestamp; periodLength n = [periodZero + n*periodLength, periodZero + (n+1)*periodLength)
+        uint64 periodLength;         // seconds per settlement period (WEEK for real pods, shorter for tests)
         bool exists;
     }
 
@@ -97,14 +97,14 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
     mapping(bytes32 => Pod) private pods;
     mapping(bytes32 => mapping(address => bool)) public isPodMember;
     mapping(bytes32 => bytes32) public taskPod; // taskId => podId (0 for solo tasks)
-    mapping(bytes32 => mapping(uint256 => uint256)) public podPool; // podId => week => forfeited pool
+    mapping(bytes32 => mapping(uint256 => uint256)) public podPool; // podId => period => forfeited pool
     mapping(bytes32 => mapping(uint256 => mapping(address => uint256))) public podContrib;
     mapping(bytes32 => mapping(uint256 => mapping(address => Vote))) private podVotes;
     // Split votes carry a share vector (aligned to pod.members, bps summing
     // to 10000); the hash is what majority-matching compares.
     mapping(bytes32 => mapping(uint256 => mapping(address => uint16[]))) private splitVotes;
     mapping(bytes32 => mapping(uint256 => mapping(address => bytes32))) private splitHash;
-    mapping(bytes32 => mapping(uint256 => bool)) public weekResolved;
+    mapping(bytes32 => mapping(uint256 => bool)) public periodResolved;
 
     // ── Events ────────────────────────────────────────────────
 
@@ -115,11 +115,11 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
     event Expired(bytes32 indexed taskId, address indexed user, uint256 amount);
     event ForfeitPlanSet(address indexed user, address[] targets, uint16[] weightsBps);
     event ForfeitRouted(address indexed user, address indexed target, uint256 amount);
-    event PodCreated(bytes32 indexed podId, address[] members, uint256 ratePerMinute, uint32 weeklyMinutes, uint64 weekZero, uint64 period);
+    event PodCreated(bytes32 indexed podId, address[] members, uint256 ratePerMinute, uint32 targetMinutes, uint64 periodZero, uint64 periodLength);
     event ProgressLogged(bytes32 indexed podId, address indexed member, uint256 indexed goalId, uint16 percentBps, uint32 minutesSpent, uint256 timestamp);
-    event VoteCast(bytes32 indexed podId, uint256 indexed week, address indexed member, ResolutionKind kind, address target);
-    event WeekResolved(bytes32 indexed podId, uint256 indexed week, ResolutionKind kind, address target, uint256 amount);
-    event WeekRefunded(bytes32 indexed podId, uint256 indexed week, uint256 amount);
+    event VoteCast(bytes32 indexed podId, uint256 indexed period, address indexed member, ResolutionKind kind, address target);
+    event PeriodResolved(bytes32 indexed podId, uint256 indexed period, ResolutionKind kind, address target, uint256 amount);
+    event PeriodRefunded(bytes32 indexed podId, uint256 indexed period, uint256 amount);
 
     constructor(address _usdc) Ownable(msg.sender) {
         usdc = IERC20(_usdc);
@@ -219,9 +219,9 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
 
         bytes32 podId = taskPod[taskId];
         if (podId != bytes32(0)) {
-            uint256 week = weekOf(podId, c.deadline);
-            podPool[podId][week] += c.amount;
-            podContrib[podId][week][c.user] += c.amount;
+            uint256 period = periodOf(podId, c.deadline);
+            podPool[podId][period] += c.amount;
+            podContrib[podId][period][c.user] += c.amount;
         } else {
             _routeForfeit(c.user, c.amount);
         }
@@ -253,14 +253,14 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         bytes32 podId,
         address[] calldata members,
         uint256 ratePerMinute,
-        uint32 weeklyMinutes,
-        uint64 weekZero,
-        uint64 period
+        uint32 targetMinutes,
+        uint64 periodZero,
+        uint64 periodLength
     ) external {
         require(!pods[podId].exists, "pod exists");
         require(members.length >= 2, "need 2+ members");
         require(ratePerMinute > 0, "zero rate");
-        require(period > 0, "zero period");
+        require(periodLength > 0, "zero periodLength");
         bool callerIn;
         for (uint256 i = 0; i < members.length; i++) {
             require(members[i] != address(0), "zero member");
@@ -269,8 +269,8 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
             if (members[i] == msg.sender) callerIn = true;
         }
         require(callerIn, "creator must be a member");
-        pods[podId] = Pod(members, ratePerMinute, weeklyMinutes, weekZero, period, true);
-        emit PodCreated(podId, members, ratePerMinute, weeklyMinutes, weekZero, period);
+        pods[podId] = Pod(members, ratePerMinute, targetMinutes, periodZero, periodLength, true);
+        emit PodCreated(podId, members, ratePerMinute, targetMinutes, periodZero, periodLength);
     }
 
     function commitPod(bytes32 podId, bytes32 taskId, uint256 amount, uint256 deadline) external {
@@ -288,29 +288,29 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         emit ProgressLogged(podId, msg.sender, goalId, percentBps, minutesSpent, block.timestamp);
     }
 
-    function weekOf(bytes32 podId, uint256 timestamp) public view returns (uint256) {
+    function periodOf(bytes32 podId, uint256 timestamp) public view returns (uint256) {
         Pod storage p = pods[podId];
         require(p.exists, "no such pod");
-        require(timestamp >= p.weekZero, "before week zero");
-        return (timestamp - p.weekZero) / p.period;
+        require(timestamp >= p.periodZero, "before period zero");
+        return (timestamp - p.periodZero) / p.periodLength;
     }
 
-    function weekEnd(bytes32 podId, uint256 week) public view returns (uint256) {
+    function periodEnd(bytes32 podId, uint256 period) public view returns (uint256) {
         Pod storage p = pods[podId];
         require(p.exists, "no such pod");
-        return p.weekZero + (week + 1) * p.period;
+        return p.periodZero + (period + 1) * p.periodLength;
     }
 
-    /// @notice Vote on what happens to a finished week's pool. On
+    /// @notice Vote on what happens to a finished period's pool. On
     ///         anomalies, vote Charity/Anticharity/Burn/Recall/Rollover/
     ///         Winner as the pod decides. The normal parimutuel path is
-    ///         voteWeekSplit. Re-voting is allowed until resolution.
-    function voteWeek(bytes32 podId, uint256 week, ResolutionKind kind, address target) external {
+    ///         votePeriodSplit. Re-voting is allowed until resolution.
+    function votePeriod(bytes32 podId, uint256 period, ResolutionKind kind, address target) external {
         require(isPodMember[podId][msg.sender], "not a member");
-        require(block.timestamp > weekEnd(podId, week), "week not over");
-        require(!weekResolved[podId][week], "already resolved");
+        require(block.timestamp > periodEnd(podId, period), "period not over");
+        require(!periodResolved[podId][period], "already resolved");
         require(kind != ResolutionKind.None, "invalid kind");
-        require(kind != ResolutionKind.Split, "use voteWeekSplit");
+        require(kind != ResolutionKind.Split, "use votePeriodSplit");
         if (kind == ResolutionKind.Winner) {
             require(isPodMember[podId][target], "winner not a member");
         } else if (kind == ResolutionKind.Charity || kind == ResolutionKind.Anticharity) {
@@ -318,10 +318,10 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         } else {
             require(target == address(0), "target must be zero");
         }
-        podVotes[podId][week][msg.sender] = Vote(kind, target, true);
-        delete splitVotes[podId][week][msg.sender];
-        delete splitHash[podId][week][msg.sender];
-        emit VoteCast(podId, week, msg.sender, kind, target);
+        podVotes[podId][period][msg.sender] = Vote(kind, target, true);
+        delete splitVotes[podId][period][msg.sender];
+        delete splitHash[podId][period][msg.sender];
+        emit VoteCast(podId, period, msg.sender, kind, target);
     }
 
     /// @notice The normal weekly path: parimutuel settlement. Every agent
@@ -332,37 +332,37 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
     ///         pod's member order and must sum to 10000 bps. Honest agents
     ///         reading the same chain produce identical vectors, so
     ///         majority agreement is the natural outcome.
-    function voteWeekSplit(bytes32 podId, uint256 week, uint16[] calldata sharesBps) external {
+    function votePeriodSplit(bytes32 podId, uint256 period, uint16[] calldata sharesBps) external {
         require(isPodMember[podId][msg.sender], "not a member");
-        require(block.timestamp > weekEnd(podId, week), "week not over");
-        require(!weekResolved[podId][week], "already resolved");
+        require(block.timestamp > periodEnd(podId, period), "period not over");
+        require(!periodResolved[podId][period], "already resolved");
         Pod storage p = pods[podId];
         require(sharesBps.length == p.members.length, "shares/members mismatch");
         uint256 sum;
         for (uint256 i = 0; i < sharesBps.length; i++) sum += sharesBps[i];
         require(sum == BPS, "shares must sum to 10000");
-        podVotes[podId][week][msg.sender] = Vote(ResolutionKind.Split, address(0), true);
-        splitVotes[podId][week][msg.sender] = sharesBps;
-        splitHash[podId][week][msg.sender] = keccak256(abi.encodePacked(sharesBps));
-        emit VoteCast(podId, week, msg.sender, ResolutionKind.Split, address(0));
+        podVotes[podId][period][msg.sender] = Vote(ResolutionKind.Split, address(0), true);
+        splitVotes[podId][period][msg.sender] = sharesBps;
+        splitHash[podId][period][msg.sender] = keccak256(abi.encodePacked(sharesBps));
+        emit VoteCast(podId, period, msg.sender, ResolutionKind.Split, address(0));
     }
 
     /// @notice Execute the majority resolution. Callable by anyone once a
     ///         strict majority of members agrees on an identical option and
     ///         either all members have voted or one extra period has elapsed.
-    function resolveWeek(bytes32 podId, uint256 week) external nonReentrant {
-        require(!weekResolved[podId][week], "already resolved");
+    function resolvePeriod(bytes32 podId, uint256 period) external nonReentrant {
+        require(!periodResolved[podId][period], "already resolved");
         Pod storage p = pods[podId];
         require(p.exists, "no such pod");
-        uint256 end = weekEnd(podId, week);
-        require(block.timestamp > end, "week not over");
+        uint256 end = periodEnd(podId, period);
+        require(block.timestamp > end, "period not over");
 
         uint256 n = p.members.length;
         uint256 castCount;
         for (uint256 i = 0; i < n; i++) {
-            if (podVotes[podId][week][p.members[i]].cast) castCount++;
+            if (podVotes[podId][period][p.members[i]].cast) castCount++;
         }
-        require(castCount == n || block.timestamp > end + p.period, "waiting for votes");
+        require(castCount == n || block.timestamp > end + p.periodLength, "waiting for votes");
 
         // Find an option with a strict majority of all members. Split votes
         // match only if their share vectors are identical (compared by hash).
@@ -370,14 +370,14 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         address winTarget;
         address winVoter;
         for (uint256 i = 0; i < n; i++) {
-            Vote storage v = podVotes[podId][week][p.members[i]];
+            Vote storage v = podVotes[podId][period][p.members[i]];
             if (!v.cast) continue;
-            bytes32 vHash = splitHash[podId][week][p.members[i]];
+            bytes32 vHash = splitHash[podId][period][p.members[i]];
             uint256 count;
             for (uint256 j = 0; j < n; j++) {
-                Vote storage w = podVotes[podId][week][p.members[j]];
+                Vote storage w = podVotes[podId][period][p.members[j]];
                 if (!w.cast || w.kind != v.kind || w.target != v.target) continue;
-                if (v.kind == ResolutionKind.Split && splitHash[podId][week][p.members[j]] != vHash) continue;
+                if (v.kind == ResolutionKind.Split && splitHash[podId][period][p.members[j]] != vHash) continue;
                 count++;
             }
             if (count * 2 > n) {
@@ -389,26 +389,26 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         }
         require(winKind != ResolutionKind.None, "no majority");
 
-        weekResolved[podId][week] = true;
-        uint256 pool = podPool[podId][week];
-        podPool[podId][week] = 0;
+        periodResolved[podId][period] = true;
+        uint256 pool = podPool[podId][period];
+        podPool[podId][period] = 0;
 
         if (pool > 0) {
             if (winKind == ResolutionKind.Split) {
-                _distributeSplit(p, splitVotes[podId][week][winVoter], pool);
+                _distributeSplit(p, splitVotes[podId][period][winVoter], pool);
             } else if (winKind == ResolutionKind.Winner) {
                 balances[winTarget] += pool;
             } else if (winKind == ResolutionKind.Recall) {
-                _refundContributors(podId, week, pool);
+                _refundContributors(podId, period, pool);
             } else if (winKind == ResolutionKind.Rollover) {
-                podPool[podId][week + 1] += pool;
+                podPool[podId][period + 1] += pool;
             } else if (winKind == ResolutionKind.Burn) {
                 usdc.safeTransfer(BURN_ADDRESS, pool);
             } else {
                 usdc.safeTransfer(winTarget, pool);
             }
         }
-        emit WeekResolved(podId, week, winKind, winTarget, pool);
+        emit PeriodResolved(podId, period, winKind, winTarget, pool);
     }
 
     function _distributeSplit(Pod storage p, uint16[] storage sharesBps, uint256 pool) internal {
@@ -428,24 +428,24 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
 
     /// @notice Failsafe: if voting never produced a majority, anyone can
     ///         return the whole pool to whoever forfeited into it.
-    function refundWeek(bytes32 podId, uint256 week) external nonReentrant {
-        require(!weekResolved[podId][week], "already resolved");
-        require(block.timestamp > weekEnd(podId, week) + 2 * pods[podId].period, "refund window not open");
-        weekResolved[podId][week] = true;
-        uint256 pool = podPool[podId][week];
-        podPool[podId][week] = 0;
-        if (pool > 0) _refundContributors(podId, week, pool);
-        emit WeekRefunded(podId, week, pool);
+    function refundPeriod(bytes32 podId, uint256 period) external nonReentrant {
+        require(!periodResolved[podId][period], "already resolved");
+        require(block.timestamp > periodEnd(podId, period) + 2 * pods[podId].periodLength, "refund window not open");
+        periodResolved[podId][period] = true;
+        uint256 pool = podPool[podId][period];
+        podPool[podId][period] = 0;
+        if (pool > 0) _refundContributors(podId, period, pool);
+        emit PeriodRefunded(podId, period, pool);
     }
 
-    function _refundContributors(bytes32 podId, uint256 week, uint256 pool) internal {
+    function _refundContributors(bytes32 podId, uint256 period, uint256 pool) internal {
         Pod storage p = pods[podId];
         uint256 returned;
         for (uint256 i = 0; i < p.members.length; i++) {
             address m = p.members[i];
-            uint256 contrib = podContrib[podId][week][m];
+            uint256 contrib = podContrib[podId][period][m];
             if (contrib == 0) continue;
-            podContrib[podId][week][m] = 0;
+            podContrib[podId][period][m] = 0;
             balances[m] += contrib;
             returned += contrib;
         }
@@ -478,21 +478,21 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
     }
 
     function getPod(bytes32 podId) external view returns (
-        address[] memory members, uint256 ratePerMinute, uint32 weeklyMinutes, uint64 weekZero, uint64 period
+        address[] memory members, uint256 ratePerMinute, uint32 targetMinutes, uint64 periodZero, uint64 periodLength
     ) {
         Pod storage p = pods[podId];
         require(p.exists, "no such pod");
-        return (p.members, p.ratePerMinute, p.weeklyMinutes, p.weekZero, p.period);
+        return (p.members, p.ratePerMinute, p.targetMinutes, p.periodZero, p.periodLength);
     }
 
-    function getVote(bytes32 podId, uint256 week, address member) external view returns (
+    function getVote(bytes32 podId, uint256 period, address member) external view returns (
         ResolutionKind kind, address target, bool cast
     ) {
-        Vote memory v = podVotes[podId][week][member];
+        Vote memory v = podVotes[podId][period][member];
         return (v.kind, v.target, v.cast);
     }
 
-    function getSplitVote(bytes32 podId, uint256 week, address member) external view returns (uint16[] memory) {
-        return splitVotes[podId][week][member];
+    function getSplitVote(bytes32 podId, uint256 period, address member) external view returns (uint16[] memory) {
+        return splitVotes[podId][period][member];
     }
 }

@@ -56,14 +56,14 @@ describe("CommitmentEscrowV2", () => {
     const POD = id("pod1");
 
     beforeEach(async () => {
-      const weekZero = await time.latest();
+      const periodZero = await time.latest();
       await escrow.connect(a).createPod(
-        POD, [a.address, b.address, c.address], usdc(0.2) / 60n || 3333n, 300, weekZero, WEEK
+        POD, [a.address, b.address, c.address], usdc(0.2) / 60n || 3333n, 300, periodZero, WEEK
       );
     });
 
-    it("expired pod stakes pool by week; majority split vote pays completers by stake", async () => {
-      const deadline = (await time.latest()) + 3600; // inside week 0
+    it("expired pod stakes pool by period; majority split vote pays completers by stake", async () => {
+      const deadline = (await time.latest()) + 3600; // inside period 0
       // A stakes $48 (4h), B stakes $12 (1h): both "complete".
       // C stakes $24 (2h) and misses -> $24 pool.
       await escrow.connect(a).commitPod(POD, id("pa"), usdc(48), deadline);
@@ -79,10 +79,10 @@ describe("CommitmentEscrowV2", () => {
       // A: 48/60 = 8000 bps, B: 12/60 = 2000 bps, C: 0.
       await time.increase(WEEK);
       const shares = [8000, 2000, 0];
-      await escrow.connect(a).voteWeekSplit(POD, 0, shares);
-      await escrow.connect(b).voteWeekSplit(POD, 0, shares);
-      await escrow.connect(c).voteWeekSplit(POD, 0, shares);
-      await escrow.connect(outsider).resolveWeek(POD, 0);
+      await escrow.connect(a).votePeriodSplit(POD, 0, shares);
+      await escrow.connect(b).votePeriodSplit(POD, 0, shares);
+      await escrow.connect(c).votePeriodSplit(POD, 0, shares);
+      await escrow.connect(outsider).resolvePeriod(POD, 0);
 
       const [aBal] = await escrow.getUserInfo(a.address);
       const [bBal] = await escrow.getUserInfo(b.address);
@@ -101,40 +101,40 @@ describe("CommitmentEscrowV2", () => {
 
       await time.increase(WEEK);
       // Agents disagree (anomaly): no two vectors match.
-      await escrow.connect(a).voteWeekSplit(POD, 0, [8000, 2000, 0]);
-      await escrow.connect(b).voteWeekSplit(POD, 0, [5000, 5000, 0]);
-      await escrow.connect(c).voteWeek(POD, 0, 4, ethers.ZeroAddress); // Recall
-      await expect(escrow.resolveWeek(POD, 0)).to.be.revertedWith("no majority");
+      await escrow.connect(a).votePeriodSplit(POD, 0, [8000, 2000, 0]);
+      await escrow.connect(b).votePeriodSplit(POD, 0, [5000, 5000, 0]);
+      await escrow.connect(c).votePeriod(POD, 0, 4, ethers.ZeroAddress); // Recall
+      await expect(escrow.resolvePeriod(POD, 0)).to.be.revertedWith("no majority");
 
-      // Past refund deadline (weekEnd + 2 periods) anyone can trigger the failsafe.
+      // Past refund deadline (periodEnd + 2 periods) anyone can trigger the failsafe.
       await time.increase(15 * 24 * 3600);
-      await escrow.connect(outsider).refundWeek(POD, 0);
+      await escrow.connect(outsider).refundPeriod(POD, 0);
       const [cBal] = await escrow.getUserInfo(c.address);
       expect(cBal).to.equal(usdc(100)); // made whole
     });
 
-    it("majority anomaly vote can roll the pool into next week", async () => {
+    it("majority anomaly vote can roll the pool into next period", async () => {
       const deadline = (await time.latest()) + 3600;
       await escrow.connect(a).commitPod(POD, id("pa3"), usdc(10), deadline);
       await time.increase(2 * 3600);
       await escrow.connect(outsider).expire(id("pa3"));
 
       await time.increase(WEEK);
-      await escrow.connect(a).voteWeek(POD, 0, 7, ethers.ZeroAddress); // Rollover
-      await escrow.connect(b).voteWeek(POD, 0, 7, ethers.ZeroAddress);
-      await escrow.connect(c).voteWeek(POD, 0, 7, ethers.ZeroAddress);
-      await escrow.connect(outsider).resolveWeek(POD, 0);
+      await escrow.connect(a).votePeriod(POD, 0, 7, ethers.ZeroAddress); // Rollover
+      await escrow.connect(b).votePeriod(POD, 0, 7, ethers.ZeroAddress);
+      await escrow.connect(c).votePeriod(POD, 0, 7, ethers.ZeroAddress);
+      await escrow.connect(outsider).resolvePeriod(POD, 0);
       expect(await escrow.podPool(POD, 0)).to.equal(0);
       expect(await escrow.podPool(POD, 1)).to.equal(usdc(10));
     });
 
     it("supports a short period for live testing (10-min pod resolves in minutes)", async () => {
       const SHORT = id("shortpod");
-      const period = 600; // 10 minutes
+      const periodLength = 600; // 10 minutes
       const wz = await time.latest();
-      await escrow.connect(a).createPod(SHORT, [a.address, b.address], 3333n, 20, wz, period);
+      await escrow.connect(a).createPod(SHORT, [a.address, b.address], 3333n, 20, wz, periodLength);
       const [, , , , p] = await escrow.getPod(SHORT);
-      expect(p).to.equal(period);
+      expect(p).to.equal(periodLength);
 
       // b stakes and misses within period 0.
       const deadline = (await time.latest()) + 120;
@@ -143,12 +143,12 @@ describe("CommitmentEscrowV2", () => {
       await escrow.connect(a).expire(id("sp"));
       expect(await escrow.podPool(SHORT, 0)).to.equal(usdc(10));
 
-      // Period 0 ends 600s after weekZero; a completed nothing either, so
+      // Period 0 ends 600s after periodZero; a completed nothing either, so
       // both agree the pool rolls forward — resolvable minutes in, not days.
       await time.increase(600);
-      await escrow.connect(a).voteWeek(SHORT, 0, 7, ethers.ZeroAddress); // Rollover
-      await escrow.connect(b).voteWeek(SHORT, 0, 7, ethers.ZeroAddress);
-      await escrow.connect(a).resolveWeek(SHORT, 0);
+      await escrow.connect(a).votePeriod(SHORT, 0, 7, ethers.ZeroAddress); // Rollover
+      await escrow.connect(b).votePeriod(SHORT, 0, 7, ethers.ZeroAddress);
+      await escrow.connect(a).resolvePeriod(SHORT, 0);
       expect(await escrow.podPool(SHORT, 1)).to.equal(usdc(10));
     });
 
@@ -161,7 +161,7 @@ describe("CommitmentEscrowV2", () => {
       ).to.be.revertedWith("not a member");
       await time.increase(WEEK + 10);
       await expect(
-        escrow.connect(outsider).voteWeekSplit(POD, 0, [10000, 0, 0])
+        escrow.connect(outsider).votePeriodSplit(POD, 0, [10000, 0, 0])
       ).to.be.revertedWith("not a member");
     });
   });
