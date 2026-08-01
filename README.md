@@ -4,7 +4,9 @@ Put real money on your goals. MAST is a commitment escrow system: you
 deposit USDC on Base, your AI agent locks it against your commitments, and
 you get it back when you follow through. Miss the deadline and the stake is
 forfeited — the point isn't to lose money, it's to make the cost of
-procrastination real enough that you don't.
+procrastination real enough that you don't. Go solo, or form a
+[pod](#pod-mode--group-accountability) with friends where missed stakes pool
+and split among whoever actually showed up.
 
 ## How it works
 
@@ -100,13 +102,92 @@ node mast-timer/timer.js today                   # progress vs targets
 node mast-timer/timer.js start writing --ago 5   # started 5 min ago
 ```
 
+## Pod Mode — group accountability
+
+Two or more people put money on their *own* goals and hold each other
+accountable. Each period (weekly by default) the stakes people **miss** pool
+together and — on a majority vote — **split among the members who hit their
+targets, weighted by how much each staked**. Complete everything and there's
+nothing to lose; slack off and your forfeit funds the people who showed up.
+A 4-hour-a-week member who follows through earns proportionally more than a
+1-hour member, because they put more at risk — so you can't game it by
+committing tiny.
+
+Pods run on the **V2 contract**
+(`0xA836A23a939D8BdaF334D0CE0DecfEBF3f01905b` on Base mainnet), separate from
+solo commitments. Each member has their own wallet and runs their own MCP —
+the server always acts as *one* member (you).
+
+### One-time setup (each member)
+
+Exactly the same as [Installation](#installation) + [Setup](#setup) above:
+clone, `npm install`, `claude mcp add mast`, say **"set up MAST"**, and fund
+your wallet with USDC on Base. Do this once; it works for both solo
+commitments and pods.
+
+### Forming a pod
+
+1. **Share addresses.** Everyone tells the others their wallet address (it's
+   in the `mast_setup` output, or ask your agent "what's my MAST address?").
+2. **Agree on a label.** Any shared phrase — e.g. `sibling-sprint`. The label
+   deterministically derives the on-chain pod id, so *everyone must type the
+   exact same label* (case-insensitive).
+3. **Agree on the terms.** The single `$/minute` rate and the period length
+   (default 7 days).
+4. **One member creates it:** *"Create a pod called sibling-sprint with me
+   and 0xBrother… at $0.20/min, weekly."* → `mast_pod_create` registers all
+   members on-chain.
+5. **Every other member joins:** *"Join the pod sibling-sprint."* →
+   `mast_pod_join` reads it from the chain into their local state. (Creating
+   registers everyone on-chain; joining is how the others get a local copy so
+   they can stake and vote.)
+
+### Running a pod
+
+Just talk to your agent — it maps to the `mast_pod_*` tools:
+
+> **"Stake $20 on finishing chapter 3 by Friday in the sibling pod."** —
+> `mast_pod_commit`. Your goal's *name* stays on your machine; only an integer
+> goalId goes on-chain.
+>
+> **"Log 45 minutes, 60% done on chapter 3."** — `mast_pod_log_progress`
+> (public: goalId + percent + minutes, never the name).
+>
+> **"I finished chapter 3."** — `mast_pod_complete`, your stake returns.
+>
+> **"Expire my missed stakes."** — `mast_pod_expire`, forfeits them into the
+> pool at period end.
+>
+> **"Pod status."** — `mast_pod_status`: members, pool, everyone's votes, your
+> balance.
+
+At the end of a period, each member's agent reads the chain, computes the
+same completers-split-by-stake vector, and votes (`mast_pod_vote`); once a
+majority matches, anyone runs `mast_pod_resolve` and the pool pays out. If
+something's disputed (a timer left running, a bad log), members can instead
+vote to send the pool to a charity, an anticharity, burn it, roll it over,
+refund everyone, or award one member. If a vote stalls, a failsafe refunds
+all contributors.
+
+**Privacy.** Other members only ever see "goalId 3, 60%, 45 min" — the goal's
+name lives solely in your local `~/.mast/pods.json`.
+
+**Current manual step.** Missed stakes only pool once expired; today each
+member runs `mast_pod_expire` at period end. Automating this in the nightly
+daemon is on the roadmap.
+
+## Solo forfeit plans
+
+By default a missed solo stake is forfeited to the platform. On the V2
+contract you can instead route your forfeits — *"send my forfeits 50% to a
+burn address, 30% to charity, 20% back to my cold wallet"* →
+`mast_set_forfeit_plan`. Any weighted mix of an address you control, a
+charity, an anticharity, the burn address, or the MAST project (weights must
+sum to 100%). See [contracts/README.md](contracts/README.md) for the
+mechanics and the destination registry.
+
 ## Roadmap
 
-- **Forfeit plans** (contract ready, not yet deployed): route forfeits to
-  an address you control, the MAST project, a burn address, charities, an
-  anticharity, or any weighted mix. See [contracts/README.md](contracts/README.md).
-- **Pod Mode** (contract ready): group accountability — a shared $/minute
-  rate, goals logged on-chain as anonymous integer IDs, weekly parimutuel
-  settlement where completers split the forfeits weighted by stake, and
-  member voting for anomalies.
+- Auto-expire overdue pod stakes in the nightly settle daemon (so pools fund
+  and periods resolve without anyone running `mast_pod_expire` by hand).
 - Pod messaging via Telegram/WhatsApp (stub in `mast-mcp/pod-notify.js`).

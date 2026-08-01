@@ -667,6 +667,21 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "mast_pod_join",
+      description:
+        "Join a pod someone else already created — syncs it into your local state so you can stake, log, " +
+        "and vote. You must already be one of its members on-chain (the creator includes your address). " +
+        "Identify it by the shared label (preferred — it derives the same id for everyone) or the 0x pod id.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pod: { type: "string", description: "Shared pod label (preferred) or 0x pod id." },
+          label: { type: "string", description: "Optional label to record locally when joining by raw id." },
+        },
+        required: ["pod"],
+      },
+    },
+    {
       name: "mast_pod_commit",
       description:
         "Stake money on a personal goal inside a pod. The goal's NAME stays local (private) — only an " +
@@ -814,6 +829,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await handleSetForfeitPlan(args);
       case "mast_pod_create":
         return await handlePodCreate(args);
+      case "mast_pod_join":
+        return await handlePodJoin(args);
       case "mast_pod_commit":
         return await handlePodCommit(args);
       case "mast_pod_complete":
@@ -1855,6 +1872,51 @@ async function handlePodCreate(args) {
     `Tx: ${podExplorerTx(config, r.hash)}\n\n` +
     `Each other member must be in this pod too (same label derives the same id). ` +
     `Stake goals with mast_pod_commit; log work with mast_pod_log_progress.`
+  );
+}
+
+async function handlePodJoin(args) {
+  const config = requireConfig();
+  const isId = args.pod.startsWith("0x") && args.pod.length === 66;
+  const id = isId ? args.pod : podIdHash(args.pod);
+  const pods = loadPods();
+  if (pods[id]) return ok(`Already joined "${pods[id].label}" (${id}).`);
+
+  const escrow = getPodContract(config);
+  let onchain;
+  try {
+    onchain = await podRead(() => escrow.getPod(id));
+  } catch {
+    return err(`No pod found for "${args.pod}" on-chain. Confirm the label matches the creator's exactly (case-insensitive), or use the 0x id.`);
+  }
+  const [members, ratePerMinute, targetMinutes, periodZero, periodLength] = onchain;
+  const norm = members.map((m) => ethers.getAddress(m));
+  const self = ethers.getAddress(config.address);
+  if (!norm.includes(self)) {
+    return err(`You (${self}) are not a member of this pod. Ask the creator to include your address in mast_pod_create.`);
+  }
+
+  const label = isId ? (args.label || id) : args.pod;
+  pods[id] = {
+    label,
+    members: norm,
+    ratePerMinuteUsd: Number(ratePerMinute) / 1e6,
+    targetMinutes: Number(targetMinutes),
+    periodZero: Number(periodZero),
+    periodLength: Number(periodLength),
+    goals: {},
+    nextGoalId: 1,
+    tasks: {},
+    joined: true,
+  };
+  savePods(pods);
+
+  return ok(
+    `Joined pod "${label}".\n` +
+    `Members (split-vote order):\n` +
+    norm.map((m, i) => `  [${i}] ${m}${m === self ? "  (you)" : ""}`).join("\n") + "\n" +
+    `Period: ${fmtDuration(periodLength)}  ·  rate $${Number(ratePerMinute) / 1e6}/min\n` +
+    `You can now stake with mast_pod_commit and log work with mast_pod_log_progress.`
   );
 }
 
