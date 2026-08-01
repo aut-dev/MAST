@@ -43,12 +43,12 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
     address public constant BURN_ADDRESS = 0x000000000000000000000000000000000000dEaD;
     uint16 public constant BPS = 10000;
     uint8 public constant MAX_PLAN_ENTRIES = 8;
-    uint256 public constant WEEK = 7 days;
-    // After a pod week ends: majority suffices once everyone voted;
-    // past VOTE_GRACE a majority of cast votes suffices; past
-    // REFUND_DEADLINE anyone can force a refund to contributors.
-    uint256 public constant VOTE_GRACE = 3 days;
-    uint256 public constant REFUND_DEADLINE = 7 days;
+    uint64 public constant WEEK = 7 days; // the natural pod period; testing can use shorter
+    // Grace / refund windows are relative to each pod's own period, so a
+    // 7-day pod behaves weekly while a short test pod stays fully testable.
+    // After a period ends: majority suffices once everyone voted; past one
+    // extra period a majority of cast votes suffices; past two extra
+    // periods anyone can force a refund to contributors.
 
     // ── Shared commitment state ───────────────────────────────
 
@@ -81,7 +81,8 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         address[] members;
         uint256 ratePerMinute; // USDC (6 decimals) per minute — the pod's single $/min parameter
         uint32 weeklyMinutes;  // informational target used by agents
-        uint64 weekZero;       // anchor timestamp; week n = [weekZero + n*WEEK, weekZero + (n+1)*WEEK)
+        uint64 weekZero;       // anchor timestamp; period n = [weekZero + n*period, weekZero + (n+1)*period)
+        uint64 period;         // seconds per settlement period (WEEK for real pods, shorter for tests)
         bool exists;
     }
 
@@ -114,7 +115,7 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
     event Expired(bytes32 indexed taskId, address indexed user, uint256 amount);
     event ForfeitPlanSet(address indexed user, address[] targets, uint16[] weightsBps);
     event ForfeitRouted(address indexed user, address indexed target, uint256 amount);
-    event PodCreated(bytes32 indexed podId, address[] members, uint256 ratePerMinute, uint32 weeklyMinutes, uint64 weekZero);
+    event PodCreated(bytes32 indexed podId, address[] members, uint256 ratePerMinute, uint32 weeklyMinutes, uint64 weekZero, uint64 period);
     event ProgressLogged(bytes32 indexed podId, address indexed member, uint256 indexed goalId, uint16 percentBps, uint32 minutesSpent, uint256 timestamp);
     event VoteCast(bytes32 indexed podId, uint256 indexed week, address indexed member, ResolutionKind kind, address target);
     event WeekResolved(bytes32 indexed podId, uint256 indexed week, ResolutionKind kind, address target, uint256 amount);
@@ -253,11 +254,13 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         address[] calldata members,
         uint256 ratePerMinute,
         uint32 weeklyMinutes,
-        uint64 weekZero
+        uint64 weekZero,
+        uint64 period
     ) external {
         require(!pods[podId].exists, "pod exists");
         require(members.length >= 2, "need 2+ members");
         require(ratePerMinute > 0, "zero rate");
+        require(period > 0, "zero period");
         bool callerIn;
         for (uint256 i = 0; i < members.length; i++) {
             require(members[i] != address(0), "zero member");
@@ -266,8 +269,8 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
             if (members[i] == msg.sender) callerIn = true;
         }
         require(callerIn, "creator must be a member");
-        pods[podId] = Pod(members, ratePerMinute, weeklyMinutes, weekZero, true);
-        emit PodCreated(podId, members, ratePerMinute, weeklyMinutes, weekZero);
+        pods[podId] = Pod(members, ratePerMinute, weeklyMinutes, weekZero, period, true);
+        emit PodCreated(podId, members, ratePerMinute, weeklyMinutes, weekZero, period);
     }
 
     function commitPod(bytes32 podId, bytes32 taskId, uint256 amount, uint256 deadline) external {
@@ -289,13 +292,13 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         Pod storage p = pods[podId];
         require(p.exists, "no such pod");
         require(timestamp >= p.weekZero, "before week zero");
-        return (timestamp - p.weekZero) / WEEK;
+        return (timestamp - p.weekZero) / p.period;
     }
 
     function weekEnd(bytes32 podId, uint256 week) public view returns (uint256) {
         Pod storage p = pods[podId];
         require(p.exists, "no such pod");
-        return p.weekZero + (week + 1) * WEEK;
+        return p.weekZero + (week + 1) * p.period;
     }
 
     /// @notice Vote on what happens to a finished week's pool. On
@@ -346,7 +349,7 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
 
     /// @notice Execute the majority resolution. Callable by anyone once a
     ///         strict majority of members agrees on an identical option and
-    ///         either all members have voted or VOTE_GRACE has elapsed.
+    ///         either all members have voted or one extra period has elapsed.
     function resolveWeek(bytes32 podId, uint256 week) external nonReentrant {
         require(!weekResolved[podId][week], "already resolved");
         Pod storage p = pods[podId];
@@ -359,7 +362,7 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
         for (uint256 i = 0; i < n; i++) {
             if (podVotes[podId][week][p.members[i]].cast) castCount++;
         }
-        require(castCount == n || block.timestamp > end + VOTE_GRACE, "waiting for votes");
+        require(castCount == n || block.timestamp > end + p.period, "waiting for votes");
 
         // Find an option with a strict majority of all members. Split votes
         // match only if their share vectors are identical (compared by hash).
@@ -427,7 +430,7 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
     ///         return the whole pool to whoever forfeited into it.
     function refundWeek(bytes32 podId, uint256 week) external nonReentrant {
         require(!weekResolved[podId][week], "already resolved");
-        require(block.timestamp > weekEnd(podId, week) + REFUND_DEADLINE, "refund window not open");
+        require(block.timestamp > weekEnd(podId, week) + 2 * pods[podId].period, "refund window not open");
         weekResolved[podId][week] = true;
         uint256 pool = podPool[podId][week];
         podPool[podId][week] = 0;
@@ -475,11 +478,11 @@ contract CommitmentEscrowV2 is Ownable, ReentrancyGuard {
     }
 
     function getPod(bytes32 podId) external view returns (
-        address[] memory members, uint256 ratePerMinute, uint32 weeklyMinutes, uint64 weekZero
+        address[] memory members, uint256 ratePerMinute, uint32 weeklyMinutes, uint64 weekZero, uint64 period
     ) {
         Pod storage p = pods[podId];
         require(p.exists, "no such pod");
-        return (p.members, p.ratePerMinute, p.weeklyMinutes, p.weekZero);
+        return (p.members, p.ratePerMinute, p.weeklyMinutes, p.weekZero, p.period);
     }
 
     function getVote(bytes32 podId, uint256 week, address member) external view returns (

@@ -76,9 +76,12 @@ expiry time, so changing it affects only future forfeits.
 Two or more people hold each other accountable with a shared stake rate.
 
 **Setup.** One member calls `createPod(podId, members[], ratePerMinute,
-weeklyMinutes, weekZero)`. The member list is fixed at creation.
+weeklyMinutes, weekZero, period)`. The member list is fixed at creation.
 `ratePerMinute` (USDC, 6 decimals) is the pod's single $/minute parameter —
-hours per week × rate = money per week. `weekZero` anchors the weekly cycle.
+hours per week × rate = money per week. `weekZero` anchors the cycle and
+`period` is its length in seconds (`7 days` for a real weekly pod; a short
+value like `600` makes a 10-minute pod for end-to-end testing). Grace and
+refund windows scale with the period (one and two extra periods).
 
 **Privacy.** Goals are logged on-chain only as integer IDs. "Work on porn
 novel" is publicly just `goalId 13`. Each member's agent keeps the

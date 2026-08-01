@@ -58,7 +58,7 @@ describe("CommitmentEscrowV2", () => {
     beforeEach(async () => {
       const weekZero = await time.latest();
       await escrow.connect(a).createPod(
-        POD, [a.address, b.address, c.address], usdc(0.2) / 60n || 3333n, 300, weekZero
+        POD, [a.address, b.address, c.address], usdc(0.2) / 60n || 3333n, 300, weekZero, WEEK
       );
     });
 
@@ -106,8 +106,8 @@ describe("CommitmentEscrowV2", () => {
       await escrow.connect(c).voteWeek(POD, 0, 4, ethers.ZeroAddress); // Recall
       await expect(escrow.resolveWeek(POD, 0)).to.be.revertedWith("no majority");
 
-      // Past refund deadline anyone can trigger the failsafe.
-      await time.increase(8 * 24 * 3600);
+      // Past refund deadline (weekEnd + 2 periods) anyone can trigger the failsafe.
+      await time.increase(15 * 24 * 3600);
       await escrow.connect(outsider).refundWeek(POD, 0);
       const [cBal] = await escrow.getUserInfo(c.address);
       expect(cBal).to.equal(usdc(100)); // made whole
@@ -126,6 +126,30 @@ describe("CommitmentEscrowV2", () => {
       await escrow.connect(outsider).resolveWeek(POD, 0);
       expect(await escrow.podPool(POD, 0)).to.equal(0);
       expect(await escrow.podPool(POD, 1)).to.equal(usdc(10));
+    });
+
+    it("supports a short period for live testing (10-min pod resolves in minutes)", async () => {
+      const SHORT = id("shortpod");
+      const period = 600; // 10 minutes
+      const wz = await time.latest();
+      await escrow.connect(a).createPod(SHORT, [a.address, b.address], 3333n, 20, wz, period);
+      const [, , , , p] = await escrow.getPod(SHORT);
+      expect(p).to.equal(period);
+
+      // b stakes and misses within period 0.
+      const deadline = (await time.latest()) + 120;
+      await escrow.connect(b).commitPod(SHORT, id("sp"), usdc(10), deadline);
+      await time.increase(200);
+      await escrow.connect(a).expire(id("sp"));
+      expect(await escrow.podPool(SHORT, 0)).to.equal(usdc(10));
+
+      // Period 0 ends 600s after weekZero; a completed nothing either, so
+      // both agree the pool rolls forward — resolvable minutes in, not days.
+      await time.increase(600);
+      await escrow.connect(a).voteWeek(SHORT, 0, 7, ethers.ZeroAddress); // Rollover
+      await escrow.connect(b).voteWeek(SHORT, 0, 7, ethers.ZeroAddress);
+      await escrow.connect(a).resolveWeek(SHORT, 0);
+      expect(await escrow.podPool(SHORT, 1)).to.equal(usdc(10));
     });
 
     it("non-members cannot commit, log, or vote", async () => {
