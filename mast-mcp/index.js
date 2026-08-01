@@ -136,6 +136,143 @@ function taskIdHash(id) {
   return ethers.id(id);
 }
 
+// ── Pod mode (CommitmentEscrowV2) ─────────────────────────────────
+// Pods live on the V2 contract, separate from the user's solo escrow.
+// The MCP acts as ONE pod member (this wallet); every member runs their
+// own MCP. Goal names stay local — only integer goalIds go on-chain.
+
+const DEFAULT_POD_CONTRACT = "0xA836A23a939D8BdaF334D0CE0DecfEBF3f01905b";
+// publicnode blocks receipt polling without a paid token, so pod ops use a
+// receipt-friendly RPC by default. Override with config.podRpc.
+const DEFAULT_POD_RPC = "https://mainnet.base.org";
+const PODS_FILE = path.join(MAST_DIR, "pods.json");
+
+// ResolutionKind enum in the contract.
+const RESOLUTION = { none: 0, winner: 1, charity: 2, anticharity: 3, recall: 4, burn: 5, split: 6, rollover: 7 };
+const RESOLUTION_NAME = Object.fromEntries(Object.entries(RESOLUTION).map(([k, v]) => [v, k]));
+
+const POD_ABI = [
+  // shared with solo escrow
+  "function deposit(uint256) external",
+  "function withdraw(uint256) external",
+  "function complete(bytes32) external",
+  "function expire(bytes32) external",
+  "function getUserInfo(address) view returns (uint256, uint256)",
+  // solo forfeit plans
+  "function setForfeitPlan(address[], uint16[]) external",
+  "function clearForfeitPlan() external",
+  "function getForfeitPlan(address) view returns (address[], uint16[])",
+  "function BURN_ADDRESS() view returns (address)",
+  // pods
+  "function createPod(bytes32, address[], uint256, uint32, uint64, uint64) external",
+  "function commitPod(bytes32, bytes32, uint256, uint256) external",
+  "function logProgress(bytes32, uint256, uint16, uint32) external",
+  "function votePeriod(bytes32, uint256, uint8, address) external",
+  "function votePeriodSplit(bytes32, uint256, uint16[]) external",
+  "function resolvePeriod(bytes32, uint256) external",
+  "function refundPeriod(bytes32, uint256) external",
+  "function periodOf(bytes32, uint256) view returns (uint256)",
+  "function periodEnd(bytes32, uint256) view returns (uint256)",
+  "function getPod(bytes32) view returns (address[], uint256, uint32, uint64, uint64)",
+  "function podPool(bytes32, uint256) view returns (uint256)",
+  "function getVote(bytes32, uint256, address) view returns (uint8, address, bool)",
+  "function isPodMember(bytes32, address) view returns (bool)",
+];
+
+function getPodProvider(config) {
+  return new ethers.JsonRpcProvider(config.podRpc || DEFAULT_POD_RPC);
+}
+function getPodWallet(config) {
+  return new ethers.Wallet(config.privateKey, getPodProvider(config));
+}
+function getPodContract(config) {
+  return new ethers.Contract(config.podContract || DEFAULT_POD_CONTRACT, POD_ABI, getPodWallet(config));
+}
+function getPodUsdc(config) {
+  const net = NETWORKS[config.network] || NETWORKS["base"];
+  return new ethers.Contract(net.usdc, USDC_ABI, getPodWallet(config));
+}
+function podContractAddress(config) {
+  return config.podContract || DEFAULT_POD_CONTRACT;
+}
+
+function loadPods() {
+  if (!fs.existsSync(PODS_FILE)) return {};
+  return JSON.parse(fs.readFileSync(PODS_FILE, "utf-8"));
+}
+function savePods(pods) {
+  ensureDir();
+  fs.writeFileSync(PODS_FILE, JSON.stringify(pods, null, 2));
+}
+// Deterministic pod id from a human label, so all members derive the same id.
+function podIdHash(label) {
+  return ethers.id("mastpod:" + label.trim().toLowerCase());
+}
+
+// Look up a pod by label or on-chain id (hex). Returns [id, record] or [id, null].
+function resolvePod(arg) {
+  const pods = loadPods();
+  if (arg && arg.startsWith("0x") && arg.length === 66) return [arg, pods[arg] || null];
+  const id = podIdHash(arg || "");
+  return [id, pods[id] || null];
+}
+
+// Retry transient RPC reverts (load-balanced nodes lag a just-mined tx during
+// gas estimation). thunk must return a FRESH tx promise each attempt.
+async function sendPodTx(thunk) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await (await thunk()).wait();
+    } catch (e) {
+      const msg = e.shortMessage || e.message || "";
+      // Retry only transient lag on load-balanced RPCs. "no such pod" / "not a
+      // member" / "waiting for votes" are transient right after the state they
+      // depend on was written on another replica; a genuinely wrong pod or
+      // non-member just fails after the retries elapse.
+      const transient = /waiting for votes|no such pod|not a member|exceeds allowance|insufficient balance|could not coalesce|timeout|SERVER_ERROR|missing revert/i.test(msg);
+      if (attempt >= 5 || !transient) throw e;
+      await new Promise((r) => setTimeout(r, attempt * 3000));
+    }
+  }
+}
+
+function fmtDuration(seconds) {
+  seconds = Number(seconds);
+  if (seconds % 86400 === 0) return `${seconds / 86400} day(s)`;
+  if (seconds >= 3600) return `${(seconds / 3600).toFixed(1)} h`;
+  return `${Math.round(seconds / 60)} min`;
+}
+
+// Retry a view call — load-balanced RPCs occasionally drop a read in a burst
+// ("missing revert data" with no revert reason).
+async function podRead(fn) {
+  for (let i = 1; ; i++) {
+    try { return await fn(); }
+    catch (e) { if (i >= 4) throw e; await new Promise((r) => setTimeout(r, 1200)); }
+  }
+}
+
+// Ensure `amount` (bigint) is available in the pod contract's escrow for this
+// wallet; top up from the wallet's USDC if short.
+async function ensurePodAvailable(config, amount) {
+  const escrow = getPodContract(config);
+  const usdc = getPodUsdc(config);
+  const [available] = await escrow.getUserInfo(config.address);
+  if (available >= amount) return;
+  const need = amount - available;
+  const walletBal = await usdc.balanceOf(config.address);
+  if (walletBal < need) {
+    throw new Error(
+      `Not enough USDC. Need $${formatUsdc(need)} more in the pod escrow, ` +
+      `wallet holds $${formatUsdc(walletBal)}. Fund ${config.address} with USDC on Base.`
+    );
+  }
+  const spender = podContractAddress(config);
+  const allowance = await usdc.allowance(config.address, spender);
+  if (allowance < need) await sendPodTx(() => usdc.approve(spender, need));
+  await sendPodTx(() => escrow.deposit(need));
+}
+
 // ── Recurring schedule helpers ────────────────────────────────────
 
 const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
@@ -482,6 +619,165 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ["amount_usd"],
       },
     },
+    {
+      name: "mast_set_forfeit_plan",
+      description:
+        "Set where THIS user's forfeited stakes go on the pod contract (CommitmentEscrowV2). " +
+        "By default forfeits go to the platform. A plan routes them to any mix of: an address " +
+        "you control, a charity, an anticharity, a burn address, or the MAST project — weighted. " +
+        "Weights are in basis points and must sum to 10000 (100%). Pass clear:true to revert to default. " +
+        "Note: only affects commitments on the V2 pod contract, not legacy solo commitments.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          splits: {
+            type: "array",
+            description: "Destinations and weights. Omit when clearing.",
+            items: {
+              type: "object",
+              properties: {
+                target: { type: "string", description: "Recipient address. Use the burn address 0x000...dEaD to burn." },
+                weight_bps: { type: "number", description: "Weight in basis points (100% = 10000)." },
+              },
+              required: ["target", "weight_bps"],
+            },
+          },
+          clear: { type: "boolean", description: "Revert to the platform default (no plan)." },
+        },
+      },
+    },
+    {
+      name: "mast_pod_create",
+      description:
+        "Create an accountability pod on the V2 contract. 2+ members hold each other accountable; " +
+        "forfeited stakes pool each period and, on a majority vote, split among the members who hit their " +
+        "own target — weighted by how much each staked. The caller must be one of the members. " +
+        "All members must independently derive the same pod from the same label, so agree on a label first.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          label: { type: "string", description: "Shared human label for the pod (hashed to a deterministic id). All members use the same label." },
+          members: { type: "array", items: { type: "string" }, description: "Member wallet addresses (must include your own). At least 2." },
+          rate_per_minute_usd: { type: "number", description: "The pod's single $/minute parameter (e.g. 0.2). Informational anchor for stakes." },
+          target_minutes: { type: "number", description: "Weekly/period minutes target per member (informational)." },
+          period_days: { type: "number", description: "Length of a settlement period in days. Default 7 (weekly)." },
+          period_seconds: { type: "number", description: "Override period length in seconds (for testing short periods). Takes precedence over period_days." },
+        },
+        required: ["label", "members", "rate_per_minute_usd"],
+      },
+    },
+    {
+      name: "mast_pod_commit",
+      description:
+        "Stake money on a personal goal inside a pod. The goal's NAME stays local (private) — only an " +
+        "integer goalId goes on-chain. Auto-deposits from your wallet if the pod escrow is short. If you " +
+        "complete it (mast_complete on the returned task id) the stake returns; if it expires it pools for the period.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pod: { type: "string", description: "Pod label or 0x id." },
+          goal_name: { type: "string", description: "Private goal name (stored locally only, mapped to an integer goalId)." },
+          amount_usd: { type: "number", description: "Amount to stake." },
+          deadline_hours: { type: "number", description: "Hours from now until the deadline. Default 24." },
+        },
+        required: ["pod", "goal_name", "amount_usd"],
+      },
+    },
+    {
+      name: "mast_pod_complete",
+      description:
+        "Complete a pod stake you followed through on — returns the staked USDC to your pod escrow " +
+        "balance (withdraw anytime). Identify the stake by task_id, or by goal_name to complete your " +
+        "most recent open stake on that goal.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pod: { type: "string", description: "Pod label or 0x id." },
+          task_id: { type: "string", description: "The stake's task id (returned by mast_pod_commit)." },
+          goal_name: { type: "string", description: "Alternatively, the goal name — completes your most recent open stake on it." },
+        },
+        required: ["pod"],
+      },
+    },
+    {
+      name: "mast_pod_expire",
+      description:
+        "Forfeit your own overdue pod stakes into the period's pool — for stakes you did NOT complete. " +
+        "Expire a specific task_id, or omit it to expire all your overdue unsettled stakes in the pod. " +
+        "This is how missed stakes fund the pool for settlement; each member expires their own.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pod: { type: "string", description: "Pod label or 0x id." },
+          task_id: { type: "string", description: "Specific stake to expire. Omit to expire all your overdue unsettled stakes." },
+        },
+        required: ["pod"],
+      },
+    },
+    {
+      name: "mast_pod_log_progress",
+      description:
+        "Publicly log a work session toward a pod goal — only the integer goalId, percent complete, and " +
+        "minutes go on-chain (never the goal name). Other members' agents read these to compute the split.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pod: { type: "string", description: "Pod label or 0x id." },
+          goal_name: { type: "string", description: "Goal name (resolved to its local goalId) — or pass goal_id directly." },
+          goal_id: { type: "number", description: "Integer goalId, if known." },
+          percent: { type: "number", description: "Percent of the goal complete, 0–100." },
+          minutes: { type: "number", description: "Minutes spent this session." },
+        },
+        required: ["pod"],
+      },
+    },
+    {
+      name: "mast_pod_vote",
+      description:
+        "Vote on how a finished period's pool is resolved. Normal path: a parimutuel SPLIT — pass shares_bps " +
+        "aligned to the pod's member order (summing to 10000), computed as each completer's stake share. " +
+        "Anomaly path: pass kind (winner/charity/anticharity/recall/burn/rollover) with an optional target address. " +
+        "A strict majority of matching votes resolves the period.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pod: { type: "string", description: "Pod label or 0x id." },
+          period: { type: "number", description: "Period index to vote on. Defaults to the most recently ended period." },
+          shares_bps: { type: "array", items: { type: "number" }, description: "Split vote: bps per member in member order, summing to 10000." },
+          kind: { type: "string", enum: ["winner", "charity", "anticharity", "recall", "burn", "rollover"], description: "Anomaly resolution kind (instead of shares_bps)." },
+          target: { type: "string", description: "Target address for kind=winner/charity/anticharity." },
+        },
+        required: ["pod"],
+      },
+    },
+    {
+      name: "mast_pod_resolve",
+      description:
+        "Execute the majority resolution for a finished period (pays out the pool), or trigger the refund " +
+        "failsafe if voting stalled past the window. Callable by anyone once conditions are met.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pod: { type: "string", description: "Pod label or 0x id." },
+          period: { type: "number", description: "Period index to resolve. Defaults to the most recently ended period." },
+          refund: { type: "boolean", description: "Use the refund failsafe (return the pool to contributors) instead of resolving votes." },
+        },
+        required: ["pod"],
+      },
+    },
+    {
+      name: "mast_pod_status",
+      description:
+        "Show pod state: members (with order for split votes), period length, the current and last-ended " +
+        "period, the pool amount, your escrow balance on the pod contract, and each member's vote for a period.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pod: { type: "string", description: "Pod label or 0x id. Omit to list all your pods." },
+          period: { type: "number", description: "Period index to inspect votes for. Defaults to the last-ended period." },
+        },
+      },
+    },
   ],
 }));
 
@@ -514,6 +810,24 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await handleSetDefaultStrictness(args);
       case "mast_withdraw":
         return await handleWithdraw(args);
+      case "mast_set_forfeit_plan":
+        return await handleSetForfeitPlan(args);
+      case "mast_pod_create":
+        return await handlePodCreate(args);
+      case "mast_pod_commit":
+        return await handlePodCommit(args);
+      case "mast_pod_complete":
+        return await handlePodComplete(args);
+      case "mast_pod_expire":
+        return await handlePodExpire(args);
+      case "mast_pod_log_progress":
+        return await handlePodLogProgress(args);
+      case "mast_pod_vote":
+        return await handlePodVote(args);
+      case "mast_pod_resolve":
+        return await handlePodResolve(args);
+      case "mast_pod_status":
+        return await handlePodStatus(args);
       default:
         return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
     }
@@ -1444,6 +1758,345 @@ async function handleWithdraw(args) {
     `Withdrawn $${args.amount_usd} from escrow to wallet.\n` +
     `Tx: ${NETWORKS[config.network].explorer}/tx/${receipt.hash}`
   );
+}
+
+// ── Pod / forfeit-plan handlers ───────────────────────────────────
+
+function podExplorerTx(config, hash) {
+  return `${NETWORKS[config.network].explorer}/tx/${hash}`;
+}
+
+// Which period most recently ended for a pod (the one ready to resolve).
+// Returns -1 if the first period is still open.
+async function lastEndedPeriod(escrow, id) {
+  const [, , , periodZero, periodLength] = await escrow.getPod(id);
+  const now = BigInt(Math.floor(Date.now() / 1000));
+  if (now <= periodZero) return -1n;
+  const idx = (now - periodZero) / periodLength; // current period index
+  return idx - 1n; // the one before "current" has ended
+}
+
+async function handleSetForfeitPlan(args) {
+  const config = requireConfig();
+  const escrow = getPodContract(config);
+
+  if (args.clear) {
+    const r = await sendPodTx(() => escrow.clearForfeitPlan());
+    return ok(`Forfeit plan cleared — forfeits on the pod contract go to the platform default again.\nTx: ${podExplorerTx(config, r.hash)}`);
+  }
+  const splits = args.splits || [];
+  if (!splits.length) return err("Provide splits (target + weight_bps) or clear:true.");
+  const targets = [];
+  const weights = [];
+  let sum = 0;
+  for (const s of splits) {
+    if (!ethers.isAddress(s.target)) return err(`Invalid address: ${s.target}`);
+    targets.push(ethers.getAddress(s.target));
+    weights.push(s.weight_bps);
+    sum += s.weight_bps;
+  }
+  if (sum !== 10000) return err(`Weights must sum to 10000 (100%). Got ${sum}.`);
+
+  const r = await sendPodTx(() => escrow.setForfeitPlan(targets, weights));
+  const lines = splits.map((s) => `  ${(s.weight_bps / 100).toFixed(1)}% → ${s.target}`).join("\n");
+  return ok(`Forfeit plan set on the pod contract:\n${lines}\nApplies to future forfeits.\nTx: ${podExplorerTx(config, r.hash)}`);
+}
+
+async function handlePodCreate(args) {
+  const config = requireConfig();
+  const escrow = getPodContract(config);
+
+  const members = (args.members || []).map((m) => {
+    if (!ethers.isAddress(m)) throw new Error(`Invalid member address: ${m}`);
+    return ethers.getAddress(m);
+  });
+  if (members.length < 2) return err("A pod needs at least 2 members.");
+  const self = ethers.getAddress(config.address);
+  if (!members.includes(self)) return err(`Your own address (${self}) must be in the members list.`);
+  if (new Set(members).size !== members.length) return err("Duplicate member addresses.");
+
+  const id = podIdHash(args.label);
+  const pods = loadPods();
+  if (pods[id]) return err(`You already have a pod labelled "${args.label}" (${id}).`);
+
+  const ratePerMinute = parseUsdc(args.rate_per_minute_usd);
+  if (ratePerMinute <= 0n) return err("rate_per_minute_usd must be > 0.");
+  const targetMinutes = Math.round(args.target_minutes || 0);
+  const periodLength = args.period_seconds
+    ? Math.round(args.period_seconds)
+    : Math.round((args.period_days || 7) * 86400);
+
+  // Anchor the cycle at current chain time.
+  const block = await getPodProvider(config).getBlock("latest");
+  const periodZero = block.timestamp;
+
+  const r = await sendPodTx(() => escrow.createPod(id, members, ratePerMinute, targetMinutes, periodZero, periodLength));
+
+  pods[id] = {
+    label: args.label,
+    members,
+    ratePerMinuteUsd: args.rate_per_minute_usd,
+    targetMinutes,
+    periodZero,
+    periodLength,
+    goals: {},
+    nextGoalId: 1,
+    tasks: {},
+    createdTx: r.hash,
+  };
+  savePods(pods);
+
+  return ok(
+    `Pod "${args.label}" created on the V2 contract.\n` +
+    `Id: ${id}\n` +
+    `Members (${members.length}, split-vote order):\n` +
+    members.map((m, i) => `  [${i}] ${m}${m === self ? "  (you)" : ""}`).join("\n") + "\n" +
+    `Period: ${fmtDuration(periodLength)}  ·  rate $${args.rate_per_minute_usd}/min  ·  target ${targetMinutes} min\n` +
+    `Tx: ${podExplorerTx(config, r.hash)}\n\n` +
+    `Each other member must be in this pod too (same label derives the same id). ` +
+    `Stake goals with mast_pod_commit; log work with mast_pod_log_progress.`
+  );
+}
+
+// Resolve a goal name to a stable integer id within a pod (assigns if new).
+function goalIdFor(podRec, goalName) {
+  for (const [gid, name] of Object.entries(podRec.goals)) {
+    if (name.toLowerCase() === goalName.toLowerCase()) return parseInt(gid, 10);
+  }
+  const gid = podRec.nextGoalId || 1;
+  podRec.goals[gid] = goalName;
+  podRec.nextGoalId = gid + 1;
+  return gid;
+}
+
+async function handlePodCommit(args) {
+  const config = requireConfig();
+  const [id, rec] = resolvePod(args.pod);
+  if (!rec) return err(`No local pod "${args.pod}". Create it or check the label.`);
+
+  const escrow = getPodContract(config);
+  const amount = parseUsdc(args.amount_usd);
+  const goalId = goalIdFor(rec, args.goal_name);
+
+  const deadlineHours = args.deadline_hours || 24;
+  const deadline = Math.floor(Date.now() / 1000) + Math.round(deadlineHours * 3600);
+  const taskId = ethers.id(`${id}:${goalId}:${deadline}`);
+
+  await ensurePodAvailable(config, amount);
+  const r = await sendPodTx(() => escrow.commitPod(id, taskId, amount, deadline));
+
+  rec.tasks[taskId] = { goalId, amountUsd: args.amount_usd, deadline, tx: r.hash };
+  const pods = loadPods();
+  pods[id] = rec;
+  savePods(pods);
+
+  return ok(
+    `Staked $${args.amount_usd} on "${args.goal_name}" (goal #${goalId}) in pod "${rec.label}".\n` +
+    `Task id: ${taskId}\n` +
+    `Deadline: ${new Date(deadline * 1000).toLocaleString()}\n` +
+    `Complete it in time (mast_pod_complete with this pod + goal or task id) to get the stake back; ` +
+    `otherwise it expires into this period's pool.\n` +
+    `Tx: ${podExplorerTx(config, r.hash)}`
+  );
+}
+
+async function handlePodComplete(args) {
+  const config = requireConfig();
+  const [id, rec] = resolvePod(args.pod);
+  if (!rec) return err(`No local pod "${args.pod}".`);
+
+  let taskId = args.task_id;
+  if (!taskId && args.goal_name) {
+    const gid = Object.entries(rec.goals).find(([, n]) => n.toLowerCase() === args.goal_name.toLowerCase())?.[0];
+    if (!gid) return err(`No goal named "${args.goal_name}" in this pod.`);
+    const open = Object.entries(rec.tasks)
+      .filter(([, t]) => String(t.goalId) === String(gid) && !t.completed)
+      .sort((a, b) => b[1].deadline - a[1].deadline);
+    if (!open.length) return err(`No open stake on "${args.goal_name}".`);
+    taskId = open[0][0];
+  }
+  if (!taskId) return err("Provide task_id or goal_name.");
+  const t = rec.tasks[taskId];
+
+  const escrow = getPodContract(config);
+  const r = await sendPodTx(() => escrow.complete(taskId));
+  if (t) { t.completed = true; t.completeTx = r.hash; const pods = loadPods(); pods[id] = rec; savePods(pods); }
+
+  return ok(
+    `Completed pod stake${t ? ` of $${t.amountUsd}` : ""}${t && rec.goals[t.goalId] ? ` on "${rec.goals[t.goalId]}"` : ""} in "${rec.label}". ` +
+    `Stake returned to your pod escrow balance.\n` +
+    `Tx: ${podExplorerTx(config, r.hash)}`
+  );
+}
+
+async function handlePodExpire(args) {
+  const config = requireConfig();
+  const [id, rec] = resolvePod(args.pod);
+  if (!rec) return err(`No local pod "${args.pod}".`);
+  const now = Math.floor(Date.now() / 1000);
+
+  let taskIds = args.task_id
+    ? [args.task_id]
+    : Object.entries(rec.tasks).filter(([, t]) => !t.completed && !t.expired && t.deadline < now).map(([tid]) => tid);
+  if (!taskIds.length) return err("No overdue unsettled stakes to expire.");
+
+  const escrow = getPodContract(config);
+  const results = [];
+  for (const tid of taskIds) {
+    const t = rec.tasks[tid];
+    if (t && t.deadline >= now) { results.push(`  skip ${tid.slice(0, 12)}… — not overdue yet`); continue; }
+    try {
+      const r = await sendPodTx(() => escrow.expire(tid));
+      if (t) { t.expired = true; t.expireTx = r.hash; }
+      results.push(`  expired${t ? ` $${t.amountUsd}` : ""} ${tid.slice(0, 12)}… → pooled`);
+    } catch (e) {
+      results.push(`  ${tid.slice(0, 12)}…: ${(e.shortMessage || e.message).slice(0, 50)}`);
+    }
+  }
+  const pods = loadPods(); pods[id] = rec; savePods(pods);
+  return ok(`Expired overdue stakes in "${rec.label}":\n${results.join("\n")}\nThe pool grows by these amounts — see mast_pod_status.`);
+}
+
+async function handlePodLogProgress(args) {
+  const config = requireConfig();
+  const [id, rec] = resolvePod(args.pod);
+  if (!rec) return err(`No local pod "${args.pod}".`);
+
+  let goalId = args.goal_id;
+  if (goalId == null) {
+    if (!args.goal_name) return err("Provide goal_name or goal_id.");
+    goalId = goalIdFor(rec, args.goal_name);
+    const pods = loadPods(); pods[id] = rec; savePods(pods);
+  }
+  const percent = Math.max(0, Math.min(100, args.percent ?? 0));
+  const percentBps = Math.round(percent * 100);
+  const minutes = Math.round(args.minutes || 0);
+
+  const escrow = getPodContract(config);
+  const r = await sendPodTx(() => escrow.logProgress(id, goalId, percentBps, minutes));
+
+  return ok(
+    `Logged ${percent}% (${minutes} min) on goal #${goalId}` +
+    (rec.goals[goalId] ? ` ("${rec.goals[goalId]}")` : "") + ` in pod "${rec.label}".\n` +
+    `On-chain this is just goalId ${goalId} — the name stays local.\n` +
+    `Tx: ${podExplorerTx(config, r.hash)}`
+  );
+}
+
+async function handlePodVote(args) {
+  const config = requireConfig();
+  const [id, rec] = resolvePod(args.pod);
+  if (!rec) return err(`No local pod "${args.pod}".`);
+  const escrow = getPodContract(config);
+
+  let period = args.period;
+  if (period == null) {
+    const p = await lastEndedPeriod(escrow, id);
+    if (p < 0n) return err("The first period hasn't ended yet — nothing to vote on.");
+    period = Number(p);
+  }
+
+  if (args.shares_bps) {
+    const shares = args.shares_bps.map((n) => Math.round(n));
+    const sum = shares.reduce((a, b) => a + b, 0);
+    if (sum !== 10000) return err(`shares_bps must sum to 10000. Got ${sum}.`);
+    if (rec && shares.length !== rec.members.length) {
+      return err(`shares_bps has ${shares.length} entries but the pod has ${rec.members.length} members (order matters).`);
+    }
+    const r = await sendPodTx(() => escrow.votePeriodSplit(id, period, shares));
+    const breakdown = rec.members.map((m, i) => `  [${i}] ${(shares[i] / 100).toFixed(1)}%  ${m}`).join("\n");
+    return ok(`Voted a parimutuel SPLIT for period ${period} of "${rec.label}":\n${breakdown}\n` +
+      `Resolves when a majority of members submit the same vector.\nTx: ${podExplorerTx(config, r.hash)}`);
+  }
+
+  if (args.kind) {
+    const kind = RESOLUTION[args.kind];
+    if (kind == null || args.kind === "split") return err(`Unknown vote kind: ${args.kind}.`);
+    let target = ethers.ZeroAddress;
+    if (["winner", "charity", "anticharity"].includes(args.kind)) {
+      if (!args.target || !ethers.isAddress(args.target)) return err(`kind=${args.kind} needs a valid target address.`);
+      target = ethers.getAddress(args.target);
+    } else if (args.target) {
+      return err(`kind=${args.kind} must not have a target.`);
+    }
+    const r = await sendPodTx(() => escrow.votePeriod(id, period, kind, target));
+    return ok(`Voted "${args.kind}"${target !== ethers.ZeroAddress ? ` → ${target}` : ""} for period ${period} of "${rec.label}".\n` +
+      `Resolves on a strict majority.\nTx: ${podExplorerTx(config, r.hash)}`);
+  }
+
+  return err("Provide shares_bps (parimutuel split) or kind (anomaly resolution).");
+}
+
+async function handlePodResolve(args) {
+  const config = requireConfig();
+  const [id, rec] = resolvePod(args.pod);
+  if (!rec) return err(`No local pod "${args.pod}".`);
+  const escrow = getPodContract(config);
+
+  let period = args.period;
+  if (period == null) {
+    const p = await lastEndedPeriod(escrow, id);
+    if (p < 0n) return err("The first period hasn't ended yet — nothing to resolve.");
+    period = Number(p);
+  }
+
+  const poolBefore = await escrow.podPool(id, period);
+  const r = await sendPodTx(() => (args.refund ? escrow.refundPeriod(id, period) : escrow.resolvePeriod(id, period)));
+  return ok(
+    `${args.refund ? "Refunded" : "Resolved"} period ${period} of "${rec.label}". ` +
+    `Pool was $${formatUsdc(poolBefore)}.\n` +
+    `Members' escrow balances updated on-chain — check mast_pod_status.\n` +
+    `Tx: ${podExplorerTx(config, r.hash)}`
+  );
+}
+
+async function handlePodStatus(args) {
+  const config = requireConfig();
+  const pods = loadPods();
+
+  if (!args.pod) {
+    const ids = Object.keys(pods);
+    if (!ids.length) return ok("You're not in any pods yet. Create one with mast_pod_create.");
+    return ok("Your pods:\n" + ids.map((id) => `  "${pods[id].label}" — ${pods[id].members.length} members — ${id}`).join("\n") +
+      `\n\nCall mast_pod_status with a label for detail.`);
+  }
+
+  const [id, rec] = resolvePod(args.pod);
+  const escrow = getPodContract(config);
+  let onchain;
+  try {
+    onchain = await podRead(() => escrow.getPod(id));
+  } catch {
+    return err(`Pod ${args.pod} (${id}) not found on-chain.`);
+  }
+  const [members, ratePerMinute, targetMinutes, periodZero, periodLength] = onchain;
+  const now = BigInt(Math.floor(Date.now() / 1000));
+  const curIdx = now > periodZero ? Number((now - periodZero) / periodLength) : 0;
+  const lastEnded = now > periodZero ? Math.max(-1, Number((now - periodZero) / periodLength) - 1) : -1;
+  const period = args.period != null ? args.period : lastEnded;
+
+  const [avail, locked] = await podRead(() => escrow.getUserInfo(config.address));
+  const lines = [];
+  lines.push(`Pod "${rec ? rec.label : id}"  (${id})`);
+  lines.push(`Members (split-vote order):`);
+  members.forEach((m, i) => lines.push(`  [${i}] ${m}${m.toLowerCase() === config.address.toLowerCase() ? "  (you)" : ""}`));
+  lines.push(`Period length: ${fmtDuration(periodLength)}  ·  rate $${formatUsdc(ratePerMinute)}/min  ·  target ${targetMinutes} min`);
+  lines.push(`Current period: ${curIdx}   Last ended: ${lastEnded < 0 ? "(none yet)" : lastEnded}`);
+  lines.push(`Your pod escrow: $${formatUsdc(avail)} available, $${formatUsdc(locked)} locked`);
+
+  if (period >= 0) {
+    const pool = await podRead(() => escrow.podPool(id, period));
+    lines.push(`\nPeriod ${period}: pool $${formatUsdc(pool)}`);
+    lines.push(`Votes:`);
+    for (const m of members) {
+      const [kind, target, cast] = await podRead(() => escrow.getVote(id, period, m));
+      lines.push(`  ${m}: ${cast ? RESOLUTION_NAME[Number(kind)] + (target !== ethers.ZeroAddress ? ` → ${target}` : "") : "— not voted"}`);
+    }
+  }
+  if (rec && Object.keys(rec.goals).length) {
+    lines.push(`\nYour goals (local, private): ` + Object.entries(rec.goals).map(([g, n]) => `#${g} ${n}`).join(", "));
+  }
+  return ok(lines.join("\n"));
 }
 
 // ── Prompts (agent instructions) ──────────────────────────────────
