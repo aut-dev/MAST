@@ -114,7 +114,7 @@ A 4-hour-a-week member who follows through earns proportionally more than a
 committing tiny.
 
 Pods run on the **V2 contract**
-(`0xA836A23a939D8BdaF334D0CE0DecfEBF3f01905b` on Base mainnet), separate from
+(`0x5eb837Ea6a3578D882284019e55bF9F659a56F1A` on Base mainnet), separate from
 solo commitments. Each member has their own wallet and runs their own MCP —
 the server always acts as *one* member (you).
 
