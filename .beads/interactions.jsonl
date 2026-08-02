@@ -4,3 +4,5 @@
 {"id":"int-043c1bf8","kind":"field_change","created_at":"2026-08-01T06:53:11.956912Z","actor":"gaga","issue_id":"mast-euq","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
 {"id":"int-7d476ecb","kind":"field_change","created_at":"2026-08-01T06:54:38.708965Z","actor":"gaga","issue_id":"mast-1gg","extra":{"field":"status","new_value":"in_progress","old_value":"open"}}
 {"id":"int-97935da4","kind":"field_change","created_at":"2026-08-01T07:09:46.117529Z","actor":"gaga","issue_id":"mast-1gg","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
+{"id":"int-5a4c243a","kind":"field_change","created_at":"2026-08-02T07:55:16.795246Z","actor":"gaga","issue_id":"mast-i40","extra":{"field":"status","new_value":"in_progress","old_value":"open"}}
+{"id":"int-1b2d7ce6","kind":"field_change","created_at":"2026-08-02T08:06:43.214665Z","actor":"gaga","issue_id":"mast-i40","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Closed"}}
