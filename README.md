@@ -142,6 +142,29 @@ commitments and pods.
    registers everyone on-chain; joining is how the others get a local copy so
    they can stake and vote.)
 
+### Changing the roster
+
+The pod **admin** (whoever created it) can add or remove members —
+*"add 0xNewPerson to the pod"* (`mast_pod_add_member`) or *"remove 0xBrother"*
+(`mast_pod_remove_member`). Changes **take effect from the next period**, never
+retroactively:
+
+- Membership is snapshotted per period, so settlement, votes, and the majority
+  threshold for a period always use the roster that was in force *during* that
+  period. Nothing already accrued is disturbed.
+- A newly-added member can't share a pool they didn't stake into — they only
+  count from their first full period. After being added they run
+  `mast_pod_join` to sync locally.
+- A removed member keeps every claim from periods they were part of, their
+  balance is untouched (withdraw anytime), and any pool they forfeited into is
+  still refundable to them.
+- A pod can't drop below 2 members. To swap someone in a 2-person pod, add
+  first (→3), then remove (→2). Admin can hand off with a transfer.
+
+This also fixes the **ghost-member** problem: a member who goes silent still
+counts toward quorum and can stall every vote into the refund failsafe —
+removing them lets the pod settle normally again.
+
 ### Running a pod
 
 Just talk to your agent — it maps to the `mast_pod_*` tools:

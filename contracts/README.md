@@ -9,7 +9,7 @@ Two contracts live here:
 | Contract | Status | What it does |
 |---|---|---|
 | `CommitmentEscrow.sol` (V1) | deployed at `0xb279110b7a7F77344094721Bf4232dE46AFC1C42` (Base mainnet) | Solo commitments; all forfeits go to the contract owner's platform balance |
-| `CommitmentEscrowV2.sol` | source ready, not yet deployed | Solo mode with configurable forfeit plans, plus Pod Mode (group accountability with parimutuel weekly settlement) |
+| `CommitmentEscrowV2.sol` | deployed at `0x5eb837Ea6a3578D882284019e55bF9F659a56F1A` (Base mainnet) | Solo mode with configurable forfeit plans, plus Pod Mode (group accountability, parimutuel settlement, per-period membership rosters) |
 
 ## Setup & deployment
 
@@ -75,8 +75,19 @@ expiry time, so changing it affects only future forfeits.
 
 Two or more people hold each other accountable with a shared stake rate.
 
+**Membership.** Rosters are versioned per period: `createPod` sets the initial
+members, and the admin (creator) can `addMember` / `removeMember` afterward.
+Changes take effect from the **next** period — settlement, votes, and the
+majority threshold for a period always use the roster in force *during* that
+period, so a roster change never disturbs an accrued pool, a newcomer can't
+share a pool they didn't stake into, and a removed member is still refunded any
+pool they forfeited into (contributors are tracked explicitly, independent of
+the current roster). A pod can't drop below 2 members; `transferPodAdmin` hands
+off control. Views: `membersOf(podId, period)`, `latestMembers`,
+`currentPeriod`, `podAdmin`, `isMember`.
+
 **Setup.** One member calls `createPod(podId, members[], ratePerMinute,
-targetMinutes, periodZero, periodLength)`. The member list is fixed at creation.
+targetMinutes, periodZero, periodLength)`.
 `ratePerMinute` (USDC, 6 decimals) is the pod's single $/minute parameter —
 hours per period × rate = money per period. `periodZero` anchors the cycle and
 `periodLength` is its length in seconds (`7 days` for a real weekly pod; a short

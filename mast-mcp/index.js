@@ -141,7 +141,7 @@ function taskIdHash(id) {
 // The MCP acts as ONE pod member (this wallet); every member runs their
 // own MCP. Goal names stay local — only integer goalIds go on-chain.
 
-const DEFAULT_POD_CONTRACT = "0xA836A23a939D8BdaF334D0CE0DecfEBF3f01905b";
+const DEFAULT_POD_CONTRACT = "0x5eb837Ea6a3578D882284019e55bF9F659a56F1A";
 // publicnode blocks receipt polling without a paid token, so pod ops use a
 // receipt-friendly RPC by default. Override with config.podRpc.
 const DEFAULT_POD_RPC = "https://mainnet.base.org";
@@ -165,6 +165,9 @@ const POD_ABI = [
   "function BURN_ADDRESS() view returns (address)",
   // pods
   "function createPod(bytes32, address[], uint256, uint32, uint64, uint64) external",
+  "function addMember(bytes32, address) external",
+  "function removeMember(bytes32, address) external",
+  "function transferPodAdmin(bytes32, address) external",
   "function commitPod(bytes32, bytes32, uint256, uint256) external",
   "function logProgress(bytes32, uint256, uint16, uint32) external",
   "function votePeriod(bytes32, uint256, uint8, address) external",
@@ -174,9 +177,13 @@ const POD_ABI = [
   "function periodOf(bytes32, uint256) view returns (uint256)",
   "function periodEnd(bytes32, uint256) view returns (uint256)",
   "function getPod(bytes32) view returns (address[], uint256, uint32, uint64, uint64)",
+  "function membersOf(bytes32, uint256) view returns (address[])",
+  "function latestMembers(bytes32) view returns (uint256, address[])",
+  "function currentPeriod(bytes32) view returns (uint256)",
+  "function podAdmin(bytes32) view returns (address)",
+  "function isMember(bytes32, address) view returns (bool)",
   "function podPool(bytes32, uint256) view returns (uint256)",
   "function getVote(bytes32, uint256, address) view returns (uint8, address, bool)",
-  "function isPodMember(bytes32, address) view returns (bool)",
 ];
 
 function getPodProvider(config) {
@@ -229,7 +236,7 @@ async function sendPodTx(thunk) {
       // member" / "waiting for votes" are transient right after the state they
       // depend on was written on another replica; a genuinely wrong pod or
       // non-member just fails after the retries elapse.
-      const transient = /waiting for votes|no such pod|not a member|exceeds allowance|insufficient balance|could not coalesce|timeout|SERVER_ERROR|missing revert/i.test(msg);
+      const transient = /waiting for votes|no such pod|not a member|min 2 members|already a member|exceeds allowance|insufficient balance|could not coalesce|timeout|SERVER_ERROR|missing revert/i.test(msg);
       if (attempt >= 5 || !transient) throw e;
       await new Promise((r) => setTimeout(r, attempt * 3000));
     }
@@ -682,6 +689,36 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "mast_pod_add_member",
+      description:
+        "Add a member to a pod (admin only — the creator). Takes effect from the NEXT period, so it " +
+        "never disturbs the current or past periods and the newcomer can't share a pool they didn't " +
+        "stake into. They should run mast_pod_join afterward to sync locally.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pod: { type: "string", description: "Pod label or 0x id." },
+          member: { type: "string", description: "Wallet address to add." },
+        },
+        required: ["pod", "member"],
+      },
+    },
+    {
+      name: "mast_pod_remove_member",
+      description:
+        "Remove a member from a pod (admin only). Takes effect from the NEXT period; the member keeps " +
+        "every claim from periods they were part of, their balance is untouched, and any pool they " +
+        "forfeited into is still refundable to them. Can't drop below 2 members.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          pod: { type: "string", description: "Pod label or 0x id." },
+          member: { type: "string", description: "Wallet address to remove." },
+        },
+        required: ["pod", "member"],
+      },
+    },
+    {
       name: "mast_pod_commit",
       description:
         "Stake money on a personal goal inside a pod. The goal's NAME stays local (private) — only an " +
@@ -831,6 +868,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await handlePodCreate(args);
       case "mast_pod_join":
         return await handlePodJoin(args);
+      case "mast_pod_add_member":
+        return await handlePodAddMember(args);
+      case "mast_pod_remove_member":
+        return await handlePodRemoveMember(args);
       case "mast_pod_commit":
         return await handlePodCommit(args);
       case "mast_pod_complete":
@@ -1889,11 +1930,14 @@ async function handlePodJoin(args) {
   } catch {
     return err(`No pod found for "${args.pod}" on-chain. Confirm the label matches the creator's exactly (case-insensitive), or use the 0x id.`);
   }
-  const [members, ratePerMinute, targetMinutes, periodZero, periodLength] = onchain;
-  const norm = members.map((m) => ethers.getAddress(m));
+  const [, ratePerMinute, targetMinutes, periodZero, periodLength] = onchain;
+  // Use the latest roster (includes members added effective next period) so a
+  // newly-added member can join before their first period begins.
+  const [, latest] = await podRead(() => escrow.latestMembers(id));
+  const norm = latest.map((m) => ethers.getAddress(m));
   const self = ethers.getAddress(config.address);
   if (!norm.includes(self)) {
-    return err(`You (${self}) are not a member of this pod. Ask the creator to include your address in mast_pod_create.`);
+    return err(`You (${self}) are not a member of this pod. Ask the admin to add you with mast_pod_add_member.`);
   }
 
   const label = isId ? (args.label || id) : args.pod;
@@ -1917,6 +1961,60 @@ async function handlePodJoin(args) {
     norm.map((m, i) => `  [${i}] ${m}${m === self ? "  (you)" : ""}`).join("\n") + "\n" +
     `Period: ${fmtDuration(periodLength)}  ·  rate $${Number(ratePerMinute) / 1e6}/min\n` +
     `You can now stake with mast_pod_commit and log work with mast_pod_log_progress.`
+  );
+}
+
+// Refresh a local pod record's member list from the latest on-chain roster.
+// Optionally wait (through RPC replica lag) until an expected change lands.
+async function syncRoster(config, id, rec, expect = {}) {
+  const escrow = getPodContract(config);
+  let members = rec.members || [];
+  for (let i = 1; i <= 6; i++) {
+    const [, latest] = await podRead(() => escrow.latestMembers(id));
+    members = latest.map((m) => ethers.getAddress(m));
+    const hasWanted = !expect.present || members.includes(expect.present);
+    const lacksGone = !expect.absent || !members.includes(expect.absent);
+    if (hasWanted && lacksGone) break;
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+  rec.members = members;
+  const pods = loadPods(); pods[id] = rec; savePods(pods);
+  return members;
+}
+
+async function handlePodAddMember(args) {
+  const config = requireConfig();
+  const [id, rec] = resolvePod(args.pod);
+  if (!rec) return err(`No local pod "${args.pod}".`);
+  if (!ethers.isAddress(args.member)) return err(`Invalid address: ${args.member}`);
+  const member = ethers.getAddress(args.member);
+
+  const escrow = getPodContract(config);
+  const r = await sendPodTx(() => escrow.addMember(id, member));
+  const members = await syncRoster(config, id, rec, { present: member });
+  return ok(
+    `Added ${member} to pod "${rec.label}" — effective next period.\n` +
+    `Roster going forward (${members.length}): ${members.join(", ")}\n` +
+    `They should run mast_pod_join to sync locally.\n` +
+    `Tx: ${podExplorerTx(config, r.hash)}`
+  );
+}
+
+async function handlePodRemoveMember(args) {
+  const config = requireConfig();
+  const [id, rec] = resolvePod(args.pod);
+  if (!rec) return err(`No local pod "${args.pod}".`);
+  if (!ethers.isAddress(args.member)) return err(`Invalid address: ${args.member}`);
+  const member = ethers.getAddress(args.member);
+
+  const escrow = getPodContract(config);
+  const r = await sendPodTx(() => escrow.removeMember(id, member));
+  const members = await syncRoster(config, id, rec, { absent: member });
+  return ok(
+    `Removed ${member} from pod "${rec.label}" — effective next period. ` +
+    `Their claims to past periods and their balance are untouched.\n` +
+    `Roster going forward (${members.length}): ${members.join(", ")}\n` +
+    `Tx: ${podExplorerTx(config, r.hash)}`
   );
 }
 
@@ -2058,17 +2156,22 @@ async function handlePodVote(args) {
     period = Number(p);
   }
 
+  // Split shares align to the roster that was in force during THIS period,
+  // which can differ from the current roster — always read it from chain.
+  const periodMembers = (await podRead(() => escrow.membersOf(id, period))).map((m) => ethers.getAddress(m));
+
   if (args.shares_bps) {
     const shares = args.shares_bps.map((n) => Math.round(n));
     const sum = shares.reduce((a, b) => a + b, 0);
     if (sum !== 10000) return err(`shares_bps must sum to 10000. Got ${sum}.`);
-    if (rec && shares.length !== rec.members.length) {
-      return err(`shares_bps has ${shares.length} entries but the pod has ${rec.members.length} members (order matters).`);
+    if (shares.length !== periodMembers.length) {
+      return err(`shares_bps has ${shares.length} entries but period ${period} had ${periodMembers.length} members. Order:\n` +
+        periodMembers.map((m, i) => `  [${i}] ${m}`).join("\n"));
     }
     const r = await sendPodTx(() => escrow.votePeriodSplit(id, period, shares));
-    const breakdown = rec.members.map((m, i) => `  [${i}] ${(shares[i] / 100).toFixed(1)}%  ${m}`).join("\n");
+    const breakdown = periodMembers.map((m, i) => `  [${i}] ${(shares[i] / 100).toFixed(1)}%  ${m}`).join("\n");
     return ok(`Voted a parimutuel SPLIT for period ${period} of "${rec.label}":\n${breakdown}\n` +
-      `Resolves when a majority of members submit the same vector.\nTx: ${podExplorerTx(config, r.hash)}`);
+      `Resolves when a majority of the period's members submit the same vector.\nTx: ${podExplorerTx(config, r.hash)}`);
   }
 
   if (args.kind) {
@@ -2138,19 +2241,22 @@ async function handlePodStatus(args) {
   const period = args.period != null ? args.period : lastEnded;
 
   const [avail, locked] = await podRead(() => escrow.getUserInfo(config.address));
+  const admin = await podRead(() => escrow.podAdmin(id));
   const lines = [];
   lines.push(`Pod "${rec ? rec.label : id}"  (${id})`);
-  lines.push(`Members (split-vote order):`);
-  members.forEach((m, i) => lines.push(`  [${i}] ${m}${m.toLowerCase() === config.address.toLowerCase() ? "  (you)" : ""}`));
+  lines.push(`Members now (split-vote order):`);
+  members.forEach((m, i) => lines.push(`  [${i}] ${m}${m.toLowerCase() === config.address.toLowerCase() ? "  (you)" : ""}${m.toLowerCase() === admin.toLowerCase() ? "  (admin)" : ""}`));
   lines.push(`Period length: ${fmtDuration(periodLength)}  ·  rate $${formatUsdc(ratePerMinute)}/min  ·  target ${targetMinutes} min`);
   lines.push(`Current period: ${curIdx}   Last ended: ${lastEnded < 0 ? "(none yet)" : lastEnded}`);
   lines.push(`Your pod escrow: $${formatUsdc(avail)} available, $${formatUsdc(locked)} locked`);
 
   if (period >= 0) {
+    // Votes/quorum for a period use that period's roster, which may differ.
+    const periodMembers = (await podRead(() => escrow.membersOf(id, period))).map((m) => ethers.getAddress(m));
     const pool = await podRead(() => escrow.podPool(id, period));
-    lines.push(`\nPeriod ${period}: pool $${formatUsdc(pool)}`);
+    lines.push(`\nPeriod ${period}: pool $${formatUsdc(pool)}  (${periodMembers.length} members that period)`);
     lines.push(`Votes:`);
-    for (const m of members) {
+    for (const m of periodMembers) {
       const [kind, target, cast] = await podRead(() => escrow.getVote(id, period, m));
       lines.push(`  ${m}: ${cast ? RESOLUTION_NAME[Number(kind)] + (target !== ethers.ZeroAddress ? ` → ${target}` : "") : "— not voted"}`);
     }

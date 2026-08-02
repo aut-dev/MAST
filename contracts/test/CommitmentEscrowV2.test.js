@@ -165,4 +165,75 @@ describe("CommitmentEscrowV2", () => {
       ).to.be.revertedWith("not a member");
     });
   });
+
+  describe("pod membership (per-period rosters)", () => {
+    const P = id("rosterpod");
+    const PERIOD = 1000;
+    let z;
+
+    beforeEach(async () => {
+      z = await time.latest();
+      // a is creator/admin; a + b to start.
+      await escrow.connect(a).createPod(P, [a.address, b.address], 3333n, 20, z, PERIOD);
+    });
+
+    it("add/remove take effect next period; past periods keep their roster", async () => {
+      // Period 0: a stakes $10 and misses -> pool[0]=$10.
+      await escrow.connect(a).commitPod(P, id("r0"), usdc(10), z + 300);
+      await time.increase(400);
+      await escrow.connect(b).expire(id("r0"));
+
+      // Admin adds c — effective next period only.
+      await escrow.connect(a).addMember(P, c.address);
+      expect((await escrow.membersOf(P, 0)).length).to.equal(2); // period 0 roster unchanged
+      expect((await escrow.membersOf(P, 1)).length).to.equal(3); // c joins period 1
+      const [fp, lm] = await escrow.latestMembers(P);
+      expect(fp).to.equal(1n);
+      expect(lm).to.include(c.address);
+
+      // Period 0 over: resolve with the 2-member roster. c cannot vote on it.
+      await time.increase(700); // now > z + 1000 = end of period 0
+      await expect(
+        escrow.connect(c).votePeriodSplit(P, 0, [10000, 0])
+      ).to.be.revertedWith("not a member");
+      await escrow.connect(a).votePeriodSplit(P, 0, [10000, 0]);
+      await escrow.connect(b).votePeriodSplit(P, 0, [10000, 0]);
+      await escrow.connect(outsider).resolvePeriod(P, 0);
+      const [aBal] = await escrow.getUserInfo(a.address);
+      expect(aBal).to.equal(usdc(100)); // staked 10, missed, won the 10 back via split
+    });
+
+    it("a removed member is still refunded for a period they forfeited into", async () => {
+      await escrow.connect(a).addMember(P, c.address); // -> [a,b,c] from period 1
+      await time.increase(PERIOD + 10); // enter period 1
+
+      // Period 1: c stakes $6 and misses -> pool[1]=$6, c is a contributor.
+      const d = (await time.latest()) + 300;
+      await escrow.connect(c).commitPod(P, id("r1"), usdc(6), d);
+      await time.increase(400);
+      await escrow.connect(a).expire(id("r1"));
+
+      // Admin removes c — effective period 2. c stays a member of period 1.
+      await escrow.connect(a).removeMember(P, c.address);
+      expect((await escrow.membersOf(P, 2)).length).to.equal(2);
+      expect(await escrow.membersOf(P, 1)).to.include(c.address);
+
+      // Nobody reaches majority on period 1; past the refund window c is made whole.
+      await time.increase(PERIOD * 3);
+      await escrow.connect(outsider).refundPeriod(P, 1);
+      const [cBal] = await escrow.getUserInfo(c.address);
+      expect(cBal).to.equal(usdc(100)); // forfeit returned despite being removed
+    });
+
+    it("guards: only admin changes the roster, and never below 2 members", async () => {
+      await expect(escrow.connect(b).addMember(P, c.address)).to.be.revertedWith("not admin");
+      await expect(escrow.connect(a).removeMember(P, b.address)).to.be.revertedWith("min 2 members");
+      // Accumulated changes in the same pending period: add c then remove b -> [a,c].
+      await escrow.connect(a).addMember(P, c.address);
+      await escrow.connect(a).removeMember(P, b.address);
+      const [, lm] = await escrow.latestMembers(P);
+      expect(lm.map((x) => x.toLowerCase())).to.have.members([a.address.toLowerCase(), c.address.toLowerCase()]);
+      expect(await escrow.podAdmin(P)).to.equal(a.address);
+    });
+  });
 });
