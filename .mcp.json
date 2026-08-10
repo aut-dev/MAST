@@ -2,7 +2,7 @@
   "mcpServers": {
     "mast": {
       "command": "node",
-      "args": ["/Users/gaga/MAST/mast-mcp/index.js"]
+      "args": ["${CLAUDE_PROJECT_DIR}/mast-mcp/index.js"]
     }
   }
 }

@@ -43,7 +43,12 @@ git clone https://github.com/aut-dev/MAST.git
 cd MAST/mast-mcp && npm install
 ```
 
-Register the MCP server with Claude Code:
+The repo ships a project-scoped `.mcp.json` that registers the `mast` server
+with a portable path (`${CLAUDE_PROJECT_DIR}/mast-mcp/index.js`), so when you
+open the cloned repo in Claude Code it offers to enable the server — just
+approve it. No per-machine path editing needed.
+
+If you'd rather register it manually (or use it from another directory):
 
 ```bash
 claude mcp add mast -- node /absolute/path/to/MAST/mast-mcp/index.js
@@ -68,7 +73,15 @@ Open Claude Code in the repo (so it picks up `CLAUDE.md`) and say
    each item, totals a weekly cost, and confirms it with you.
 4. **Funding** — `mast_fund` shows your wallet address and the recommended
    amount. Send USDC on Base from any wallet (Coinbase app, MetaMask,
-   Rainbow, …). MAST never touches fiat or processes payments.
+   Rainbow, …), **plus a little ETH on Base for gas** (see below). MAST never
+   touches fiat or processes payments.
+
+> **You need ETH on Base, not just USDC.** MAST is self-custodial: it signs
+> its own transactions with a local wallet and pays gas in ETH — there is no
+> gasless/paymaster path in the implementation. With zero ETH, `mast_setup`
+> still succeeds but your **first commit fails on gas**. Send ≈$1–2 of ETH on
+> Base to the same wallet address once; Base gas is cheap, so that lasts a
+> long time. USDC is what you *stake*; ETH is what *pays for the transactions*.
 
 ## Daily use
 
@@ -122,8 +135,8 @@ the server always acts as *one* member (you).
 
 Exactly the same as [Installation](#installation) + [Setup](#setup) above:
 clone, `npm install`, `claude mcp add mast`, say **"set up MAST"**, and fund
-your wallet with USDC on Base. Do this once; it works for both solo
-commitments and pods.
+your wallet with USDC **and a little ETH for gas** on Base (see the note in
+[Setup](#setup)). Do this once; it works for both solo commitments and pods.
 
 ### Forming a pod
 

@@ -938,8 +938,11 @@ async function handleSetup(args) {
     `Next steps:\n` +
     `1. Get to know the user — ask their name, what drives them, their aesthetic preferences — then call mast_save_profile.\n` +
     `2. Run the commitment questionnaire — what are they procrastinating on? Gather all items, calculate weekly cost.\n` +
-    `3. Call mast_fund to show the wallet address — they send USDC from any wallet.\n` +
-    `4. Once funded, create all commitments with mast_commit.`
+    `3. Call mast_fund to show the wallet address — they send USDC AND a little ETH for gas from any wallet.\n` +
+    `4. Once funded, create all commitments with mast_commit.\n\n` +
+    `Note: this is a self-custodial wallet with no gasless/paymaster support — ` +
+    `it needs a small amount of ETH on ${net.name} (≈$1–2) to pay transaction gas, ` +
+    `in addition to the USDC it stakes. Back up ${CONFIG_FILE}: it holds the only copy of the private key.`
   );
 }
 
@@ -976,6 +979,10 @@ async function handleFund(args) {
   const escrow = getEscrow(config);
   const walletBal = await usdc.balanceOf(config.address);
   const [escrowAvailable, lockedAmt] = await escrow.getUserInfo(config.address);
+  // Gas is paid in native ETH — the wallet needs a little or the first commit
+  // reverts. There is no paymaster; this is a plain self-custodial wallet.
+  const ethBal = await getProvider(config).getBalance(config.address);
+  const needsGas = ethBal < 300000000000000n; // ~0.0003 ETH
 
   // Generate and open branded funding page
   const pagePath = generateFundingPage({
@@ -994,13 +1001,21 @@ async function handleFund(args) {
 
   const totalAvailable = formatUsdc(walletBal + escrowAvailable);
 
+  const ethStr = (Number(ethBal) / 1e18).toFixed(5);
   return ok(
     `Funding page opened in browser.\n\n` +
     `Current balance: $${totalAvailable} available\n` +
-    `  Wallet: $${formatUsdc(walletBal)} | Escrow: $${formatUsdc(escrowAvailable)} | Locked: $${formatUsdc(lockedAmt)}\n\n` +
+    `  Wallet: $${formatUsdc(walletBal)} | Escrow: $${formatUsdc(escrowAvailable)} | Locked: $${formatUsdc(lockedAmt)}\n` +
+    `  Gas: ${ethStr} ETH\n\n` +
     `Send USDC on ${net.name} to: ${config.address}\n` +
     `From any wallet — Coinbase, MetaMask, Rainbow, etc.\n\n` +
     (amountUsd ? `Recommended amount: $${amountUsd}\n\n` : "") +
+    (needsGas
+      ? `⚠️ GAS: this wallet has almost no ETH (${ethStr}). MAST signs its own ` +
+        `transactions and pays gas in ETH — there is no gasless/paymaster path. ` +
+        `Send a little ETH on ${net.name} (≈$1–2 is plenty) to the SAME address, ` +
+        `or the first commit will fail with an out-of-gas / insufficient-funds error.\n\n`
+      : "") +
     `Page: ${pagePath}`
   );
 }
