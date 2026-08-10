@@ -36,7 +36,10 @@ owner only ever receives forfeits you route to them.
 
 ## Installation
 
-Prerequisites: Node 18+, [Claude Code](https://claude.com/claude-code).
+Prerequisites: Node 18+, [Claude Code](https://claude.com/claude-code), and a
+funded wallet on Base — **both USDC to stake and a little ETH for gas** (≈$1–2;
+MAST has no gasless/paymaster path, so with zero ETH your first commit fails).
+See [Setup](#setup) for details.
 
 ```bash
 git clone https://github.com/aut-dev/MAST.git
